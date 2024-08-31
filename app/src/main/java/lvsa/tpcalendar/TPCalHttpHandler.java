@@ -11,27 +11,27 @@ import com.sun.net.httpserver.HttpExchange;
 
 class TPCalHttpHandler implements HttpHandler {
 
-  public void handle(HttpExchange het) throws IOException {
-    InputStream is = het.getRequestBody();
+    public void handle(HttpExchange het) throws IOException {
+        InputStream is = het.getRequestBody();
 
-    InputStreamReader isReader = new InputStreamReader(is);
-    BufferedReader reader = new BufferedReader(isReader);
-    StringBuffer sb = new StringBuffer();
+        InputStreamReader isReader = new InputStreamReader(is);
+        BufferedReader reader = new BufferedReader(isReader);
+        StringBuffer sb = new StringBuffer();
 
-    String str;
-    while ( (str = reader.readLine()) != null ) {
-      sb.append(str);
-      System.out.println(str);
+        String str;
+        while ( (str = reader.readLine()) != null ) {
+            sb.append(str);
+            System.out.println(str);
+        }
+
+        String res = "am a teapot :3\n";
+
+        het.sendResponseHeaders(418, res.length());
+
+        OutputStream os = het.getResponseBody();
+        os.write(res.getBytes());
+        os.flush();
+        os.close();
+        is.close();
     }
-
-    String res = "am a teapot :3\n";
-
-    het.sendResponseHeaders(418, res.length());
-
-    OutputStream os = het.getResponseBody();
-    os.write(res.getBytes());
-    os.flush();
-    os.close();
-    is.close();
-  }
 }
