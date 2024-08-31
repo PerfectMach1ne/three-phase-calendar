@@ -25,7 +25,7 @@ public class App {
             ioe.printStackTrace();
         }
 
-        server.createContext("/", new TPCalHttpHandler());
+        server.createContext("/teapot", new TPCalHttpHandler());
 
         server.setExecutor(null);
         server.start();

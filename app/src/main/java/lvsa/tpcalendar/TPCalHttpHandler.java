@@ -23,12 +23,13 @@ class TPCalHttpHandler implements HttpHandler {
       System.out.println(str);
     }
 
-    String res = "am a teapot :3";
+    String res = "am a teapot :3\n";
 
     het.sendResponseHeaders(418, res.length());
 
     OutputStream os = het.getResponseBody();
     os.write(res.getBytes());
+    os.flush();
     os.close();
   }
 }
