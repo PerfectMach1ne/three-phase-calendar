@@ -6,7 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
-import com.sun.net.httpserver.*;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
 
 class TPCalHttpHandler implements HttpHandler {
 
@@ -31,5 +32,6 @@ class TPCalHttpHandler implements HttpHandler {
     os.write(res.getBytes());
     os.flush();
     os.close();
+    is.close();
   }
 }
