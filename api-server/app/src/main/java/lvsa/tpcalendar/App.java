@@ -65,6 +65,8 @@ public class App {
                                  + "\nlast updated at " + deleteMeLater.getUpdatedDate() + "\n";
 
                     het.sendResponseHeaders(200, res.length());
+                    
+                    het.getResponseHeaders().set("Content-Type", "text/plain");
 
                     OutputStream os = het.getResponseBody();
                     os.write(res.getBytes());
@@ -119,10 +121,7 @@ public class App {
                     os.close();
                     is.close();
                 }
-
-
             }
-            
         });
 
         server.setExecutor(null);
