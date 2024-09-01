@@ -23,7 +23,7 @@ void draw_datestring() {
   char* msg_buf = (char*)malloc(35*sizeof(char));
   char fstr[11] = "%e";
   if (lt->tm_mday < 10) {
-    switch (lt->tm_mday) {
+    switch (lt->tm_mday % 10) {
       case 1:
         if (lt->tm_mday == 11) break;
         strcat(fstr, "st %B %Y");
