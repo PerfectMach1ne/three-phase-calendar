@@ -1,7 +1,5 @@
 .PHONY = all default clean
-
 CC = gcc
-LINKERFLAG = -lm
 LDLIBS = -lcurl -lncurses
 
 C17FLAG = -std='c17'
@@ -18,7 +16,7 @@ default:
 
 %: %.o
 	@echo "Compiling binaries..."
-	${CC} ${LINKERFLAG} $< ${LDLIBS} -o $@   
+	${CC} $< ${LDLIBS} -o $@   
 
 %.o: %.c
 	@echo "Creating objects..."

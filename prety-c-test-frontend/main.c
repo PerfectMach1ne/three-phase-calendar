@@ -6,16 +6,62 @@
 #include <curl/curl.h>
 #include <ncurses.h>
 
-void draw_monthdays() {
+void draw_datestring() {
   time_t t = time(NULL);
   struct tm* lt = localtime(&t);
-  printf("asctime: %s", asctime(lt)); // asctime() appends a '\n' at the end of the string.
-  printf("Today is day %i of month  %i!\n", lt->tm_mday, lt->tm_mon);
-  char buf[70];
-  if (strftime(buf, sizeof(buf), "%est %B", lt)) {
-    printf("Today is %s!\n", &buf);
+  char tstr_buf[20];
+  // printf("asctime: %s", asctime(lt)); // asctime() appends a '\n' at the end of the string.
+  // printf("Today is day %i of month %i!\n", lt->tm_mday, lt->tm_mon);
+
+  for (int i = 0; i < 43; i++) {
+    if (i == 0) printf("╔");
+    else if (i < 42 ) printf("═");
+    else printf("╗\n");
+  }
+
+  printf("║");
+  char* msg_buf = (char*)malloc(35*sizeof(char));
+  char fstr[11] = "%e";
+  if (lt->tm_mday < 10) {
+    switch (lt->tm_mday) {
+      case 1:
+        if (lt->tm_mday == 11) break;
+        strcat(fstr, "st %B %Y");
+        break;
+      case 2:
+        if (lt->tm_mday == 12) break;
+        strcat(fstr, "nd %B %Y");
+        break;
+      case 3:
+        if (lt->tm_mday == 13) break;
+        strcat(fstr, "rd %B %Y");
+        break;
+      default:
+        strcat(fstr, "th %B %Y");
+    }
+  }
+  size_t spaces_to_fill = 0;
+  if (strftime(tstr_buf, sizeof(tstr_buf), fstr, lt)) {
+    if (lt->tm_mday < 10) {
+      spaces_to_fill = 2 + 9 + strlen(tstr_buf);
+      spaces_to_fill = 43 - spaces_to_fill;
+      int left_space_count = (int)(spaces_to_fill / 2);
+      int right_space_count = spaces_to_fill - left_space_count;
+      char left_space[left_space_count + 1]; char right_space[right_space_count + 1];
+
+      for (int i = 0; i < left_space_count; i++) printf(" ");
+      printf("Today is%s!", &tstr_buf);
+      for (int i = 0; i < right_space_count; i++) printf(" ");
+    } else {
+      spaces_to_fill = 2 + 10 + strlen(tstr_buf);
+      printf("Today is %s!", &tstr_buf);
+    }
   } else { puts("strftime failed"); }
-  
+  printf("║\n");
+}
+
+void draw_monthdays() {
+
 }
 
 void draw_weekdays() {
@@ -23,9 +69,9 @@ void draw_weekdays() {
 
   for (int i = 0; i < sizeof(weekdays) / sizeof(char*); i++) {
     if (i == 0) {
-      printf("╔═════╦"); 
+      printf("╠═════╦"); 
     } else if (i == 6) {
-      printf("═════╗\n"); 
+      printf("═════╣\n"); 
     } else {
       printf("═════╦"); 
     }
@@ -51,6 +97,7 @@ void draw_weekdays() {
 }
 
 int main(int argc, char** argv) {
+  draw_datestring();
   draw_monthdays();
   draw_weekdays();
   printf("what\n");
@@ -76,6 +123,7 @@ int main(int argc, char** argv) {
       char *ct;
       res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
       
+      // this doesn't work lol
       if ((CURLE_OK == res) && ct) {
         printf("Wondrous! We have received Content-Type %s!\n", &ct);
       }
