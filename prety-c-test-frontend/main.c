@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <time.h>
 
 #include <curl/curl.h>
@@ -61,13 +62,11 @@ void draw_datestring() {
 }
 
 void draw_monthdays() {
+  time_t t = time(NULL);
+  struct tm* lt = localtime(&t);
+  char tstr_buf[7];
 
-}
-
-void draw_weekdays() {
-  char* weekdays[7] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
-
-  for (int i = 0; i < sizeof(weekdays) / sizeof(char*); i++) {
+  for (int i = 0; i < 7; i++) {
     if (i == 0) {
       printf("╠═════╦"); 
     } else if (i == 6) {
@@ -76,6 +75,39 @@ void draw_weekdays() {
       printf("═════╦"); 
     }
   }
+
+  printf("║");
+  lt->tm_mday = lt->tm_mday - lt->tm_wday + 1;
+  mktime(lt);
+  for (int i = 0; i < 7; i++) {
+    lt->tm_mday = i != 0 ? lt->tm_mday + 1 : lt->tm_mday;
+    /* https://pubs.opengroup.org/onlinepubs/009695399/functions/mktime.html
+     * "The original values of the tm_wday and tm_yday components of the structure are ignored, [...]"" 
+     * ...can you guess what I tried to do before?
+    */
+    time_t newt = mktime(lt);
+    lt = localtime(&newt);
+    // printf("%d %d║", lt->tm_wday, lt->tm_mday);
+    if (strftime(tstr_buf, sizeof(tstr_buf), "%d.%m", lt)) {
+      printf("%s║", &tstr_buf);
+    } else { puts("strftime failed"); }
+  }
+  printf("\n");
+}
+
+void draw_weekdays() {
+  char* weekdays[7] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
+
+  for (int i = 0; i < sizeof(weekdays) / sizeof(char*); i++) {
+    if (i == 0) {
+      printf("╠═════╬"); 
+    } else if (i == 6) {
+      printf("═════╣\n"); 
+    } else {
+      printf("═════╬"); 
+    }
+  }
+
   for (int j = 0; j < sizeof(weekdays) / sizeof(char*); j++) { 
     if (j == 0) {
       printf("║ %s ║", weekdays[j]); 
@@ -85,6 +117,7 @@ void draw_weekdays() {
       printf(" %s ║", weekdays[j]); 
     }
   }
+
   for (int k = 0; k < sizeof(weekdays) / sizeof(char*); k++) { 
     if (k == 0) {
       printf("╚═════╩"); 
