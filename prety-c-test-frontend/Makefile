@@ -2,7 +2,9 @@
 
 CC = gcc
 LINKERFLAG = -lm
-CURLLIBS = -lcurl
+LIBCURL = -lcurl
+NCURSES = -lncurses
+
 C17FLAG = -std='c17'
 
 SRCS := $(wildcard *c)
@@ -17,11 +19,11 @@ default:
 
 %: %.o
 	@echo "Compiling binaries..."
-	$(CC) $< -o $(LINKERFLAG) $(CURLLIBS) $@ 
+	$(CC) $< $(LINKERFLAG) $(LIBCURL) $(NCURSES) -o $@ 
 
 %.o: %.c
 	@echo "Creating objects..."
-	$(CC) -c $(C17FLAG) $< $(CURLLIBS)
+	$(CC) -c $(C17FLAG) $< $(LIBCURL) $(NCURSES)
 
 move:
 	@echo "Moving binaries to bin folder..."
