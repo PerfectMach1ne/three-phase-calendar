@@ -27,25 +27,13 @@ public class PeriodEvent implements Event {
     }
 
     @Override
-    public String setName() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setName'");
-    }
-
-    @Override
-    public String setDescription() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setDescription'");
-    }
-
-    @Override
     public void create() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'create'");
     }
 
     @Override
-    public void update() {
+    public void update(byte mode) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
@@ -54,6 +42,18 @@ public class PeriodEvent implements Event {
     public void delete() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    }
+
+    @Override
+    public void setName(String newName) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setName'");
+    }
+
+    @Override
+    public void setDescription(String newDesc) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setDescription'");
     }
     
 }
