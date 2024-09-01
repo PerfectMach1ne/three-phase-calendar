@@ -1,5 +1,3 @@
-#define __STDC_WANT_LIB_EXT1__ 1
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,16 +7,15 @@
 #include <ncurses.h>
 
 void draw_monthdays() {
-#ifdef __STDC_LIB_EXT1__
   time_t t = time(NULL);
-  struct tm buf;
-  char str[26];
-  printf("asctime: %s", asctime_s(str, sizeof str, localtime_s(&t, &buf))); // asctime() appends a '\n' at the end of the string.
-  printf("Today is %s", )
-#else
-  time_t t = time(NULL);
-  printf("asctime: %s", asctime(localtime(&t))); // asctime() appends a '\n' at the end of the string.
-#endif
+  struct tm* lt = localtime(&t);
+  printf("asctime: %s", asctime(lt)); // asctime() appends a '\n' at the end of the string.
+  printf("Today is day %i of month  %i!\n", lt->tm_mday, lt->tm_mon);
+  char buf[70];
+  if (strftime(buf, sizeof(buf), "%est %B", lt)) {
+    printf("Today is %s!\n", &buf);
+  } else { puts("strftime failed"); }
+  
 }
 
 void draw_weekdays() {

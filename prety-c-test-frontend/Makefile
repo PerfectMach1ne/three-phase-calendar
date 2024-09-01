@@ -2,15 +2,14 @@
 
 CC = gcc
 LINKERFLAG = -lm
-LIBCURL = -lcurl
-NCURSES = -lncurses
+LDLIBS = -lcurl -lncurses
 
 C17FLAG = -std='c17'
 
-SRCS := $(wildcard *c)
+SRCS := $(wildcard *.c)
 BINS := $(SRCS:%.c=%)
 
-all: default $(BINS) move
+all: default ${BINS} move clean 
 
 default:
 	@echo "Pretty C frontend!"
@@ -19,16 +18,16 @@ default:
 
 %: %.o
 	@echo "Compiling binaries..."
-	$(CC) $< $(LINKERFLAG) $(LIBCURL) $(NCURSES) -o $@ 
+	${CC} ${LINKERFLAG} $< ${LDLIBS} -o $@   
 
 %.o: %.c
 	@echo "Creating objects..."
-	$(CC) -c $(C17FLAG) $< $(LIBCURL) $(NCURSES)
+	${CC} -c ${C17FLAG} $< ${LDLIBS}
 
 move:
 	@echo "Moving binaries to bin folder..."
-	mv -t ./bin $(BINS)
+	mv -t ./bin ${BINS}
 
 clean:
 	@echo "Cleaning up..."
-	rm -rvi *.o $(BINS)
+	rm -rv *.o ${BINS}
