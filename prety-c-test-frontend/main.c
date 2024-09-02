@@ -11,18 +11,19 @@ void draw_datestring() {
   time_t t = time(NULL);
   struct tm* lt = localtime(&t);
   char tstr_buf[20];
-  // printf("asctime: %s", asctime(lt)); // asctime() appends a '\n' at the end of the string.
-  // printf("Today is day %i of month %i!\n", lt->tm_mday, lt->tm_mon);
 
+  // Draw 1st box ceiling
   for (int i = 0; i < 43; i++) {
     if (i == 0) printf("╔");
     else if (i < 42 ) printf("═");
     else printf("╗\n");
   }
 
+  // Draw 1st box content & walls
   printf("║");
   char* msg_buf = (char*)malloc(35*sizeof(char));
   char fstr[11] = "%e";
+  // Prepare the English format string.
   if (lt->tm_mday < 10) {
     switch (lt->tm_mday % 10) {
       case 1:
@@ -43,18 +44,26 @@ void draw_datestring() {
   }
   size_t spaces_to_fill = 0;
   if (strftime(tstr_buf, sizeof(tstr_buf), fstr, lt)) {
+    // The point of this if statement is just to ensure there is no ugly extra space from strftime() on monthdays < 10
     if (lt->tm_mday < 10) {
+      // Current width of the entire box = 43
       spaces_to_fill = 2 + 9 + strlen(tstr_buf);
       spaces_to_fill = 43 - spaces_to_fill;
       int left_space_count = (int)(spaces_to_fill / 2);
       int right_space_count = spaces_to_fill - left_space_count;
-      char left_space[left_space_count + 1]; char right_space[right_space_count + 1];
+      char left_space[left_space_count + 1];
+      char right_space[right_space_count + 1];
 
       for (int i = 0; i < left_space_count; i++) printf(" ");
       printf("Today is%s!", &tstr_buf);
       for (int i = 0; i < right_space_count; i++) printf(" ");
     } else {
       spaces_to_fill = 2 + 10 + strlen(tstr_buf);
+      spaces_to_fill = 43 - spaces_to_fill;
+      int left_space_count = (int)(spaces_to_fill / 2);
+      int right_space_count = spaces_to_fill - left_space_count;
+      char left_space[left_space_count + 1];
+      char right_space[right_space_count + 1];
       printf("Today is %s!", &tstr_buf);
     }
   } else { puts("strftime failed"); }
@@ -66,6 +75,7 @@ void draw_monthdays() {
   struct tm* lt = localtime(&t);
   char tstr_buf[7];
 
+  // Draw 1st box floor & 2nd box ceiling
   for (int i = 0; i < 7; i++) {
     if (i == 0) {
       printf("╠═════╦"); 
@@ -76,18 +86,22 @@ void draw_monthdays() {
     }
   }
 
+  // Draw 2nd box content & walls
   printf("║");
-  lt->tm_mday = lt->tm_mday - lt->tm_wday + 1;
+  // For testing if it doesn't get wrecked on Sundays and monthdays > 7:
+  // lt->tm_mday += 8 % 31; lt->tm_wday += 8 % 7;
+  lt->tm_mday = (lt->tm_mday - lt->tm_wday % 7 + 1) % 31; // Potentially flawed on [28,30] monthday months.
   mktime(lt);
   for (int i = 0; i < 7; i++) {
-    lt->tm_mday = i != 0 ? lt->tm_mday + 1 : lt->tm_mday;
     /* https://pubs.opengroup.org/onlinepubs/009695399/functions/mktime.html
      * "The original values of the tm_wday and tm_yday components of the structure are ignored, [...]"" 
      * ...can you guess what I tried to do before?
     */
+    lt->tm_mday = (i != 0 ? lt->tm_mday + 1 : lt->tm_mday) % 31; // Potentially flawed on [28,30] monthday months.
+
     time_t newt = mktime(lt);
     lt = localtime(&newt);
-    // printf("%d %d║", lt->tm_wday, lt->tm_mday);
+
     if (strftime(tstr_buf, sizeof(tstr_buf), "%d.%m", lt)) {
       printf("%s║", &tstr_buf);
     } else { puts("strftime failed"); }
@@ -98,6 +112,7 @@ void draw_monthdays() {
 void draw_weekdays() {
   char* weekdays[7] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
+  // Draw 2nd box floor & 3rd box ceiling
   for (int i = 0; i < sizeof(weekdays) / sizeof(char*); i++) {
     if (i == 0) {
       printf("╠═════╬"); 
@@ -108,6 +123,7 @@ void draw_weekdays() {
     }
   }
 
+  // Draw 3rd box content & walls
   for (int j = 0; j < sizeof(weekdays) / sizeof(char*); j++) { 
     if (j == 0) {
       printf("║ %s ║", weekdays[j]); 
@@ -118,6 +134,7 @@ void draw_weekdays() {
     }
   }
 
+  // Draw 3rd box floor
   for (int k = 0; k < sizeof(weekdays) / sizeof(char*); k++) { 
     if (k == 0) {
       printf("╚═════╩"); 
@@ -130,14 +147,14 @@ void draw_weekdays() {
 }
 
 int main(int argc, char** argv) {
-  draw_datestring();
-  draw_monthdays();
-  draw_weekdays();
-  printf("what\n");
   CURL* curl;
   CURLcode res;
 
   curl = curl_easy_init();
+
+  draw_datestring();
+  draw_monthdays();
+  draw_weekdays();
   
   if (curl) {
     curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:8057/testTask");
