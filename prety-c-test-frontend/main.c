@@ -20,10 +20,9 @@ void draw_datestring() {
   }
 
   // Draw 1st box content & walls
-  printf("║");
-  char* msg_buf = (char*)malloc(35*sizeof(char));
-  char fstr[11] = "%e";
+  
   // Prepare the English format string.
+  char fstr[11] = "%e";
   if (lt->tm_mday < 10) {
     switch (lt->tm_mday % 10) {
       case 1:
@@ -42,13 +41,17 @@ void draw_datestring() {
         strcat(fstr, "th %B %Y");
     }
   }
-  size_t spaces_to_fill = 0;
+  
+  printf("║");
   if (strftime(tstr_buf, sizeof(tstr_buf), fstr, lt)) {
-    // Current width of the entire box = 43
+    size_t spaces_to_fill = 0;
+    
     spaces_to_fill = 2 + (lt->tm_mday < 10 ? 9 : 10) + strlen(tstr_buf);
-    spaces_to_fill = 43 - spaces_to_fill;
+    spaces_to_fill = 43 - spaces_to_fill; // Current width of the entire box = 43
+
     int left_space_count = (int)(spaces_to_fill / 2);
     int right_space_count = spaces_to_fill - left_space_count;
+
     char left_space[left_space_count + 1];
     char right_space[right_space_count + 1];
 
