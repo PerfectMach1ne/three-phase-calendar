@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
@@ -15,9 +16,6 @@ import lvsa.tpcalendar.colors.Colors;
 import lvsa.tpcalendar.model.TaskEvent;
 
 public class App {
-    // public String getGreeting() {
-    //     return "heeeeELOOOOOOOOO WOOOORLLLLLLLDDD";
-    // }
     private static TaskEvent deleteMeLater;
 
     public static void main(String[] args) {
@@ -36,8 +34,6 @@ public class App {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
-        
-        // System.out.println(new App().getGreeting());
     }
 
     private static void runServer() throws IOException {
@@ -84,12 +80,18 @@ public class App {
                     String str;
                     while ( (str = reader.readLine()) != null ) {
                         sb.append(str);
-                        System.out.println(str);
+                        // System.out.println(str);
                     }
 
-                    String res = "POST testTask " + deleteMeLater.getName() + "\n"; 
+                    Headers resh = het.getResponseHeaders();
+                    resh.set("Content-Type", "application/json");
+                    System.out.println(resh.toString());
 
-                    het.sendResponseHeaders(200, res.length());
+                    String res = "{ \"deleteMeLaterName\": \"" + deleteMeLater.getName() + "\" }";
+
+                    // 0 to use Chunked Transfer Coding
+                    // https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
+                    het.sendResponseHeaders(201, 0);
 
                     OutputStream os = het.getResponseBody();
                     os.write(res.getBytes());
