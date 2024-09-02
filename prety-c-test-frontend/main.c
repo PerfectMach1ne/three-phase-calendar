@@ -44,28 +44,17 @@ void draw_datestring() {
   }
   size_t spaces_to_fill = 0;
   if (strftime(tstr_buf, sizeof(tstr_buf), fstr, lt)) {
-    // The point of this if statement is just to ensure there is no ugly extra space from strftime() on monthdays < 10
-    if (lt->tm_mday < 10) {
-      // Current width of the entire box = 43
-      spaces_to_fill = 2 + 9 + strlen(tstr_buf);
-      spaces_to_fill = 43 - spaces_to_fill;
-      int left_space_count = (int)(spaces_to_fill / 2);
-      int right_space_count = spaces_to_fill - left_space_count;
-      char left_space[left_space_count + 1];
-      char right_space[right_space_count + 1];
+    // Current width of the entire box = 43
+    spaces_to_fill = 2 + (lt->tm_mday < 10 ? 9 : 10) + strlen(tstr_buf);
+    spaces_to_fill = 43 - spaces_to_fill;
+    int left_space_count = (int)(spaces_to_fill / 2);
+    int right_space_count = spaces_to_fill - left_space_count;
+    char left_space[left_space_count + 1];
+    char right_space[right_space_count + 1];
 
-      for (int i = 0; i < left_space_count; i++) printf(" ");
-      printf("Today is%s!", &tstr_buf);
-      for (int i = 0; i < right_space_count; i++) printf(" ");
-    } else {
-      spaces_to_fill = 2 + 10 + strlen(tstr_buf);
-      spaces_to_fill = 43 - spaces_to_fill;
-      int left_space_count = (int)(spaces_to_fill / 2);
-      int right_space_count = spaces_to_fill - left_space_count;
-      char left_space[left_space_count + 1];
-      char right_space[right_space_count + 1];
-      printf("Today is %s!", &tstr_buf);
-    }
+    for (int i = 0; i < left_space_count; i++) printf(" ");
+    printf("Today is%s!", &tstr_buf);
+    for (int i = 0; i < right_space_count; i++) printf(" ");
   } else { puts("strftime failed"); }
   printf("║\n");
 }
