@@ -48,6 +48,7 @@ public class App {
         }
 
         server.createContext("/teapot", new TPCalHttpHandler());
+
         server.createContext("/testTask", new HttpHandler() {
 
             @Override
@@ -60,9 +61,9 @@ public class App {
                                  + "\ncreated at " + deleteMeLater.getCreatedDate()
                                  + "\nlast updated at " + deleteMeLater.getUpdatedDate() + "\n";
 
+                    het.getResponseHeaders().set("Content-Type", "text/plain");
                     het.sendResponseHeaders(200, res.length());
                     
-                    het.getResponseHeaders().set("Content-Type", "text/plain");
 
                     OutputStream os = het.getResponseBody();
                     os.write(res.getBytes());
@@ -120,8 +121,7 @@ public class App {
                     OutputStream os = het.getResponseBody();
                     os.write(res.getBytes());
                     os.flush();
-                    os.close();
-                    is.close();
+                    is.close(); os.close();
                 }
             }
         });
