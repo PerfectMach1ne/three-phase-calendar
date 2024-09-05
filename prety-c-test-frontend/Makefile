@@ -1,11 +1,12 @@
-.PHONY = all default clean
+.PHONY = all default clean move
 CC = gcc
-LDLIBS = -lcurl -lncurses
+LDLIBS = -lcurl -lncursesw 
 
 C17FLAG = -std='c17'
 
 SRCS := $(wildcard *.c)
 BINS := $(SRCS:%.c=%)
+NCURSES_CFLAGS := $(shell ncursesw6-config --cflags)
 
 all: default ${BINS} move clean 
 
@@ -20,7 +21,7 @@ default:
 
 %.o: %.c
 	@echo "Creating objects..."
-	${CC} -c ${C17FLAG} $< ${LDLIBS}
+	${CC} -c ${C17FLAG} $(NCURSES_CFLAGS) -DNCURSES_WIDECHAR $< 
 
 move:
 	@echo "Moving binaries to bin folder..."
