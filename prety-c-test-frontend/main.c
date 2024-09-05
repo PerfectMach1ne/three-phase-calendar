@@ -55,8 +55,6 @@ int main(int argc, char** argv) {
 
   height = 5; width = 7;
   starty = 1; startx = 1;
-  // test_box = create_newwin(height, width, starty, startx);
-  // wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
   filler_W = create_newwin(7, 9, 0, 0);
   datestring_W = create_newwin(3, 42, 0, 9);
   monthdays_W = create_newwin(3, 42, 2, 9);
@@ -91,37 +89,38 @@ int main(int argc, char** argv) {
   
   destroy_win(filler_W);
   destroy_win(datestring_W);
-  // if (curl) {
-  //   curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:8057/testTask");
-  //   /* Do not do the transfer - only connect to host */
-  //   // curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
+  if (curl) {
+    curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:8057/teapot");
+    /* Do not do the transfer - only connect to host */
+    // curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
 
-  //   res = curl_easy_perform(curl);
+    res = curl_easy_perform(curl);
 
-  //   if (res != CURLE_OK) {
-  //     fprintf(stderr, "curl_easy_perform() failed: %s\n",
-  //                   curl_easy_strerror(res));
-  //   } else {
-  //     char buf[512];
-  //     size_t nread;
-  //     long sockfd;
-  //     char *ct;
-  //     res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
+    if (res != CURLE_OK) {
+      printw("curl_easy_perform() failed: %s\n",
+                    curl_easy_strerror(res));
+    } else {
+      char buf[512];
+      size_t nread;
+      long sockfd;
+      char *ct;
+      res = curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &ct);
       
-  //     // this doesn't work lol
-  //     if ((CURLE_OK == res) && ct) {
-  //       printf("Wondrous! We have received Content-Type %s!\n", &ct);
-  //     }
+      // this doesn't work lol
+      if ((CURLE_OK == res) && ct) {
+        printw("Wondrous! We have received Content-Type %s!\n", &ct);
+      }
 
-  //     res = curl_easy_getinfo(curl, CURLINFO_ACTIVESOCKET, &sockfd);
+      res = curl_easy_getinfo(curl, CURLINFO_ACTIVESOCKET, &sockfd);
 
-  //     res = curl_easy_recv(curl, buf, sizeof(buf), &nread);
-  //     printf("%s", &buf);
-  //   }
+      res = curl_easy_recv(curl, buf, sizeof(buf), &nread);
+      printw("%s", &buf);
+    }
 
-  //   curl_easy_cleanup(curl);
-  // }
+    curl_easy_cleanup(curl);
+  }
   refresh();
+  getch();
 
   endwin();
   return EXIT_SUCCESS;
