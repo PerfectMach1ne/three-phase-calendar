@@ -1,7 +1,10 @@
+#define _XOPEN_SOURCE_EXTENDED 700
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <locale.h>
 #include <time.h>
 
 #include <curl/curl.h>
@@ -9,13 +12,31 @@
 
 #define SMALL_Q 113
 
+typedef struct _win_border_struct {
+  chtype ls, rs, ts, bs,
+         tl, tr, bl, br;
+} WIN_BORDER;
+
+typedef struct _WIN_struct {
+  int startx, starty;
+  int height, width;
+  WIN_BORDER border;
+} WIN;
+
 WINDOW* create_newwin(int height, int width, int starty, int startx);
 void destroy_win(WINDOW* local_win);
-// delete this later and replace with proper functions
-void draw_topleftbox(); void draw_datestring(); void draw_monthdays(); void draw_weekdays();
+// void draw_datestring_W(WINDOW* local_win);
+// void draw_monthdays_W(WINDOW* local_win);
+// void draw_weekdays_W(WINDOW* local_win);
+// void draw_hours_W(WINDOW* local_win);
 
 int main(int argc, char** argv) {
-  WINDOW* test_box;
+  WINDOW* filler_W;
+  // WINDOW* filler_W;
+  WINDOW* datestring_W;
+  WINDOW* monthdays_W;
+  WINDOW* weekdays_W;
+  WINDOW* hours_W;
   int height, width, starty, startx;
   int ch;
   int ch_mult = 0;
@@ -24,136 +45,52 @@ int main(int argc, char** argv) {
   CURLcode res;
 
   curl = curl_easy_init();
+
+  setlocale(LC_ALL, "");
   
   initscr();
   cbreak(); // Disable line buffering
-  keypad(stdscr, TRUE);
   noecho();
+  keypad(stdscr, TRUE);
 
   height = 5; width = 7;
   starty = 1; startx = 1;
-  test_box = create_newwin(height, width, starty, startx);
-  wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
+  // test_box = create_newwin(height, width, starty, startx);
+  // wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
+  filler_W = create_newwin(7, 9, 0, 0);
+  datestring_W = create_newwin(3, 42, 0, 9);
+  monthdays_W = create_newwin(3, 42, 2, 9);
 
   while ( (ch = getch()) != SMALL_Q ) {
-    wrefresh(test_box);
-    switch (ch) {
-      case 'h':
-      case 'H':
-        if (starty > LINES) {
-          starty = LINES;
-          break;
-        } else if (starty < 0) {
-          starty = 0;
-          break;
-        } else if (startx < 0) {
-          startx = 0;
-          break;
-        } else if (startx > COLS) {
-          startx = COLS;
-          break;
-        }
-        destroy_win(test_box);  
-        if (ch_mult > 0) {
-          startx -= ch_mult;
-          create_newwin(height, width, starty, startx);
-          ch_mult = 0;
-        } else test_box = create_newwin(height, width, starty, --startx);
-        wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
-        printw("[%d]", ch_mult);
-        printw("(%d,%d)", startx,starty);
-        break;
-      case 'j':
-      case 'J':
-        if (starty > LINES) {
-          starty = LINES;
-          break;
-        } else if (starty < 0) {
-          starty = 0;
-          break;
-        } else if (startx < 0) {
-          startx = 0;
-          break;
-        } else if (startx > COLS) {
-          startx = COLS;
-          break;
-        }
-        destroy_win(test_box);
-        if (ch_mult > 0) {
-          starty += ch_mult;
-          create_newwin(height, width, starty, startx);
-          ch_mult = 0;
-        } else test_box = create_newwin(height, width, ++starty, startx);
-        wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
-        printw("[%d]", ch_mult);
-        printw("(%d,%d)", startx,starty);
-        break;
-      case 'k':
-      case 'K':
-        if (starty > LINES) {
-          starty = LINES;
-          break;
-        } else if (starty < 0) {
-          starty = 0;
-          break;
-        } else if (startx < 0) {
-          startx = 0;
-          break;
-        } else if (startx > COLS) {
-          startx = COLS;
-          break;
-        }
-        destroy_win(test_box);  
-        if (ch_mult > 0) {
-          starty -= ch_mult;
-          create_newwin(height, width, starty, startx);
-          ch_mult = 0;
-        } else test_box = create_newwin(height, width, --starty, startx);
-        wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
-        printw("[%d]", ch_mult);
-        printw("(%d,%d)", startx,starty);
-        break;
-      case 'l':
-      case 'L':
-        if (starty > LINES) {
-          starty = LINES;
-          break;
-        } else if (starty < 0) {
-          starty = 0;
-          break;
-        } else if (startx < 0) {
-          startx = 0;
-          break;
-        } else if (startx > COLS) {
-          startx = COLS;
-          break;
-        }
-        destroy_win(test_box);  
-        if (ch_mult > 0) {
-          startx += ch_mult;
-          create_newwin(height, width, starty, startx);
-          ch_mult = 0;
-        } else test_box = create_newwin(height, width, starty, ++startx);
-        wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
-        printw("[%d]", ch_mult);
-        printw("(%d,%d)", startx,starty);
-        break;
-      default:
-        if (ch >= 49 && ch <= 57) {
-          ch_mult += ch - 48;
-        }
-        printw("[%d]", ch_mult);
-        printw("(%d,%d)", startx,starty);
-    }
-    wrefresh(test_box);
-    // if (ch == CTRL_Q) break;
-    // draw_topleftbox();
-    // draw_datestring();
+    if ( filler_W != NULL ) destroy_win(filler_W);
+    if ( datestring_W != NULL ) destroy_win(datestring_W);
+    if ( monthdays_W != NULL ) destroy_win(monthdays_W);
+    
+    filler_W = create_newwin(7, 9, 0, 0);
+    datestring_W = create_newwin(3, 42, 0, 8);
+    monthdays_W = create_newwin(3, 42, 2, 8);
+    cchar_t ls; setcchar(&ls, L"║", 0, 0, NULL);
+    cchar_t rs; setcchar(&rs, L"║", 0, 0, NULL);
+    cchar_t ts; setcchar(&ts, L"═", 0, 0, NULL);
+    cchar_t bs; setcchar(&bs, L"═", 0, 0, NULL);
+    cchar_t tl; setcchar(&tl, L"╔", 0, 0, NULL);
+    cchar_t tr; setcchar(&tr, L"╗", 0, 0, NULL);
+    cchar_t bl; setcchar(&bl, L"╚", 0, 0, NULL);
+    cchar_t br; setcchar(&br, L"╝", 0, 0, NULL);
 
+    wborder_set(filler_W, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+    wrefresh(filler_W);
+    // printw("");
+    
+    // wrefresh(test_box);
+
+    // draw_datestring();
     // draw_monthdays();
     // draw_weekdays();
   }
   
+  destroy_win(filler_W);
+  destroy_win(datestring_W);
   // if (curl) {
   //   curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:8057/testTask");
   //   /* Do not do the transfer - only connect to host */
@@ -205,20 +142,6 @@ void destroy_win(WINDOW* local_win) {
   wborder(local_win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
   wrefresh(local_win);
   delwin(local_win);
-}
-
-void draw_topleftbox() {
-  printf("╔");
-  for (int i = 0; i < 5; i++) {
-    printf("═");
-  }
-  // printf("╠");
-  for (int i = 0; i < 5; i++) {
-    for (int j = 0; i < 5; i++) {
-      printf(" ");
-    }
-    // printf("\n");
-  }
 }
 
 void draw_datestring() {

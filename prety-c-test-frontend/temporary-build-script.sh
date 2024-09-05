@@ -1,4 +1,4 @@
 #!/bin/bash
 
-gcc -c -std='c17' main.c -lcurl
-gcc main.o -lm -lcurl -o main
+gcc main.c -std='c17' $(ncursesw6-config --cflags) -c
+gcc main.o -lm -lcurl -lncursesw -o main
