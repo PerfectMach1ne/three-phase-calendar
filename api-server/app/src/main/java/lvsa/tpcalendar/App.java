@@ -56,12 +56,13 @@ public class App {
                 if (het.getRequestMethod().equals("GET")) {
                     System.out.println("GET task :)");
 
-                    String res = "GET testTask " + deleteMeLater.getName() 
-                                 + "\ncolor HEX code = " + deleteMeLater.getColor() 
-                                 + "\ncreated at " + deleteMeLater.getCreatedDate()
-                                 + "\nlast updated at " + deleteMeLater.getUpdatedDate() + "\n";
+                    // String res = "GET testTask " + deleteMeLater.getName() 
+                    //              + "\ncolor HEX code = " + deleteMeLater.getColor() 
+                    //              + "\ncreated at " + deleteMeLater.getCreatedDate()
+                    //              + "\nlast updated at " + deleteMeLater.getUpdatedDate() + "\n";
+                    String res = "{ \"deleteMeLaterName\": \"" + deleteMeLater.getName() + "\" }";
 
-                    het.getResponseHeaders().set("Content-Type", "text/plain");
+                    het.getResponseHeaders().set("Content-Type", "application/json");
                     het.sendResponseHeaders(200, res.length());
                     
 

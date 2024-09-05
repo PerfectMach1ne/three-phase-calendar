@@ -9,8 +9,8 @@ public class TaskEvent implements Event {
     private String taskName = "Unnamed task"; 
     private String taskDescription = "";
     private LocalDateTime updatedDate = createdDate;
-    private boolean isDone;
-    private boolean hasColor;
+    private boolean isDone = false;
+    private boolean hasColor = false;
     private Colors color;
 
     /*
@@ -58,10 +58,12 @@ public class TaskEvent implements Event {
     }
 
     public void setColor(String hexColor) {
+        this.hasColor = true;
         this.color = Colors.getColorFromHex(hexColor);
     }
 
     public void setColor(Colors color) { 
+        this.hasColor = true;
         this.color = color;
     }
     /*

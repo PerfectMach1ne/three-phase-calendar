@@ -24,6 +24,7 @@ class TPCalHttpHandler implements HttpHandler {
             System.out.println(str);
         }
 
+        System.out.println("418 /teapot requested");
         String res = "am a teapot :3\n";
 
         het.sendResponseHeaders(418, res.length());
