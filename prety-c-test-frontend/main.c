@@ -40,6 +40,19 @@ int main(int argc, char** argv) {
     switch (ch) {
       case 'h':
       case 'H':
+        if (starty > LINES) {
+          starty = LINES;
+          break;
+        } else if (starty < 0) {
+          starty = 0;
+          break;
+        } else if (startx < 0) {
+          startx = 0;
+          break;
+        } else if (startx > COLS) {
+          startx = COLS;
+          break;
+        }
         destroy_win(test_box);  
         if (ch_mult > 0) {
           startx -= ch_mult;
@@ -47,9 +60,24 @@ int main(int argc, char** argv) {
           ch_mult = 0;
         } else test_box = create_newwin(height, width, starty, --startx);
         wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
+        printw("[%d]", ch_mult);
+        printw("(%d,%d)", startx,starty);
         break;
       case 'j':
       case 'J':
+        if (starty > LINES) {
+          starty = LINES;
+          break;
+        } else if (starty < 0) {
+          starty = 0;
+          break;
+        } else if (startx < 0) {
+          startx = 0;
+          break;
+        } else if (startx > COLS) {
+          startx = COLS;
+          break;
+        }
         destroy_win(test_box);
         if (ch_mult > 0) {
           starty += ch_mult;
@@ -57,9 +85,24 @@ int main(int argc, char** argv) {
           ch_mult = 0;
         } else test_box = create_newwin(height, width, ++starty, startx);
         wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
+        printw("[%d]", ch_mult);
+        printw("(%d,%d)", startx,starty);
         break;
       case 'k':
       case 'K':
+        if (starty > LINES) {
+          starty = LINES;
+          break;
+        } else if (starty < 0) {
+          starty = 0;
+          break;
+        } else if (startx < 0) {
+          startx = 0;
+          break;
+        } else if (startx > COLS) {
+          startx = COLS;
+          break;
+        }
         destroy_win(test_box);  
         if (ch_mult > 0) {
           starty -= ch_mult;
@@ -67,9 +110,24 @@ int main(int argc, char** argv) {
           ch_mult = 0;
         } else test_box = create_newwin(height, width, --starty, startx);
         wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
+        printw("[%d]", ch_mult);
+        printw("(%d,%d)", startx,starty);
         break;
       case 'l':
       case 'L':
+        if (starty > LINES) {
+          starty = LINES;
+          break;
+        } else if (starty < 0) {
+          starty = 0;
+          break;
+        } else if (startx < 0) {
+          startx = 0;
+          break;
+        } else if (startx > COLS) {
+          startx = COLS;
+          break;
+        }
         destroy_win(test_box);  
         if (ch_mult > 0) {
           startx += ch_mult;
@@ -77,12 +135,15 @@ int main(int argc, char** argv) {
           ch_mult = 0;
         } else test_box = create_newwin(height, width, starty, ++startx);
         wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
+        printw("[%d]", ch_mult);
+        printw("(%d,%d)", startx,starty);
         break;
       default:
         if (ch >= 49 && ch <= 57) {
           ch_mult += ch - 48;
-          printw("%d", ch_mult);
         }
+        printw("[%d]", ch_mult);
+        printw("(%d,%d)", startx,starty);
     }
     wrefresh(test_box);
     // if (ch == CTRL_Q) break;
