@@ -18,6 +18,7 @@ int main(int argc, char** argv) {
   WINDOW* test_box;
   int height, width, starty, startx;
   int ch;
+  int ch_mult = 0;
 
   CURL* curl;
   CURLcode res;
@@ -40,27 +41,48 @@ int main(int argc, char** argv) {
       case 'h':
       case 'H':
         destroy_win(test_box);  
-        test_box = create_newwin(height, width, starty, --startx);
+        if (ch_mult > 0) {
+          startx -= ch_mult;
+          create_newwin(height, width, starty, startx);
+          ch_mult = 0;
+        } else test_box = create_newwin(height, width, starty, --startx);
         wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
         break;
       case 'j':
       case 'J':
-        destroy_win(test_box);  
-        test_box = create_newwin(height, width, --starty, startx);
+        destroy_win(test_box);
+        if (ch_mult > 0) {
+          starty += ch_mult;
+          create_newwin(height, width, starty, startx);
+          ch_mult = 0;
+        } else test_box = create_newwin(height, width, ++starty, startx);
         wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
         break;
       case 'k':
       case 'K':
         destroy_win(test_box);  
-        test_box = create_newwin(height, width, ++starty, startx);
+        if (ch_mult > 0) {
+          starty -= ch_mult;
+          create_newwin(height, width, starty, startx);
+          ch_mult = 0;
+        } else test_box = create_newwin(height, width, --starty, startx);
         wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
         break;
       case 'l':
       case 'L':
         destroy_win(test_box);  
-        test_box = create_newwin(height, width, starty, ++startx);
+        if (ch_mult > 0) {
+          startx += ch_mult;
+          create_newwin(height, width, starty, startx);
+          ch_mult = 0;
+        } else test_box = create_newwin(height, width, starty, ++startx);
         wborder(test_box, '|', '|', '-', '-', '+', '+', '+', '+');
         break;
+      default:
+        if (ch >= 49 && ch <= 57) {
+          ch_mult += ch - 48;
+          printw("%d", ch_mult);
+        }
     }
     wrefresh(test_box);
     // if (ch == CTRL_Q) break;
