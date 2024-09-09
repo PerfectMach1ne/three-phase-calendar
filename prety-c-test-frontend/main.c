@@ -1,4 +1,4 @@
-#define _XOPEN_SOURCE_EXTENDED 700
+#define _XOPEN_SOURCE_EXTENDED 700 // An attempt at getting ncursesw to work; unnecessary thanks to cchar_t.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,16 +12,15 @@
 
 #define SMALL_Q 113
 
-typedef struct _win_border_struct {
-  chtype ls, rs, ts, bs,
-         tl, tr, bl, br;
-} WIN_BORDER;
-
-typedef struct _WIN_struct {
-  int startx, starty;
+typedef struct _WIN_params {
   int height, width;
-  WIN_BORDER border;
-} WIN;
+  int starty, startx;
+} WIN_p;
+
+typedef struct _WIN_border_params {
+  cchar_t ls, rs, ts, bs,
+         tl, tr, bl, br;
+} WIN_bp;
 
 WINDOW* create_newwin(int height, int width, int starty, int startx);
 void destroy_win(WINDOW* local_win);
@@ -32,14 +31,12 @@ void destroy_win(WINDOW* local_win);
 
 int main(int argc, char** argv) {
   WINDOW* filler_W;
-  // WINDOW* filler_W;
   WINDOW* datestring_W;
   WINDOW* monthdays_W;
   WINDOW* weekdays_W;
   WINDOW* hours_W;
-  int height, width, starty, startx;
   int ch;
-  int ch_mult = 0;
+  // int ch_mult = 0;
 
   CURL* curl;
   CURLcode res;
@@ -53,20 +50,26 @@ int main(int argc, char** argv) {
   noecho();
   keypad(stdscr, TRUE);
 
-  height = 5; width = 7;
-  starty = 1; startx = 1;
-  filler_W = create_newwin(7, 9, 0, 0);
-  datestring_W = create_newwin(3, 42, 0, 9);
-  monthdays_W = create_newwin(3, 42, 2, 9);
+  WIN_p f_p = { 7, 9, 0, 0 };
+  filler_W = create_newwin(f_p.height, f_p.width, f_p.starty, f_p.startx);
+  WIN_p ds_p = { 3, 42, 0, 8 };
+  datestring_W = create_newwin(ds_p.height, ds_p.width, ds_p.starty, ds_p.startx);
+  WIN_p md_p = { 3, 42, 2, 8 };
+  monthdays_W = create_newwin(md_p.height, md_p.width, md_p.starty, md_p.startx);
+  WIN_p wd_p = { 3, 42, 4, 8 };
+  weekdays_W = create_newwin(wd_p.height, wd_p.width, wd_p.starty, wd_p.startx);
 
   while ( (ch = getch()) != SMALL_Q ) {
     if ( filler_W != NULL ) destroy_win(filler_W);
     if ( datestring_W != NULL ) destroy_win(datestring_W);
     if ( monthdays_W != NULL ) destroy_win(monthdays_W);
+    if ( weekdays_W != NULL ) destroy_win(weekdays_W);
     
-    filler_W = create_newwin(7, 9, 0, 0);
-    datestring_W = create_newwin(3, 42, 0, 8);
-    monthdays_W = create_newwin(3, 42, 2, 8);
+    filler_W = create_newwin(f_p.height, f_p.width, f_p.starty, f_p.startx);
+    datestring_W = create_newwin(ds_p.height, ds_p.width, ds_p.starty, ds_p.startx);
+    monthdays_W = create_newwin(md_p.height, md_p.width, md_p.starty, md_p.startx);
+    weekdays_W = create_newwin(wd_p.height, wd_p.width, wd_p.starty, wd_p.startx);
+
     cchar_t ls; setcchar(&ls, L"║", 0, 0, NULL);
     cchar_t rs; setcchar(&rs, L"║", 0, 0, NULL);
     cchar_t ts; setcchar(&ts, L"═", 0, 0, NULL);
@@ -75,9 +78,18 @@ int main(int argc, char** argv) {
     cchar_t tr; setcchar(&tr, L"╗", 0, 0, NULL);
     cchar_t bl; setcchar(&bl, L"╚", 0, 0, NULL);
     cchar_t br; setcchar(&br, L"╝", 0, 0, NULL);
-
     wborder_set(filler_W, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
     wrefresh(filler_W);
+    setcchar(&tl, L"╦", 0, 0, NULL);
+    wborder_set(datestring_W, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+    wrefresh(datestring_W);
+    setcchar(&tl, L"╠", 0, 0, NULL);
+    setcchar(&tr, L"╣", 0, 0, NULL);
+    wborder_set(monthdays_W, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+    wrefresh(monthdays_W);
+    setcchar(&bl, L"╩", 0, 0, NULL);
+    wborder_set(weekdays_W, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
+    wrefresh(weekdays_W);
     // printw("");
     
     // wrefresh(test_box);
@@ -120,7 +132,7 @@ int main(int argc, char** argv) {
     curl_easy_cleanup(curl);
   }
   refresh();
-  getch();
+  getch(); // debug
 
   endwin();
   return EXIT_SUCCESS;
