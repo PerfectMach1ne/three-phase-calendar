@@ -24,17 +24,17 @@ typedef struct _WIN_border_params {
 
 WINDOW* create_newwin(int height, int width, int starty, int startx);
 void destroy_win(WINDOW* local_win);
-// void draw_datestring_W(WINDOW* local_win);
-// void draw_monthdays_W(WINDOW* local_win);
-// void draw_weekdays_W(WINDOW* local_win);
-// void draw_hours_W(WINDOW* local_win);
+void draw_datestring_W(WINDOW* local_win);
+void draw_monthdays_W(WINDOW* local_win);
+void draw_weekdays_W(WINDOW* local_win);
+void draw_hours_W(WINDOW* local_win);
 
 int main(int argc, char** argv) {
-  WINDOW* filler_W;
-  WINDOW* datestring_W;
-  WINDOW* monthdays_W;
-  WINDOW* weekdays_W;
-  WINDOW* hours_W;
+  WINDOW* filler_W; WIN_p f_p = { 7, 9, 0, 0 };
+  WINDOW* datestring_W; WIN_p ds_p = { 3, 42, 0, 8 };
+  WINDOW* monthdays_W; WIN_p md_p = { 3, 42, 2, 8 };
+  WINDOW* weekdays_W; WIN_p wd_p = { 3, 42, 4, 8 };
+  WINDOW* hours_W; WIN_p hp_p;
   int ch;
   // int ch_mult = 0;
 
@@ -50,13 +50,9 @@ int main(int argc, char** argv) {
   noecho();
   keypad(stdscr, TRUE);
 
-  WIN_p f_p = { 7, 9, 0, 0 };
   filler_W = create_newwin(f_p.height, f_p.width, f_p.starty, f_p.startx);
-  WIN_p ds_p = { 3, 42, 0, 8 };
   datestring_W = create_newwin(ds_p.height, ds_p.width, ds_p.starty, ds_p.startx);
-  WIN_p md_p = { 3, 42, 2, 8 };
   monthdays_W = create_newwin(md_p.height, md_p.width, md_p.starty, md_p.startx);
-  WIN_p wd_p = { 3, 42, 4, 8 };
   weekdays_W = create_newwin(wd_p.height, wd_p.width, wd_p.starty, wd_p.startx);
 
   while ( (ch = getch()) != SMALL_Q ) {
@@ -90,17 +86,16 @@ int main(int argc, char** argv) {
     setcchar(&bl, L"╩", 0, 0, NULL);
     wborder_set(weekdays_W, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
     wrefresh(weekdays_W);
-    // printw("");
-    
-    // wrefresh(test_box);
-
     // draw_datestring();
     // draw_monthdays();
     // draw_weekdays();
   }
   
+  // Clean up windows after the loop breaks
   destroy_win(filler_W);
   destroy_win(datestring_W);
+  destroy_win(monthdays_W);
+  destroy_win(weekdays_W);
   if (curl) {
     curl_easy_setopt(curl, CURLOPT_URL, "http://127.0.0.1:8057/teapot");
     /* Do not do the transfer - only connect to host */
@@ -143,32 +138,23 @@ WINDOW* create_newwin(int height, int width, int starty, int startx) {
   
   local_win = newwin(height, width, starty, startx);
   box(local_win, 0, 0);
-  // wborder(local_win, '|', '|', '-', '-', '+', '+', '+', '+');
   wrefresh(local_win); // Refresh the window to show the bocx
 
   return local_win;
 }
 
 void destroy_win(WINDOW* local_win) {
-  wborder(local_win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
+  cchar_t del; setcchar(&del, L" ", 0, 0, NULL);
+  wborder_set(local_win, &del, &del, &del, &del, &del, &del, &del, &del);
   wrefresh(local_win);
   delwin(local_win);
 }
 
-void draw_datestring() {
+void draw_datestring_W(WINDOW* local_win) {
   time_t t = time(NULL);
   struct tm* lt = localtime(&t);
   char tstr_buf[20];
 
-  // Draw 1st box ceiling
-  for (int i = 0; i < 43; i++) {
-    if (i == 0) printf("╦");
-    else if (i < 42 ) printf("═");
-    else printf("╗\n");
-  }
-
-  // Draw 1st box content & walls
-  
   // Prepare the English format string.
   char fstr[11] = "%e";
   if (lt->tm_mday < 10) {
@@ -190,7 +176,6 @@ void draw_datestring() {
     }
   }
   
-  printf("║");
   if (strftime(tstr_buf, sizeof(tstr_buf), fstr, lt)) {
     size_t spaces_to_fill = 0;
     
@@ -207,27 +192,13 @@ void draw_datestring() {
     printf("Today is%s!", &tstr_buf);
     for (int i = 0; i < right_space_count; i++) printf(" ");
   } else { puts("strftime failed"); }
-  printf("║\n");
 }
 
-void draw_monthdays() {
+void draw_monthdays_W(WINDOW* local_win) {
   time_t t = time(NULL);
   struct tm* lt = localtime(&t);
   char tstr_buf[7];
 
-  // Draw 1st box floor & 2nd box ceiling
-  for (int i = 0; i < 7; i++) {
-    if (i == 0) {
-      printf("╠═════╦"); 
-    } else if (i == 6) {
-      printf("═════╣\n"); 
-    } else {
-      printf("═════╦"); 
-    }
-  }
-
-  // Draw 2nd box content & walls
-  printf("║");
   // For testing if it doesn't get wrecked on Sundays and monthdays > 7:
   // lt->tm_mday += 8 % 31; lt->tm_wday += 8 % 7;
   lt->tm_mday = (lt->tm_mday - lt->tm_wday % 7 + 1) % 31; // Potentially flawed on [28,30] monthday months.
@@ -243,25 +214,14 @@ void draw_monthdays() {
     lt = localtime(&newt);
 
     if (strftime(tstr_buf, sizeof(tstr_buf), "%d.%m", lt)) {
-      printf("%s║", &tstr_buf);
+      printf("%s", &tstr_buf);
     } else { puts("strftime failed"); }
   }
   printf("\n");
 }
 
-void draw_weekdays() {
+void draw_weekdays_W(WINDOW* local_win) {
   char* weekdays[7] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
-
-  // Draw 2nd box floor & 3rd box ceiling
-  for (int i = 0; i < sizeof(weekdays) / sizeof(char*); i++) {
-    if (i == 0) {
-      printw("╠═════╬"); 
-    } else if (i == 6) {
-      printw("═════╣\n"); 
-    } else {
-      printw("═════╬"); 
-    }
-  }
 
   // Draw 3rd box content & walls
   for (int j = 0; j < sizeof(weekdays) / sizeof(char*); j++) { 
@@ -273,16 +233,8 @@ void draw_weekdays() {
       printw(" %s ║", weekdays[j]); 
     }
   }
+}
 
-  // Draw 3rd box floor
-  for (int k = 0; k < sizeof(weekdays) / sizeof(char*); k++) { 
-    if (k == 0) {
-      printw("╚═════╩"); 
-    } else if (k == 6) {
-      printw("═════╝\n"); 
-    } else {
-      printw("═════╩"); 
-    }
-  }
-  // refresh();
+void draw_hours_W(WINDOW* local_win) {
+
 }
