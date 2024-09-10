@@ -244,7 +244,6 @@ void draw_weekdays_W(WINDOW* local_win) {
   for (int j = 0; j < sizeof(weekdays) / sizeof(char*); j++) { 
     mvwprintw(local_win, 1, 1 + j*6, (j!=6?" %s ║":" %s "), weekdays[j]); 
   }
-  // wmove(local_win, 1, 1);
 }
 
 void clear_top_W(WINDOW* local_win) {
@@ -253,9 +252,10 @@ void clear_top_W(WINDOW* local_win) {
 }
 
 void draw_hours_W(WINDOW* local_win) {
-  char hstr_buf[] = "00:00"; // Has to be an array (char[]) as opposed to char*!!!
+  char hstr_buf[] = "00:00"; // Has to be an array (char[]) as opposed to an immutable char*!!!
   for (int i = 0; i < 24; i++) {
     if (i < 10) {
+      // "what the hell is this 48 doing here" have you ever heard of ASCII?
       hstr_buf[0] = 48;
       hstr_buf[1] = 48 + i;
     } else {
