@@ -110,6 +110,8 @@ int main(int argc, char** argv) {
     wrefresh(monthdays_W);
     draw_weekdays_W(weekdays_W);
     wrefresh(weekdays_W);
+    draw_hours_W(hours_W);
+    wrefresh(hours_W);
     move(0,0);
     refresh();
   }
@@ -118,6 +120,7 @@ int main(int argc, char** argv) {
   clear_top_W(datestring_W);
   clear_top_W(monthdays_W);
   clear_top_W(weekdays_W);
+  clear_hours_W(hours_W);
   
   destroy_win(filler_W);
   destroy_win(datestring_W);
@@ -250,5 +253,22 @@ void clear_top_W(WINDOW* local_win) {
 }
 
 void draw_hours_W(WINDOW* local_win) {
+  char hstr_buf[] = "00:00"; // Has to be an array (char[]) as opposed to char*!!!
+  for (int i = 0; i < 24; i++) {
+    if (i < 10) {
+      hstr_buf[0] = 48;
+      hstr_buf[1] = 48 + i;
+    } else {
+      hstr_buf[0] = (int)(48 + (i - i % 10) / 10);
+      hstr_buf[1] = 48 + i % 10;
+    }
+    mvwprintw(local_win, 1 + i, 1, " %s", hstr_buf);
+  }
+}
 
+void clear_hours_W(WINDOW* local_win) {
+  for (int i = 0; i < 24; i++) {
+    wmove(local_win, 1 + i, 1);
+    wclrtoeol(local_win);
+  }
 }
