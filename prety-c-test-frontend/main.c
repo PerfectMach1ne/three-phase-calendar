@@ -17,23 +17,25 @@ typedef struct _WIN_params {
   int starty, startx;
 } WIN_p;
 
-typedef struct _WIN_border_params {
-  cchar_t ls, rs, ts, bs,
-         tl, tr, bl, br;
-} WIN_bp;
+// typedef struct _WIN_border_params {
+//   cchar_t ls, rs, ts, bs,
+//          tl, tr, bl, br;
+// } WIN_bp;
 
 WINDOW* create_newwin(int height, int width, int starty, int startx);
 void destroy_win(WINDOW* local_win);
-void draw_datestring_W(WINDOW* local_win, int y0, int x0);
-void draw_monthdays_W(WINDOW* local_win, int y0, int x0);
-void draw_weekdays_W(WINDOW* local_win, int y0, int x0);
+void draw_datestring_W(WINDOW* local_win);
+void draw_monthdays_W(WINDOW* local_win);
+void draw_weekdays_W(WINDOW* local_win);
 void draw_hours_W(WINDOW* local_win);
+void clear_top_W(WINDOW* local_win);
+void clear_hours_W(WINDOW* local_win);
 
 int main(int argc, char** argv) {
   WINDOW* filler_W; WIN_p f_p = { 7, 9, 0, 0 };
-  WINDOW* datestring_W; WIN_p ds_p = { 3, 42, 0, 8 };
-  WINDOW* monthdays_W; WIN_p md_p = { 3, 42, 2, 8 };
-  WINDOW* weekdays_W; WIN_p wd_p = { 3, 42, 4, 8 };
+  WINDOW* datestring_W; WIN_p ds_p = { 3, 43, 0, 8 };
+  WINDOW* monthdays_W; WIN_p md_p = { 3, 43, 2, 8 };
+  WINDOW* weekdays_W; WIN_p wd_p = { 3, 43, 4, 8 };
   WINDOW* hours_W; WIN_p h_p = { 26, 9, 6, 0 };
   WINDOW* monday_W; WIN_p mon_p;
   WINDOW* tuesday_W; WIN_p tue_p;
@@ -101,17 +103,22 @@ int main(int argc, char** argv) {
     setcchar(&bl, L"╚", 0, 0, NULL);
     wborder_set(hours_W, &ls, &rs, &ts, &bs, &tl, &tr, &bl, &br);
     wrefresh(hours_W);
-    draw_datestring_W(datestring_W, ds_p.starty, ds_p.startx);
+
+    draw_datestring_W(datestring_W);
     wrefresh(datestring_W);
-    // draw_monthdays_W(monthdays_W, md_p.starty, md_p.startx);
-    // wrefresh(monthdays_W);
-    draw_weekdays_W(weekdays_W, wd_p.starty, wd_p.startx);
+    draw_monthdays_W(monthdays_W);
+    wrefresh(monthdays_W);
+    draw_weekdays_W(weekdays_W);
     wrefresh(weekdays_W);
-    // draw_monthdays();
-    // draw_weekdays();
+    move(0,0);
+    refresh();
   }
   
-  // Clean up windows after the loop breaks
+   // Clean up windows after the loop breaks
+  clear_top_W(datestring_W);
+  clear_top_W(monthdays_W);
+  clear_top_W(weekdays_W);
+  
   destroy_win(filler_W);
   destroy_win(datestring_W);
   destroy_win(monthdays_W);
@@ -148,6 +155,7 @@ int main(int argc, char** argv) {
 
     curl_easy_cleanup(curl);
   }
+
   refresh();
   getch(); // debug
 
@@ -166,13 +174,13 @@ WINDOW* create_newwin(int height, int width, int starty, int startx) {
 }
 
 void destroy_win(WINDOW* local_win) {
-  cchar_t del; setcchar(&del, L" ", 0, 0, NULL);
-  wborder_set(local_win, &del, &del, &del, &del, &del, &del, &del, &del);
+  cchar_t clr; setcchar(&clr, L" ", 0, 0, NULL);
+  wborder_set(local_win, &clr, &clr, &clr, &clr, &clr, &clr, &clr, &clr);
   wrefresh(local_win);
   delwin(local_win);
 }
 
-void draw_datestring_W(WINDOW* local_win, int y0, int x0) {
+void draw_datestring_W(WINDOW* local_win) {
   time_t t = time(NULL);
   struct tm* lt = localtime(&t);
   char tstr_buf[24];
@@ -197,12 +205,12 @@ void draw_datestring_W(WINDOW* local_win, int y0, int x0) {
   }
   
   if (strftime(tstr_buf, sizeof(tstr_buf), fstr, lt)) {
-    mvwprintw(local_win, y0 + 1, x0, (lt->tm_mday < 10 ? "Today is%s!" : "Today is %s"), &tstr_buf);
+    mvwprintw(local_win, 1, 7, (lt->tm_mday < 10 ? "Today is%s!" : "Today is %s!"), &tstr_buf);
     wmove(local_win, 0, 0);
-  } else { printw("strftime failed"); }
+  } else { mvwprintw(local_win, 1, 7, "strftime failed"); }
 }
 
-void draw_monthdays_W(WINDOW* local_win, int y0, int x0) {
+void draw_monthdays_W(WINDOW* local_win) {
   time_t t = time(NULL);
   struct tm* lt = localtime(&t);
   char tstr_buf[7];
@@ -222,25 +230,23 @@ void draw_monthdays_W(WINDOW* local_win, int y0, int x0) {
     lt = localtime(&newt);
 
     if (strftime(tstr_buf, sizeof(tstr_buf), "%d.%m", lt)) {
-      // printf("%s", &tstr_buf);
-      // wprintw(local_win, "huh");
-      // wprintw(local_win, " %s", &tstr_buf);
-      // mvwprintw(local_win, y0 + 1, x0 + 1, "%s", &tstr_buf);
-    } else { printw("strftime failed"); }
+      mvwprintw(local_win, 1, 1 + i*6, "%s║", &tstr_buf);
+    } else { mvwprintw(local_win, 1, 1, "strftime failed"); }
   }
-  printf("\n");
 }
 
-void draw_weekdays_W(WINDOW* local_win, int y0, int x0) {
+void draw_weekdays_W(WINDOW* local_win) {
   char* weekdays[7] = { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" };
 
   for (int j = 0; j < sizeof(weekdays) / sizeof(char*); j++) { 
-    wmove(local_win, 1, 1 + j * 5);
-    wprintw(local_win, " %s ", weekdays[j]); 
-    // wprintw(local_win, "(%d,%d)\"%s\"", y0 - 1, x0 + 5 * j, weekdays[j]); 
+    mvwprintw(local_win, 1, 1 + j*6, (j!=6?" %s ║":" %s "), weekdays[j]); 
   }
-  // wmove(local_win, 1, 0);
-  // wclrtoeol(local_win);
+  // wmove(local_win, 1, 1);
+}
+
+void clear_top_W(WINDOW* local_win) {
+  wmove(local_win, 1, 0);
+  wclrtoeol(local_win);
 }
 
 void draw_hours_W(WINDOW* local_win) {
