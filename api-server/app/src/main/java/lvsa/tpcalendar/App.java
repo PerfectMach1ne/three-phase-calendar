@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.function.Consumer;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -74,6 +78,16 @@ public class App {
                     System.out.println("POST task :))");
 
                     InputStream is = het.getRequestBody();
+
+                    System.out.println("Request Headers:\n");
+                    System.out.println(het.getRequestHeaders().keySet());
+                    Iterator<String> iter = het.getRequestHeaders().keySet().iterator();
+                    System.out.println("Request Headers, but via an iterator:\n");
+                    while (iter.hasNext()) {
+                        String item = iter.next();
+                        System.out.println(item + ": " + new Headers().containsKey(item));
+                    }
+
 
                     InputStreamReader isReader = new InputStreamReader(is);
                     BufferedReader reader = new BufferedReader(isReader);
