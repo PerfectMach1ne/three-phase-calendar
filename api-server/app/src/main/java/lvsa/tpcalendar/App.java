@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
+import java.rmi.ServerError;
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -17,6 +19,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import lvsa.tpcalendar.colors.Colors;
+import lvsa.tpcalendar.dbutils.DatabaseHandler;
 import lvsa.tpcalendar.model.TaskEvent;
 
 public class App {
@@ -49,6 +52,13 @@ public class App {
             server = HttpServer.create(cd, port);
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            System.exit(1);
+        }
+
+        try {
+            DatabaseHandler dh = new DatabaseHandler();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
 
         server.createContext("/teapot", new TPCalHttpHandler());
