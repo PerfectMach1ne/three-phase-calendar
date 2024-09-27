@@ -8,6 +8,9 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.sql.SQLException;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
@@ -88,11 +91,19 @@ public class App {
                         // System.out.println(str);
                     }
 
+                    JsonObject jsonObj = JsonParser.parseString(sb.toString()).getAsJsonObject();
+                    TaskEvent taskEvent = new TaskEvent();
+                    taskEvent.create(jsonObj);
+                    System.out.println("Taskname: " + taskEvent.getName() + "\n"
+                                     + "Description: " + taskEvent.getDescription() + "\n"
+                                     + "Color: " + taskEvent.getColor());
+
                     Headers resh = het.getResponseHeaders();
                     resh.set("Content-Type", "application/json");
                     System.out.println(resh.toString());
+                    
 
-                    String res = "{ \"deleteMeLaterName\": \"" + deleteMeLater.getName() + "\" }";
+                    String res = "{ \"boink\": \"" + "wheh?" + "\" }";
 
                     // 0 to use Chunked Transfer Coding
                     // https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding

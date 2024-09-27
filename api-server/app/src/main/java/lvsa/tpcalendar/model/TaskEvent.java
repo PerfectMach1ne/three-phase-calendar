@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -20,7 +21,7 @@ public class TaskEvent implements Event {
     private LocalDateTime updatedDate = createdDate;
     private boolean isDone = false;
     private boolean hasColor = false;
-    private Colors color;
+    private Colors color = null;
 
     /*
      * BEGIN GETTER HELL
@@ -46,7 +47,7 @@ public class TaskEvent implements Event {
     }
 
     public String getColor() {
-        return color.getHexColor();
+        return Colors.getPrettyNameFromColor(this.color) + ": " + this.color.getHexColor();
     }
     /*
      * END GETTER HELL
@@ -80,18 +81,21 @@ public class TaskEvent implements Event {
 
     @Override
     public void create(JsonObject jsonObj) {
-        String name = jsonObj.get("name").getAsString();
-        String desc = jsonObj.get("desc").getAsString();
+        this.setName(jsonObj.get("name").getAsString());
+        this.setDescription(jsonObj.get("desc").getAsString());
         JsonObject colorObj = jsonObj.getAsJsonObject("color");
-        boolean hasColor = colorObj.get("hasColor").getAsBoolean();
-        Colors color = null;
-        if (hasColor) {
+        this.hasColor = colorObj.get("hasColor").getAsBoolean();
+        if (this.hasColor) {
             int decColor = colorObj.get("hex").getAsInt();
-            color = Colors.getColorFromHex(Integer.toHexString(decColor));
+            String hexColor = "#" + Integer.toHexString(decColor);
+            this.setColor(hexColor);
         }
         
         try(DatabaseHandler db = new DatabaseHandler()) {
             Connection conn = db.getDBConnection();
+            Statement stat = conn.createStatement(); 
+            stat.setQueryTimeout(30);
+
             updatedDate = LocalDateTime.now();
             /*
              * uhhh sql statements go there
