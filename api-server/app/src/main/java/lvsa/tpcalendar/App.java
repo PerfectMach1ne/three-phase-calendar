@@ -5,15 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.lang.reflect.Type;
 import java.net.InetSocketAddress;
-import java.rmi.ServerError;
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.function.Consumer;
-
-
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
@@ -30,15 +23,9 @@ public class App {
     public static void main(String[] args) {
         try {
             TaskEvent testTaskEvent = new TaskEvent();
-            System.out.println(testTaskEvent.getCreatedDate());
             System.out.println(testTaskEvent.getUpdatedDate());
-            testTaskEvent.setName("My first task !! :3");
-            System.out.println(testTaskEvent.getName());
-            System.out.println(testTaskEvent.getDescription());
+            testTaskEvent.setColor(Colors.LAVENDER);
             System.out.println(testTaskEvent.getUpdatedDate());
-            testTaskEvent.setColor(Colors.DARK_BLUE);
-            System.out.println(testTaskEvent.getColor());
-            deleteMeLater = testTaskEvent;
             runServer();
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -49,6 +36,7 @@ public class App {
         int port = 8057;
         InetSocketAddress cd = new InetSocketAddress(port);
         HttpServer server = null;
+        DatabaseHandler db = null;
 
         try {
             server = HttpServer.create(cd, port);
@@ -58,7 +46,7 @@ public class App {
         }
 
         try {
-            DatabaseHandler dh = new DatabaseHandler();
+            db = new DatabaseHandler();
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
@@ -80,7 +68,6 @@ public class App {
 
                     het.getResponseHeaders().set("Content-Type", "application/json");
                     het.sendResponseHeaders(200, res.length());
-                    
 
                     OutputStream os = het.getResponseBody();
                     os.write(res.getBytes());
@@ -90,16 +77,6 @@ public class App {
                     System.out.println("POST task :))");
 
                     InputStream is = het.getRequestBody();
-
-                    System.out.println("Request Headers:\n");
-                    System.out.println(het.getRequestHeaders().keySet());
-                    Iterator<String> iter = het.getRequestHeaders().keySet().iterator();
-                    System.out.println("Request Headers, but via an iterator:\n");
-                    while (iter.hasNext()) {
-                        String item = iter.next();
-                        System.out.println(item + ": " + new Headers().containsKey(item));
-                    }
-
 
                     InputStreamReader isReader = new InputStreamReader(is);
                     BufferedReader reader = new BufferedReader(isReader);

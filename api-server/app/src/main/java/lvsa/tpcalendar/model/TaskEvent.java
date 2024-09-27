@@ -1,8 +1,17 @@
 package lvsa.tpcalendar.model;
 
+import java.io.StringReader;
+import java.sql.Connection;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.sql.SQLException;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.stream.JsonReader;
 
 import lvsa.tpcalendar.colors.Colors;
+import lvsa.tpcalendar.dbutils.DatabaseHandler;
 
 public class TaskEvent implements Event {
 
@@ -49,7 +58,6 @@ public class TaskEvent implements Event {
     @Override
     public void setName(String name) {
         this.taskName = name;
-        update((byte)1);
     }
 
     @Override
@@ -71,23 +79,48 @@ public class TaskEvent implements Event {
      */
 
     @Override
-    public void create() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
-    }
-
-    @Override
-    // 1 -> setter mode
-    public void update(byte mode) {
-        if (mode == 1) {
+    public void create(JsonObject jsonObj) {
+        String name = jsonObj.get("name").getAsString();
+        String desc = jsonObj.get("desc").getAsString();
+        JsonObject colorObj = jsonObj.getAsJsonObject("color");
+        boolean hasColor = colorObj.get("hasColor").getAsBoolean();
+        Colors color = null;
+        if (hasColor) {
+            int decColor = colorObj.get("hex").getAsInt();
+            color = Colors.getColorFromHex(Integer.toHexString(decColor));
+        }
+        
+        try(DatabaseHandler db = new DatabaseHandler()) {
+            Connection conn = db.getDBConnection();
             updatedDate = LocalDateTime.now();
+            /*
+             * uhhh sql statements go there
+             */
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
         }
     }
 
     @Override
-    public void delete() {
+    public void update(JsonObject jsonObj) {
+        updatedDate = LocalDateTime.now();
+    }
+
+    @Override
+    public void update() {
+        updatedDate = LocalDateTime.now();
+    }
+
+    @Override
+    public void delete(int hashCode) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    }
+
+    @Override
+    public LocalDateTime getDateTime() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDateTime'");
     }
     
 }

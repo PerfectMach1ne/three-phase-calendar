@@ -1,5 +1,9 @@
 package lvsa.tpcalendar.model;
 
+import java.time.LocalDateTime;
+
+import com.google.gson.JsonObject;
+
 public class TextEvent implements Event {
 
     @Override
@@ -27,19 +31,25 @@ public class TextEvent implements Event {
     }
 
     @Override
-    public void create() {
+    public void create(JsonObject jsonObj) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'create'");
     }
 
     @Override
-    public void update(byte mode) {
+    public void update(JsonObject jsonObj) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    }
+    
+    @Override
+    public void update() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
     @Override
-    public void delete() {
+    public void delete(int hashCode) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
@@ -54,6 +64,12 @@ public class TextEvent implements Event {
     public void setDescription(String newDesc) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setDescription'");
+    }
+
+    @Override
+    public LocalDateTime getDateTime() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getDateTime'");
     }
     
 }
