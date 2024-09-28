@@ -22,42 +22,42 @@ public enum Colors {
     }
 
     public static Colors getColorFromHex(String color) {
-            switch (color) {
-                case "#f291eb":
-                    return PINK;
-                case "#fa3e3d":
-                    return RED;
-                case "#f58547":
-                    return ORANGE;
-                case "#fde668":
-                    return YELLOW;
-                case "#b8fd68":
-                    return LIGHT_GREEN;
-                case "#41a630":
-                    return GREEN;
-                case "#92fff6":
-                    return LIGHT_BLUE;
-                case "#41b3ff":
-                    return BLUE;
-                case "#2e63cd":
-                    return DARK_BLUE;
-                case "#c493d3":
-                    return LAVENDER;
-                case "#8c48ff":
-                    return PURPLE;
-                case "#ff34ef":
-                    return MAGENTA;
-                case "#ffffff":
-                    return WHITE;
-                case "#cdcdcd":
-                    return LIGHT_GRAY;
-                case "#818081":
-                    return GRAY;
-                case "#404040":
-                    return BLACK;
-                default:
-            }
-            return WHITE;
+        switch (color) {
+            case "#f291eb":
+                return PINK;
+            case "#fa3e3d":
+                return RED;
+            case "#f58547":
+                return ORANGE;
+            case "#fde668":
+                return YELLOW;
+            case "#b8fd68":
+                return LIGHT_GREEN;
+            case "#41a630":
+                return GREEN;
+            case "#92fff6":
+                return LIGHT_BLUE;
+            case "#41b3ff":
+                return BLUE;
+            case "#2e63cd":
+                return DARK_BLUE;
+            case "#c493d3":
+                return LAVENDER;
+            case "#8c48ff":
+                return PURPLE;
+            case "#ff34ef":
+                return MAGENTA;
+            case "#ffffff":
+                return WHITE;
+            case "#cdcdcd":
+                return LIGHT_GRAY;
+            case "#818081":
+                return GRAY;
+            case "#404040":
+                return BLACK;
+            default:
+        }
+        return WHITE;
     }
         
     public static String getPrettyNameFromColor(Colors colors) {

@@ -17,12 +17,9 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import lvsa.tpcalendar.colors.Colors;
-import lvsa.tpcalendar.dbutils.DatabaseHandler;
 import lvsa.tpcalendar.model.TaskEvent;
 
 public class App {
-    private static TaskEvent deleteMeLater;
-
     public static void main(String[] args) {
         try {
             TaskEvent testTaskEvent = new TaskEvent();
@@ -54,16 +51,13 @@ public class App {
             @Override
             public void handle(HttpExchange het) throws IOException {
                 if (het.getRequestMethod().equals("GET")) {
-                    System.out.println("GET task :)");
+                    Headers resq = het.getRequestHeaders();
+                    System.out.println(resq.get("Host") + " GET /testTask HTTP/1.1");
 
-                    // String res = "GET testTask " + deleteMeLater.getName() 
-                    //              + "\ncolor HEX code = " + deleteMeLater.getColor() 
-                    //              + "\ncreated at " + deleteMeLater.getCreatedDate()
-                    //              + "\nlast updated at " + deleteMeLater.getUpdatedDate() + "\n";
-                    String res = "{ \"deleteMeLaterName\": \"" + deleteMeLater.getName() + "\" }";
+                    String res = "{ \"deleteMeLaterName\": \"no\" }";
 
                     het.getResponseHeaders().set("Content-Type", "application/json");
-                    het.sendResponseHeaders(200, res.length());
+                    het.sendResponseHeaders(200, 0);
 
                     OutputStream os = het.getResponseBody();
                     os.write(res.getBytes());
@@ -71,7 +65,7 @@ public class App {
                     os.close();
                 } else if (het.getRequestMethod().equals("POST")) {
                     Headers resq = het.getRequestHeaders();
-                    System.out.println("" + resq.get("Host") + " POST /testTask HTTP/1.1");
+                    System.out.println(resq.get("Host") + " POST /testTask HTTP/1.1");
                     
                     InputStream is = het.getRequestBody();
 
@@ -110,7 +104,8 @@ public class App {
                     os.close();
                     is.close();
                 } else if (het.getRequestMethod().equals("PUT")) {
-                    System.out.println("PUT (UPDATE) task :)))");
+                    Headers resq = het.getRequestHeaders();
+                    System.out.println(resq.get("Host") + " PUT /testTask HTTP/1.1");
 
                     InputStream is = het.getRequestBody();
 
@@ -124,9 +119,9 @@ public class App {
                         System.out.println(str);
                     }
 
-                    String res = "PUT testTask " + deleteMeLater.getName() + "\n"; 
+                    String res = "PUT testTask \n"; 
 
-                    het.sendResponseHeaders(200, res.length());
+                    het.sendResponseHeaders(200, 0);
 
                     OutputStream os = het.getResponseBody();
                     os.write(res.getBytes());
