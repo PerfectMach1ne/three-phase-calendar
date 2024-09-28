@@ -39,19 +39,12 @@ public class App {
         int port = 8057;
         InetSocketAddress cd = new InetSocketAddress(port);
         HttpServer server = null;
-        DatabaseHandler db = null;
 
         try {
             server = HttpServer.create(cd, port);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             System.exit(1);
-        }
-
-        try {
-            db = new DatabaseHandler();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
         }
 
         server.createContext("/teapot", new TPCalHttpHandler());
@@ -77,8 +70,9 @@ public class App {
                     os.flush();
                     os.close();
                 } else if (het.getRequestMethod().equals("POST")) {
-                    System.out.println("POST task :))");
-
+                    Headers resq = het.getRequestHeaders();
+                    System.out.println("" + resq.get("Host") + " POST /testTask HTTP/1.1");
+                    
                     InputStream is = het.getRequestBody();
 
                     InputStreamReader isReader = new InputStreamReader(is);
@@ -96,14 +90,15 @@ public class App {
                     taskEvent.create(jsonObj);
                     System.out.println("Taskname: " + taskEvent.getName() + "\n"
                                      + "Description: " + taskEvent.getDescription() + "\n"
+                                     + "Date: " + taskEvent.getDateTime().toLocalDate().toString() + "\n"
+                                     + "Hour: " + taskEvent.getDateTime().toLocalTime().toString() + "\n"
                                      + "Color: " + taskEvent.getColor());
 
                     Headers resh = het.getResponseHeaders();
                     resh.set("Content-Type", "application/json");
                     System.out.println(resh.toString());
-                    
 
-                    String res = "{ \"boink\": \"" + "wheh?" + "\" }";
+                    String res = "{ \"boink\": \"" + "wheh?" + "\" }\n";
 
                     // 0 to use Chunked Transfer Coding
                     // https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding

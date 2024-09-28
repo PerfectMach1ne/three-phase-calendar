@@ -22,5 +22,4 @@ public class DatabaseHandler implements AutoCloseable {
         conn.close();
     }
 
-    // Statement stat = conn.createStatement();
 }

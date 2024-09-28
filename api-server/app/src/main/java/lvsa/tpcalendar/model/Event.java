@@ -7,12 +7,13 @@ import com.google.gson.JsonObject;
 public interface Event {
     final LocalDateTime createdDate = LocalDateTime.now();
     
+    LocalDateTime getDateTime();
     String getName();
     String getDescription();
-    LocalDateTime getDateTime();
     String getCreatedDate();
     String getUpdatedDate();
 
+    void setDateTime(LocalDateTime localdatetime);
     void setName(String name);
     void setDescription(String desc);
     

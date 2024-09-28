@@ -71,5 +71,11 @@ public class PeriodEvent implements Event {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getDateTime'");
     }
+
+    @Override
+    public void setDateTime(LocalDateTime localdatetime) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'setDateTime'");
+    }
     
 }
