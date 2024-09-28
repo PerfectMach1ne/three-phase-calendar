@@ -50,6 +50,45 @@ public class App {
 
             @Override
             public void handle(HttpExchange het) throws IOException {
+                class HTTPRequest {
+                    final String HTTP_METHOD = het.getRequestMethod();
+
+                    HTTPRequest(String response, int status) throws IOException {
+                        Headers resq = het.getRequestHeaders();
+                        System.out.println(resq.get("Host") + " " + HTTP_METHOD + " /testTask HTTP/1.1");
+
+                        InputStream is = het.getRequestBody();
+
+                        InputStreamReader isReader = new InputStreamReader(is);
+                        BufferedReader reader = new BufferedReader(isReader);
+                        StringBuffer sb = new StringBuffer();
+                        String str;
+                        while ( (str = reader.readLine()) != null ) {
+                            sb.append(str);
+                            // System.out.println(str);
+                        }
+
+                        Headers resh = het.getResponseHeaders();
+                        resh.set("Content-Type", "application/json");
+                        System.out.println(resh.toString());
+
+                        String res = response;
+                        // 0 to use Chunked Transfer Coding
+                        // https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
+                        het.sendResponseHeaders(status, 0);
+
+                        OutputStream os = het.getResponseBody();
+                        os.write(res.getBytes());
+                        os.flush();
+                        is.close(); os.close();
+                    }
+                }
+                if (het.getRequestMethod().equals("GET")) {}
+                else if (het.getRequestMethod().equals("POST")) {}
+                else if (het.getRequestMethod().equals("PUT")) {}
+                else if (het.getRequestMethod().equals("DELETE")) {}
+                else {}
+
                 if (het.getRequestMethod().equals("GET")) {
                     Headers resq = het.getRequestHeaders();
                     System.out.println(resq.get("Host") + " GET /testTask HTTP/1.1");
@@ -93,7 +132,6 @@ public class App {
                     System.out.println(resh.toString());
 
                     String res = "{ \"boink\": \"" + "wheh?" + "\" }\n";
-
                     // 0 to use Chunked Transfer Coding
                     // https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
                     het.sendResponseHeaders(201, 0);
@@ -120,7 +158,29 @@ public class App {
                     }
 
                     String res = "PUT testTask \n"; 
+                    het.sendResponseHeaders(200, 0);
 
+                    OutputStream os = het.getResponseBody();
+                    os.write(res.getBytes());
+                    os.flush();
+                    is.close(); os.close();
+                } else if (het.getRequestMethod().equals("DELETE")) {
+                    Headers resq = het.getRequestHeaders();
+                    System.out.println(resq.get("Host") + " DELETE /testTask HTTP/1.1");
+
+                    InputStream is = het.getRequestBody();
+
+                    InputStreamReader isReader = new InputStreamReader(is);
+                    BufferedReader reader = new BufferedReader(isReader);
+                    StringBuffer sb = new StringBuffer();
+
+                    String str;
+                    while ( (str = reader.readLine()) != null ) {
+                        sb.append(str);
+                        System.out.println(str);
+                    }
+
+                    String res = "DELETE testTask \n"; 
                     het.sendResponseHeaders(200, 0);
 
                     OutputStream os = het.getResponseBody();
