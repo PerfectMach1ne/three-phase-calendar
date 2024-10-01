@@ -8,8 +8,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
-import com.google.common.collect.Iterators;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -18,16 +16,10 @@ public class DatabaseHandler implements AutoCloseable {
 
     public DatabaseHandler() throws SQLException {
         // conn = DriverManager.getConnection("jdbc:sqlite:DATABASE/calendar-sqlite.db");
-        ArrayList<String> props = loadProperties();
-        Iterator<String> iter = props.iterator();
-        while (iter.hasNext()) {
-            System.out.println(iter.next());
-        }
-        String url = "jdbc:postgresql://127.0.0.1:5432/tpc_testing";
-        // Properties props = new Properties();
-        // props.setProperty("user", "postgres");
-        // props.setProperty("password", "ohno");
-        // props.setProperty("ssl", "true");
+        Properties props = loadProperties();
+        String url = props.getProperty("url");
+        props.remove("url");
+        conn = DriverManager.getConnection(url, props);
         // conn = DriverManager.getConnection(url, props);
     }
 
@@ -48,11 +40,18 @@ public class DatabaseHandler implements AutoCloseable {
         return propsList;
     }
 
-    private ArrayList<String> loadProperties() {
+    private Properties loadProperties() {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream is = classLoader.getResourceAsStream("tpc_testing.properties");
 
-        return readFromInputStream(is);
+        Properties props = new Properties();
+        Iterator<String> iter = readFromInputStream(is).iterator();
+        while (iter.hasNext()) {
+            String[] propPair = iter.next().split("="); 
+            props.setProperty(propPair[0], propPair[1]);
+        }
+
+        return props;
     }
 
     public Connection getDBConnection() {
