@@ -3,7 +3,7 @@
  * https://github.com/PerfectMach1ne/Jaccal/blob/main/src/main/java/util/Colors.java
  */
 
-package lvsa.tpcalendar.colors;
+package lvsa.tpcalendar.util;
 
 public enum Colors {
     PINK("#f291eb"), RED("#fa3e3d"), ORANGE("#f58547"), YELLOW("#fde668"),

@@ -1,42 +1,24 @@
 
 package lvsa.tpcalendar.dbutils;
 
-import java.sql.*;
-import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.DriverManager;
 import java.io.InputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.Properties;
-
-import java.util.ArrayList;
 import java.util.Iterator;
+
+import lvsa.tpcalendar.util.IOUtils;
 
 public class DatabaseHandler implements AutoCloseable {
     private Connection conn;
 
     public DatabaseHandler() throws SQLException {
-        // conn = DriverManager.getConnection("jdbc:sqlite:DATABASE/calendar-sqlite.db");
         Properties props = loadProperties();
+        // System.out.println(props.toString());
         String url = props.getProperty("url");
         props.remove("url");
         conn = DriverManager.getConnection(url, props);
-    }
-
-    // https://www.baeldung.com/reading-file-in-java
-    // Helper method
-    private ArrayList<String> readFromInputStream(InputStream is) {
-        ArrayList<String> propsList = new ArrayList<String>();
-
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
-            String line;
-            while ( (line = br.readLine()) != null ) {
-                propsList.add(line);
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-
-        return propsList;
     }
 
     private Properties loadProperties() {
@@ -44,7 +26,7 @@ public class DatabaseHandler implements AutoCloseable {
         InputStream is = classLoader.getResourceAsStream("tpc_testing.properties");
 
         Properties props = new Properties();
-        Iterator<String> iter = readFromInputStream(is).iterator();
+        Iterator<String> iter = IOUtils.readPropsFromInputStream(is).iterator();
         while (iter.hasNext()) {
             String[] propPair = iter.next().split("="); 
             props.setProperty(propPair[0], propPair[1]);

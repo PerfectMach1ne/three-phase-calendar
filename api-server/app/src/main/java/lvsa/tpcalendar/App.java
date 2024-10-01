@@ -15,9 +15,10 @@ import java.sql.SQLException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import lvsa.tpcalendar.colors.Colors;
 import lvsa.tpcalendar.dbutils.DatabaseHandler;
+import lvsa.tpcalendar.dbutils.SchemaInitializer;
 import lvsa.tpcalendar.model.TaskEvent;
+import lvsa.tpcalendar.util.Colors;
 
 public class App {
     public static void main(String[] args) {
@@ -44,12 +45,7 @@ public class App {
             System.exit(1);
         }
 
-        try {
-            DatabaseHandler dbtest = new DatabaseHandler();
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-            System.exit(1);
-        }
+        SchemaInitializer schema = new SchemaInitializer();
 
         server.createContext("/teapot", new TPCalHttpHandler());
 
@@ -60,7 +56,7 @@ public class App {
                 class HTTPRequest {
                     final String HTTP_METHOD = het.getRequestMethod();
 
-                    HTTPRequest(String response, int status) throws IOException {
+                    HTTPRequest(String response/* , int status */) throws IOException {
                         Headers resq = het.getRequestHeaders();
                         System.out.println(resq.get("Host") + " " + HTTP_METHOD + " /testTask " + het.getProtocol());
 
@@ -80,6 +76,7 @@ public class App {
                         System.out.println(resh.toString());
 
                         String res = response;
+                        int status = 201;
                         // 0 to use Chunked Transfer Coding
                         // https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
                         het.sendResponseHeaders(status, 0);

@@ -1,0 +1,12 @@
+{
+  hash: 1554874502,
+  name: "Unnamed task",
+  desc: "descriptio nblablabalbalbfdjk 2482o",
+  isDone: false,
+  color: {
+    hasColor: true,
+    hex: 9633782 // fuck it, we math it up
+  },
+  createdAt: "2024-09-27T21:28:58.666123661",
+  updatedAt: "2024-09-27T21:28:58.578008135",
+}
