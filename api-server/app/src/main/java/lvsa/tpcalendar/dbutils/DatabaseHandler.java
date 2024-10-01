@@ -20,7 +20,6 @@ public class DatabaseHandler implements AutoCloseable {
         String url = props.getProperty("url");
         props.remove("url");
         conn = DriverManager.getConnection(url, props);
-        // conn = DriverManager.getConnection(url, props);
     }
 
     // https://www.baeldung.com/reading-file-in-java
