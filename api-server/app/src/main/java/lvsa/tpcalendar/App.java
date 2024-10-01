@@ -55,7 +55,7 @@ public class App {
 
                     HTTPRequest(String response, int status) throws IOException {
                         Headers resq = het.getRequestHeaders();
-                        System.out.println(resq.get("Host") + " " + HTTP_METHOD + " /testTask HTTP/1.1");
+                        System.out.println(resq.get("Host") + " " + HTTP_METHOD + " /testTask " + het.getProtocol());
 
                         InputStream is = het.getRequestBody();
 
