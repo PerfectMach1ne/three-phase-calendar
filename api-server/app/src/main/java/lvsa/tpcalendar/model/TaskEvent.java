@@ -3,10 +3,10 @@ package lvsa.tpcalendar.model;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.format.DateTimeParseException;
+import java.time.LocalDateTime;
 
 import com.google.gson.JsonObject;
 

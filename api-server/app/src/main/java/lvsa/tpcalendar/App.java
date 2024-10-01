@@ -6,17 +6,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.sql.SQLException;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import java.sql.SQLException;
+
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import lvsa.tpcalendar.colors.Colors;
+import lvsa.tpcalendar.dbutils.DatabaseHandler;
 import lvsa.tpcalendar.model.TaskEvent;
 
 public class App {
@@ -34,13 +34,20 @@ public class App {
 
     private static void runServer() throws IOException {
         int port = 8057;
-        InetSocketAddress cd = new InetSocketAddress(port);
+        InetSocketAddress address = new InetSocketAddress(port);
         HttpServer server = null;
 
         try {
-            server = HttpServer.create(cd, port);
+            server = HttpServer.create(address, port);
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            System.exit(1);
+        }
+
+        try {
+            DatabaseHandler dbtest = new DatabaseHandler();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
             System.exit(1);
         }
 
