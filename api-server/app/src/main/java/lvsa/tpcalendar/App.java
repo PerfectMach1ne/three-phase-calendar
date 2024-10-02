@@ -15,7 +15,7 @@ import java.sql.SQLException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import lvsa.tpcalendar.dbutils.DatabaseHandler;
+import lvsa.tpcalendar.http.HTTPStatusCode;
 import lvsa.tpcalendar.dbutils.SchemaInitializer;
 import lvsa.tpcalendar.model.TaskEvent;
 import lvsa.tpcalendar.util.Colors;
@@ -55,6 +55,7 @@ public class App {
             public void handle(HttpExchange het) throws IOException {
                 class HTTPRequest {
                     final String HTTP_METHOD = het.getRequestMethod();
+                    HTTPStatusCode status = HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
 
                     HTTPRequest(String response/* , int status */) throws IOException {
                         Headers resq = het.getRequestHeaders();

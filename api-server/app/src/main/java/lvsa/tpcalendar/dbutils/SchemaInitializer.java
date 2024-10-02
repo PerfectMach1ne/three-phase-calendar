@@ -50,6 +50,7 @@ public class SchemaInitializer {
 		if (!rs.next()) {
 			return false;
 		} else {
+			System.out.println("[DEBUG] NOT creating the table.");
 			return true;
 		}
 	}
