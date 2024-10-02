@@ -7,7 +7,7 @@
 
 This is my final calendar project, i.e. I plan to continue working on it over the years and turn it into a calendar-journaling-note system that I would actually like to use.
 
-I named it "Three Phase Calendar", because the foundational idea behind how I'm going to be designing this app over the years is are 3 modes that can be dynamically switched from by the user - a calendar mode, a planner/tasklist mode, and a journal mode. The journal mode is supposed to be relatively freeform, whereas calendar mode - rigid and structured. The idea behind the "planner/tasklist" is something sorta inbetween, allowing the users to be able to view their plans in different formats or work with their preferred one on a given day.
+I named it "Three Phase Calendar", because the foundational idea behind this project is that it it is supposed to be **modal** - i.e. the user has access to three modes or views, a calendar mode, a planner/tasklist mode, and a journal mode. The journal mode is supposed to be relatively freeform, whereas calendar mode - rigid and structured. The idea behind the "planner/tasklist" is something sorta inbetween, allowing the users to be able to view their plans in different formats or work with their preferred one on a given day.
 
 ## Project members
 
