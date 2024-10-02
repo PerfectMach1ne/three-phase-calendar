@@ -11,3 +11,4 @@
 *.jar           binary
 
 *.sql linguist-detectable=true
+*.json linguist-detectable=true
