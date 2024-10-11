@@ -48,6 +48,7 @@ public class SchemaInitializer {
 		String query = "SELECT * FROM pg_catalog.pg_tables WHERE tablename = '" + tablename + "';";
 		ResultSet rs = stat.executeQuery(query);
 		if (!rs.next()) {
+			System.out.println("[DEBUG] CREATING the table.");
 			return false;
 		} else {
 			System.out.println("[DEBUG] NOT creating the table.");

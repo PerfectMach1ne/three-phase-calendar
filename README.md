@@ -9,6 +9,10 @@ This is my final calendar project, i.e. I plan to continue working on it over th
 
 I named it "Three Phase Calendar", because the foundational idea behind this project is that it it is supposed to be **modal** - i.e. the user has access to three modes or views, a calendar mode, a planner/tasklist mode, and a journal mode. The journal mode is supposed to be relatively freeform, whereas calendar mode - rigid and structured. The idea behind the "planner/tasklist" is something sorta inbetween, allowing the users to be able to view their plans in different formats or work with their preferred one on a given day.
 
+## Milestones/ToDo list
+
+- [ ] a
+
 ## Project members
 
 **Chief Technology Officer**: me but teal

@@ -6,11 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.Iterator;
+
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import java.sql.SQLException;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -19,6 +20,7 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
 import lvsa.tpcalendar.dbutils.SchemaInitializer;
 import lvsa.tpcalendar.model.TaskEvent;
 import lvsa.tpcalendar.util.Colors;
+import lvsa.tpcalendar.util.IOUtils;
 
 public class App {
     public static void main(String[] args) {
@@ -34,8 +36,8 @@ public class App {
     }
 
     private static void runServer() throws IOException {
-        int port = 8057;
-        InetSocketAddress address = new InetSocketAddress(port);
+        final int port = 8057;
+        final InetSocketAddress address = new InetSocketAddress(port);
         HttpServer server = null;
 
         try {
@@ -44,22 +46,51 @@ public class App {
             ioe.printStackTrace();
             System.exit(1);
         }
+        System.out.println("[DEBUG] address == " + address);
 
         SchemaInitializer schema = new SchemaInitializer();
+
+        server.createContext("/", new HttpHandler() {
+            @Override
+            public void handle(HttpExchange htex) throws IOException {
+                Headers reqh = htex.getRequestHeaders();
+                
+                Headers resh = htex.getResponseHeaders();
+                resh.set("Content-Type", "text/html");
+                ClassLoader classLoader = getClass().getClassLoader();
+                InputStream is = classLoader.getResourceAsStream("index.html");
+                Iterator<String> iter = IOUtils.readPropsFromInputStream(is).iterator();
+                String res = "";
+                while (iter.hasNext()) {
+                    res += iter.next();
+                }
+                System.out.println(res);
+
+                HTTPStatusCode STATUS = HTTPStatusCode.HTTP_200_OK;
+                htex.sendResponseHeaders(STATUS.getint(), 0);
+
+                OutputStream os = htex.getResponseBody();
+                os.write(res.getBytes());
+                os.flush();
+                is.close(); os.close();
+            }
+        });
 
         server.createContext("/teapot", new TPCalHttpHandler());
 
         server.createContext("/testTask", new HttpHandler() {
 
+
             @Override
             public void handle(HttpExchange het) throws IOException {
+                System.out.println("[DEBUG] address == " + address);
                 class HTTPRequest {
                     final String HTTP_METHOD = het.getRequestMethod();
                     HTTPStatusCode status = HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
 
                     HTTPRequest(String response/* , int status */) throws IOException {
-                        Headers resq = het.getRequestHeaders();
-                        System.out.println(resq.get("Host") + " " + HTTP_METHOD + " /testTask " + het.getProtocol());
+                        Headers reqh = het.getRequestHeaders();
+                        System.out.println(reqh.get("Host") + " " + HTTP_METHOD + " /testTask " + het.getProtocol());
 
                         InputStream is = het.getRequestBody();
 

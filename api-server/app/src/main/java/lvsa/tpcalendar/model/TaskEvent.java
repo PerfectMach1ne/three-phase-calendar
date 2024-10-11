@@ -99,8 +99,6 @@ public class TaskEvent implements Event {
         } else {
             this.setColor(Colors.getColorFromHex(""));
         }
-
-
         
         // try (
         //     DatabaseHandler db = new DatabaseHandler();

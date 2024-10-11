@@ -28,7 +28,7 @@ public enum HTTPStatusCode {
 		this.statusCode = statusCode;
 	}
 
-	public int get(int statusCode) {
-		return this.statusCode;
+	public int getint() {
+		return statusCode;
 	}
 }
