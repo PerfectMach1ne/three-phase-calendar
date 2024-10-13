@@ -2,7 +2,6 @@ package lvsa.tpcalendar.dbutils;
 
 import java.sql.SQLException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -12,34 +11,30 @@ public class SchemaInitializer {
 	public SchemaInitializer() {
 		try(DatabaseHandler dbhandler = new DatabaseHandler()) {
 			conn = dbhandler.getDBConnection();
-			if (!checkIfTableExists(conn, "taskevents")) {
-				createTaskEvents(conn);
-			} 
+			createTaskEvents(conn);
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		}
-		// here we GOOOOO
-		// the master plan:
-		// 1. create tables if not exists
-		// 2. later add roles and privileges to it
 	}
 
 	private void createTaskEvents(Connection conn) throws SQLException {
 		Statement stat = conn.createStatement(); 
 		stat.execute("""
 			CREATE TABLE IF NOT EXISTS taskevents (
-				hashId TEXT PRIMARY KEY,
+				hashId INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				datetime timestamp NOT NULL,
 				name TEXT,
 				description TEXT,
 				color VARCHAR(7) NOT NULL,
-				isDone BOOLEAN,
-				createdAt timestamp,
-				updatedAt timestamp
+				isDone BOOLEAN NOT NULL,
+				createdAt timestamp NOT NULL,
+				updatedAt timestamp NOT NULL
 			);
 			""");
 	}
 
+	// ToDo: Pointless, actually, and adds unnecessary computation unless ran for more than
+	// one table. Potentially reuse this as a diagnostic check later.
 	private boolean checkIfTableExists(Connection conn, String tablename) throws SQLException {
 		Statement stat = conn.createStatement(
 			ResultSet.TYPE_SCROLL_INSENSITIVE,

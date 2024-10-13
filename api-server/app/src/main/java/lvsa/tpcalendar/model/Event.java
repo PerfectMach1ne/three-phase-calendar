@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import com.google.gson.JsonObject;
 
+import lvsa.tpcalendar.http.HTTPStatusCode;
+
 public interface Event {
     final LocalDateTime createdDate = LocalDateTime.now();
     
@@ -17,10 +19,12 @@ public interface Event {
     void setName(String name);
     void setDescription(String desc);
     
-    void create(JsonObject jsonObj);
+    HTTPStatusCode read(int hashCode);
 
-    void update(JsonObject jsonObj);
-    void update();
+    HTTPStatusCode create(JsonObject jsonObj);
 
-    void delete(int hashCode);
+    HTTPStatusCode update(JsonObject jsonObj);
+    HTTPStatusCode update();
+
+    HTTPStatusCode delete(int hashCode);
 }

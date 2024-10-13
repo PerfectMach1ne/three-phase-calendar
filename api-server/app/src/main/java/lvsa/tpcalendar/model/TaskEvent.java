@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 import com.google.gson.JsonObject;
 
-import lvsa.tpcalendar.dbutils.SchemaInitializer;
+import lvsa.tpcalendar.http.HTTPStatusCode;
 import lvsa.tpcalendar.dbutils.DatabaseHandler;
 import lvsa.tpcalendar.util.Colors;
 
@@ -77,7 +77,7 @@ public class TaskEvent implements Event {
     }
 
     @Override
-    public void create(JsonObject jsonObj) {
+    public HTTPStatusCode create(JsonObject jsonObj) {
         String dateTimeString = jsonObj.get("datetime").getAsString(); 
         try {
             LocalDateTime datetime = LocalDateTime.parse(dateTimeString);
@@ -99,32 +99,22 @@ public class TaskEvent implements Event {
         } else {
             this.setColor(Colors.getColorFromHex(""));
         }
+
+        try (
+            DatabaseHandler db = new DatabaseHandler();
+            Connection conn = db.getDBConnection();
+            Statement stat = conn.createStatement();
+            ) {
+            updatedDate = LocalDateTime.now();
+            stat.setQueryTimeout(30);
+            // performInsert(conn: Connection, this: TaskEvent);
+            // return an error if it fucks up
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
+        return HTTPStatusCode.HTTP_201_CREATED;
         
-        // try (
-        //     DatabaseHandler db = new DatabaseHandler();
-        //     Connection conn = db.getDBConnection();
-        //     Statement stat = conn.createStatement(); 
-        //     ) {
-
-        //     updatedDate = LocalDateTime.now();
-        //     stat.setQueryTimeout(30);
-        //     /* LAZY DEBUG TABLE DROPPER, REMOVE LATER */
-        //     stat.execute("DROP TABLE taskevents;");
-        //     /* LAZY DEBUG TABLE DROPPER, REMOVE LATER */
-        //     stat.execute(
-        //         "CREATE TABLE IF NOT EXISTS taskevents(" +  
-        //             "hashId INTEGER," + 
-        //             "datetime TEXT," +
-        //             "name TEXT," + 
-        //             "description TEXT," +
-        //             "color TEXT," +
-        //             "createdAt TEXT," +
-        //             "updatedAt TEXT);");
-
-        //     try (
-        //         ResultSet hashrs = stat.executeQuery("SELECT hashId FROM taskevents;");
-        //         ) {
-                
         //         if (hashrs.getInt("hashId") == hashCode()) {
         //             System.out.println("NO");
         //         } else {
@@ -158,25 +148,27 @@ public class TaskEvent implements Event {
         //         sqle.printStackTrace();
         //     }
             
-        // } catch (SQLException sqle) {
-        //     sqle.printStackTrace();
-        // }
+            
     }
 
     @Override
-    public void update(JsonObject jsonObj) {
+    public HTTPStatusCode update() {
         updatedDate = LocalDateTime.now();
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
     @Override
-    public void update() {
-        updatedDate = LocalDateTime.now();
+    public HTTPStatusCode delete(int hashCode) {
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
     @Override
-    public void delete(int hashCode) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    public HTTPStatusCode read(int hashCode) {
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
-    
+
+    @Override
+    public HTTPStatusCode update(JsonObject jsonObj) {
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+    }
 }

@@ -36,17 +36,18 @@ public class App {
     }
 
     private static void runServer() throws IOException {
-        final int port = 8057;
-        final InetSocketAddress address = new InetSocketAddress(port);
+        final int PORT = 8057;
+        final InetSocketAddress ADDRESS = new InetSocketAddress(PORT);
+        final int TCP_BACKLOG = 128; // Re: Note about socket backlogs (https://docs.oracle.com/en/java/javase/21/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html)
         HttpServer server = null;
 
         try {
-            server = HttpServer.create(address, port);
+            server = HttpServer.create(ADDRESS, TCP_BACKLOG);
         } catch (IOException ioe) {
             ioe.printStackTrace();
             System.exit(1);
         }
-        System.out.println("[DEBUG] address == " + address);
+        System.out.println("[DEBUG] address == " + ADDRESS);
 
         SchemaInitializer schema = new SchemaInitializer();
 
@@ -80,19 +81,18 @@ public class App {
 
         server.createContext("/testTask", new HttpHandler() {
 
-
             @Override
-            public void handle(HttpExchange het) throws IOException {
-                System.out.println("[DEBUG] address == " + address);
+            public void handle(HttpExchange htex) throws IOException {
+                System.out.println("[DEBUG] address == " + ADDRESS);
                 class HTTPRequest {
-                    final String HTTP_METHOD = het.getRequestMethod();
+                    final String HTTP_METHOD = htex.getRequestMethod();
                     HTTPStatusCode status = HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
 
-                    HTTPRequest(String response/* , int status */) throws IOException {
-                        Headers reqh = het.getRequestHeaders();
-                        System.out.println(reqh.get("Host") + " " + HTTP_METHOD + " /testTask " + het.getProtocol());
+                    HTTPRequest(String method) throws IOException {
+                        Headers reqh = htex.getRequestHeaders();
+                        System.out.println(reqh.get("Host") + " " + HTTP_METHOD + " /testTask " + htex.getProtocol());
 
-                        InputStream is = het.getRequestBody();
+                        InputStream is = htex.getRequestBody();
 
                         InputStreamReader isReader = new InputStreamReader(is);
                         BufferedReader reader = new BufferedReader(isReader);
@@ -103,46 +103,62 @@ public class App {
                             // System.out.println(str);
                         }
 
-                        Headers resh = het.getResponseHeaders();
+                        HTTPStatusCode status = null;
+                        switch (method) {
+                            case "POST":
+                                JsonObject jsonObj = JsonParser.parseString(sb.toString()).getAsJsonObject();
+                                TaskEvent taskEvent = new TaskEvent();
+                                status = taskEvent.create(jsonObj);
+                                System.out.println("Taskname: " + taskEvent.getName() + "\n"
+                                                + "Description: " + taskEvent.getDescription() + "\n"
+                                                + "Date: " + taskEvent.getDateTime().toLocalDate().toString() + "\n"
+                                                + "Hour: " + taskEvent.getDateTime().toLocalTime().toString() + "\n"
+                                                + "Color: " + taskEvent.getColor());
+                                break;
+                        }
+
+                        Headers resh = htex.getResponseHeaders();
                         resh.set("Content-Type", "application/json");
                         System.out.println(resh.toString());
 
-                        String res = response;
-                        int status = 201;
+                        String res = "{ \"boink\": \"" + "wheh?" + "\" }\n";
+                        
                         // 0 to use Chunked Transfer Coding
                         // https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
-                        het.sendResponseHeaders(status, 0);
+                        htex.sendResponseHeaders(status.getint(), 0);
 
-                        OutputStream os = het.getResponseBody();
+                        OutputStream os = htex.getResponseBody();
                         os.write(res.getBytes());
                         os.flush();
                         is.close(); os.close();
                     }
                 }
-                if (het.getRequestMethod().equals("GET")) {}
-                else if (het.getRequestMethod().equals("POST")) {}
-                else if (het.getRequestMethod().equals("PUT")) {}
-                else if (het.getRequestMethod().equals("DELETE")) {}
+                if (htex.getRequestMethod().equals("GET")) {}
+                else if (htex.getRequestMethod().equals("POST")) {
+                    new HTTPRequest("POST");
+                }
+                else if (htex.getRequestMethod().equals("PUT")) {}
+                else if (htex.getRequestMethod().equals("DELETE")) {}
                 else {}
 
-                if (het.getRequestMethod().equals("GET")) {
-                    Headers resq = het.getRequestHeaders();
+                if (htex.getRequestMethod().equals("GET")) {
+                    Headers resq = htex.getRequestHeaders();
                     System.out.println(resq.get("Host") + " GET /testTask HTTP/1.1");
 
                     String res = "{ \"deleteMeLaterName\": \"no\" }";
 
-                    het.getResponseHeaders().set("Content-Type", "application/json");
-                    het.sendResponseHeaders(200, 0);
+                    htex.getResponseHeaders().set("Content-Type", "application/json");
+                    htex.sendResponseHeaders(200, 0);
 
-                    OutputStream os = het.getResponseBody();
+                    OutputStream os = htex.getResponseBody();
                     os.write(res.getBytes());
                     os.flush();
                     os.close();
-                } else if (het.getRequestMethod().equals("POST")) {
-                    Headers resq = het.getRequestHeaders();
+                } else if (htex.getRequestMethod().equals("POST")) {
+                    Headers resq = htex.getRequestHeaders();
                     System.out.println(resq.get("Host") + " POST /testTask HTTP/1.1");
                     
-                    InputStream is = het.getRequestBody();
+                    InputStream is = htex.getRequestBody();
 
                     InputStreamReader isReader = new InputStreamReader(is);
                     BufferedReader reader = new BufferedReader(isReader);
@@ -163,25 +179,25 @@ public class App {
                                      + "Hour: " + taskEvent.getDateTime().toLocalTime().toString() + "\n"
                                      + "Color: " + taskEvent.getColor());
 
-                    Headers resh = het.getResponseHeaders();
+                    Headers resh = htex.getResponseHeaders();
                     resh.set("Content-Type", "application/json");
                     System.out.println(resh.toString());
 
                     String res = "{ \"boink\": \"" + "wheh?" + "\" }\n";
                     // 0 to use Chunked Transfer Coding
                     // https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
-                    het.sendResponseHeaders(201, 0);
+                    htex.sendResponseHeaders(201, 0);
 
-                    OutputStream os = het.getResponseBody();
+                    OutputStream os = htex.getResponseBody();
                     os.write(res.getBytes());
                     os.flush();
                     os.close();
                     is.close();
-                } else if (het.getRequestMethod().equals("PUT")) {
-                    Headers resq = het.getRequestHeaders();
+                } else if (htex.getRequestMethod().equals("PUT")) {
+                    Headers resq = htex.getRequestHeaders();
                     System.out.println(resq.get("Host") + " PUT /testTask HTTP/1.1");
 
-                    InputStream is = het.getRequestBody();
+                    InputStream is = htex.getRequestBody();
 
                     InputStreamReader isReader = new InputStreamReader(is);
                     BufferedReader reader = new BufferedReader(isReader);
@@ -194,17 +210,17 @@ public class App {
                     }
 
                     String res = "PUT testTask \n"; 
-                    het.sendResponseHeaders(200, 0);
+                    htex.sendResponseHeaders(200, 0);
 
-                    OutputStream os = het.getResponseBody();
+                    OutputStream os = htex.getResponseBody();
                     os.write(res.getBytes());
                     os.flush();
                     is.close(); os.close();
-                } else if (het.getRequestMethod().equals("DELETE")) {
-                    Headers resq = het.getRequestHeaders();
+                } else if (htex.getRequestMethod().equals("DELETE")) {
+                    Headers resq = htex.getRequestHeaders();
                     System.out.println(resq.get("Host") + " DELETE /testTask HTTP/1.1");
 
-                    InputStream is = het.getRequestBody();
+                    InputStream is = htex.getRequestBody();
 
                     InputStreamReader isReader = new InputStreamReader(is);
                     BufferedReader reader = new BufferedReader(isReader);
@@ -217,9 +233,9 @@ public class App {
                     }
 
                     String res = "DELETE testTask \n"; 
-                    het.sendResponseHeaders(200, 0);
+                    htex.sendResponseHeaders(200, 0);
 
-                    OutputStream os = het.getResponseBody();
+                    OutputStream os = htex.getResponseBody();
                     os.write(res.getBytes());
                     os.flush();
                     is.close(); os.close();

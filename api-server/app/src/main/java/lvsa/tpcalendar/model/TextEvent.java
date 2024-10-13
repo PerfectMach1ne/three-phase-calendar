@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import com.google.gson.JsonObject;
 
+import lvsa.tpcalendar.http.HTTPStatusCode;
+
 public class TextEvent implements Event {
 
     @Override
@@ -31,30 +33,6 @@ public class TextEvent implements Event {
     }
 
     @Override
-    public void create(JsonObject jsonObj) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'create'");
-    }
-
-    @Override
-    public void update(JsonObject jsonObj) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
-    }
-    
-    @Override
-    public void update() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
-    }
-
-    @Override
-    public void delete(int hashCode) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'delete'");
-    }
-
-    @Override
     public void setName(String newName) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setName'");
@@ -76,6 +54,36 @@ public class TextEvent implements Event {
     public void setDateTime(LocalDateTime localdatetime) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'setDateTime'");
+    }
+
+    @Override
+    public HTTPStatusCode read(int hashCode) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'read'");
+    }
+
+    @Override
+    public HTTPStatusCode create(JsonObject jsonObj) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'create'");
+    }
+
+    @Override
+    public HTTPStatusCode update(JsonObject jsonObj) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    }
+
+    @Override
+    public HTTPStatusCode update() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'update'");
+    }
+
+    @Override
+    public HTTPStatusCode delete(int hashCode) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
     
 }
