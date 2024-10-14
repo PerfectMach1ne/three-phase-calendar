@@ -52,33 +52,32 @@ public class App {
         System.out.println(Locale.ROOT);
         SchemaInitializer schema = new SchemaInitializer();
 
-        server.createContext("/", new HttpHandler() {
+        server.createContext("/teapot", new HttpHandler() {
             @Override
             public void handle(HttpExchange htex) throws IOException {
-                Headers reqh = htex.getRequestHeaders();
-                
-                Headers resh = htex.getResponseHeaders();
-                resh.set("Content-Type", "text/html");
-                ClassLoader classLoader = getClass().getClassLoader();
-                InputStream is = classLoader.getResourceAsStream("index.html");
-                Iterator<String> iter = IOUtils.readPropsFromInputStream(is).iterator();
-                String res = "";
-                while (iter.hasNext()) {
-                    res += iter.next();
-                }
-                System.out.println(res);
+                InputStream is = htex.getRequestBody();
 
-                HTTPStatusCode STATUS = HTTPStatusCode.HTTP_200_OK;
-                htex.sendResponseHeaders(STATUS.getint(), 0);
+                InputStreamReader isReader = new InputStreamReader(is);
+                BufferedReader reader = new BufferedReader(isReader);
+                StringBuffer sb = new StringBuffer();
+
+                String str;
+                while ( (str = reader.readLine()) != null ) {
+                    sb.append(str);
+                    System.out.println(str);
+                }
+
+                System.out.println("418 /teapot requested");
+                String res = "am a teapot :3\n";
+
+                htex.sendResponseHeaders(418, res.length());
 
                 OutputStream os = htex.getResponseBody();
                 os.write(res.getBytes());
                 os.flush();
-                is.close(); os.close();
+                os.close(); is.close();
             }
         });
-
-        server.createContext("/teapot", new TPCalHttpHandler());
 
         server.createContext("/testTask", new HttpHandler() {
 
@@ -104,7 +103,6 @@ public class App {
                             // System.out.println(str);
                         }
 
-                        HTTPStatusCode status = null;
                         switch (method) {
                             case "GET":
                                 status = HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
