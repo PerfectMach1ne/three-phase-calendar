@@ -34,23 +34,4 @@ public class SchemaInitializer {
 			);
 			""");
 	}
-
-	// ToDo: Pointless, actually, and adds unnecessary computation unless ran for more than
-	// one table. Potentially reuse this as a diagnostic check later.
-	private boolean checkIfTableExists(Connection conn, String tablename) throws SQLException {
-		// Statement stat = conn.createStatement(
-		// 	ResultSet.TYPE_SCROLL_INSENSITIVE,
-		// 	ResultSet.CONCUR_READ_ONLY
-		// );
-		PreparedStatement query = conn.prepareStatement("SELECT * FROM pg_catalog.pg_tables WHERE tablename = ?;");
-		query.setString(1, tablename);
-		ResultSet rs = query.executeQuery();
-		if (!rs.next()) {
-			System.out.println("[DEBUG] CREATING the table.");
-			return false;
-		} else {
-			System.out.println("[DEBUG] NOT creating the table.");
-			return true;
-		}
-	}
 }
