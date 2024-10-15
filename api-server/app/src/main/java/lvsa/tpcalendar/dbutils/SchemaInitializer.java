@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 
 public class SchemaInitializer {
 	Connection conn;
@@ -18,10 +19,11 @@ public class SchemaInitializer {
 	}
 
 	private void createTaskEvents(Connection conn) throws SQLException {
-		Statement stat = conn.createStatement(); 
+		Statement stat = conn.createStatement();
 		stat.execute("""
 			CREATE TABLE IF NOT EXISTS taskevents (
-				hashId INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+				hashcode INT UNIQUE NOT NULL,
 				datetime timestamp NOT NULL,
 				name TEXT,
 				description TEXT,
@@ -36,12 +38,13 @@ public class SchemaInitializer {
 	// ToDo: Pointless, actually, and adds unnecessary computation unless ran for more than
 	// one table. Potentially reuse this as a diagnostic check later.
 	private boolean checkIfTableExists(Connection conn, String tablename) throws SQLException {
-		Statement stat = conn.createStatement(
-			ResultSet.TYPE_SCROLL_INSENSITIVE,
-			ResultSet.CONCUR_READ_ONLY
-		);
-		String query = "SELECT * FROM pg_catalog.pg_tables WHERE tablename = '" + tablename + "';";
-		ResultSet rs = stat.executeQuery(query);
+		// Statement stat = conn.createStatement(
+		// 	ResultSet.TYPE_SCROLL_INSENSITIVE,
+		// 	ResultSet.CONCUR_READ_ONLY
+		// );
+		PreparedStatement query = conn.prepareStatement("SELECT * FROM pg_catalog.pg_tables WHERE tablename = ?;");
+		query.setString(1, tablename);
+		ResultSet rs = query.executeQuery();
 		if (!rs.next()) {
 			System.out.println("[DEBUG] CREATING the table.");
 			return false;

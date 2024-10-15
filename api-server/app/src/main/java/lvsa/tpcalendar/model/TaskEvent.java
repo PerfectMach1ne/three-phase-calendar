@@ -1,8 +1,6 @@
 package lvsa.tpcalendar.model;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.format.DateTimeParseException;
@@ -23,6 +21,10 @@ public class TaskEvent implements Event {
     private boolean isDone = false;
     private boolean hasColor = false;
     private Colors color = null;
+
+    public TaskEvent() {
+        super();
+    }
 
     @Override
     public LocalDateTime getDateTime() {
@@ -76,6 +78,30 @@ public class TaskEvent implements Event {
         this.color = color;
     }
 
+    public static Object[] findAndFetchFromDB(int hashcode) {
+        JsonObject jsonTask = null;
+
+        try (
+            DatabaseHandler db = new DatabaseHandler();
+            Connection conn = db.getDBConnection();
+        ) {
+            jsonTask = db.queryByHashcode(hashcode);
+            if (jsonTask.isEmpty()) {
+                return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
+            }
+        } catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
+        System.out.println(jsonTask);
+        return new Object[]{HTTPStatusCode.HTTP_200_OK, new TaskEvent()};
+    }
+
+    @Override
+    public HTTPStatusCode read(int hashCode) {
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+    }
+
     @Override
     public HTTPStatusCode create(JsonObject jsonObj) {
         String dateTimeString = jsonObj.get("datetime").getAsString(); 
@@ -83,7 +109,6 @@ public class TaskEvent implements Event {
             LocalDateTime datetime = LocalDateTime.parse(dateTimeString);
             this.datetime = datetime;
         } catch (DateTimeParseException dtpe) {
-            System.out.println("oh fuck");
             dtpe.printStackTrace();
         }
 
@@ -159,11 +184,6 @@ public class TaskEvent implements Event {
 
     @Override
     public HTTPStatusCode delete(int hashCode) {
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
-    }
-
-    @Override
-    public HTTPStatusCode read(int hashCode) {
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 

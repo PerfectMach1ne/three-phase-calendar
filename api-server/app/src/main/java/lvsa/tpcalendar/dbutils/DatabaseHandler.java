@@ -4,8 +4,15 @@ package lvsa.tpcalendar.dbutils;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.io.InputStream;
 import java.util.Properties;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 import java.util.Iterator;
 
 import lvsa.tpcalendar.util.IOUtils;
@@ -15,7 +22,6 @@ public class DatabaseHandler implements AutoCloseable {
 
     public DatabaseHandler() throws SQLException {
         Properties props = loadProperties();
-        // System.out.println(props.toString());
         String url = props.getProperty("url");
         props.remove("url");
         conn = DriverManager.getConnection(url, props);
@@ -33,6 +39,24 @@ public class DatabaseHandler implements AutoCloseable {
         }
 
         return props;
+    }
+
+    public JsonObject queryByHashcode(int hashcode) throws SQLException {
+        PreparedStatement query = this.conn.prepareStatement("SELECT * FROM taskevents WHERE hashcode = ?;");
+        query.setInt(1, hashcode);
+
+        JsonObject json = new JsonObject();
+
+        ResultSet rs = query.executeQuery();
+        if (!rs.next()) {
+            return json;
+        } else {
+            json.add("hashcode", new JsonPrimitive(rs.getInt("hashcode")));
+            json.add("datetime", new JsonPrimitive(rs.getString("datetime")));
+            json.add("name", new JsonPrimitive(rs.getString("name")));
+            json.add("desc", new JsonPrimitive(rs.getString("description")));
+            return json;
+        }
     }
 
     public Connection getDBConnection() {

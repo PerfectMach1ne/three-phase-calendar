@@ -49,8 +49,7 @@ public class App {
         }
         System.out.println("[DEBUG] address == " + ADDRESS);
 
-        System.out.println(Locale.ROOT);
-        SchemaInitializer schema = new SchemaInitializer();
+        /*SchemaInitializer schema = */new SchemaInitializer();
 
         server.createContext("/teapot", new HttpHandler() {
             @Override
@@ -100,18 +99,26 @@ public class App {
                         String str;
                         while ( (str = reader.readLine()) != null ) {
                             sb.append(str);
-                            // System.out.println(str);
                         }
 
+                        JsonObject jsonObj = null;
                         switch (method) {
                             case "GET":
-                                status = HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+                                jsonObj = JsonParser.parseString(sb.toString()).getAsJsonObject();
+                                Object[] dbResult = TaskEvent.findAndFetchFromDB(jsonObj.get("hashcode").getAsInt());
+                                if (dbResult[0] == HTTPStatusCode.HTTP_404_NOT_FOUND && dbResult[1] == null) {
+                                    status = HTTPStatusCode.HTTP_404_NOT_FOUND;
+                                    break;
+                                }
+                                System.out.println(jsonObj.get("hashcode"));
+                                status = HTTPStatusCode.HTTP_200_OK;
                                 break;
                             case "POST":
-                                JsonObject jsonObj = JsonParser.parseString(sb.toString()).getAsJsonObject();
+                                jsonObj = JsonParser.parseString(sb.toString()).getAsJsonObject();
                                 TaskEvent taskEvent = new TaskEvent();
                                 status = taskEvent.create(jsonObj);
-                                System.out.println("Taskname: " + taskEvent.getName() + "\n"
+                                System.out.println("Hashcode: " + taskEvent.hashCode() + '\n'
+                                                + "Taskname: " + taskEvent.getName() + "\n"
                                                 + "Description: " + taskEvent.getDescription() + "\n"
                                                 + "Date: " + taskEvent.getDateTime().toLocalDate().toString() + "\n"
                                                 + "Hour: " + taskEvent.getDateTime().toLocalTime().toString() + "\n"
@@ -156,7 +163,6 @@ public class App {
         });
 
         server.setExecutor(null);
-        System.out.println(System.getProperty("user.dir"));
         server.start();
     }
 }
