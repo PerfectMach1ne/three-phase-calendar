@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import com.google.gson.JsonObject;
 
 import lvsa.tpcalendar.http.HTTPStatusCode;
-import lvsa.tpcalendar.dbutils.DatabaseHandler;
+import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.util.Colors;
 
 public class TaskEvent implements Event {
@@ -127,7 +127,7 @@ public class TaskEvent implements Event {
         JsonObject jsonTask = null;
 
         try (
-            DatabaseHandler db = new DatabaseHandler();
+            DBConnProvider db = new DBConnProvider();
             Connection conn = db.getDBConnection();
         ) {
             jsonTask = db.queryByHashcode(hashcode);
@@ -171,7 +171,7 @@ public class TaskEvent implements Event {
         }
 
         try (
-            DatabaseHandler db = new DatabaseHandler();
+            DBConnProvider db = new DBConnProvider();
             Connection conn = db.getDBConnection();
             Statement stat = conn.createStatement();
             ) {

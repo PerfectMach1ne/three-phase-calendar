@@ -8,7 +8,7 @@ public final class SchemaInitializer {
 	Connection conn;
 
 	public SchemaInitializer() {
-		try(DatabaseHandler dbhandler = new DatabaseHandler()) {
+		try(DBConnProvider dbhandler = new DBConnProvider()) {
 			conn = dbhandler.getDBConnection();
 			createTaskEvents(conn);
 		} catch (SQLException sqle) {

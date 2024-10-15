@@ -19,8 +19,12 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] Basic internal TaskEvent data handling.
 - [x] Basic postgres database & connectivity setup.
 - [x] TaskEvent database-side implementation.
-- [ ] TaskEvent business-logic-side implementation.
-- [ ] TaskEvent server-context-side implementation.
+- [ ] HTTP query parameters/Filter implementation.
+- [ ] GET TaskEvent by ID request.
+- [ ] Basic user implementation (to separate events from each separate user & their calendar/journal/planner).
+- [ ] ForeignKey relation + GET all user/calendar events.
+- [ ] DELETE TaskEvent.
+- [ ] PUT TaskEvent.
 - [ ] PeriodEvent database-side implementation.
 - [ ] PeriodEvent business-logic-side implementation.
 - [ ] PeriodEvent server-context-side implementation.

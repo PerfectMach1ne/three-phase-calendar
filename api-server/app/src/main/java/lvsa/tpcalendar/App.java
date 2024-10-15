@@ -10,8 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.util.Iterator;
-import java.util.Locale;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -33,10 +31,6 @@ public class App {
 
     public static void main(String[] args) {
         try {
-            TaskEvent testTaskEvent = new TaskEvent();
-            System.out.println(testTaskEvent.getUpdatedDate());
-            testTaskEvent.setColor(Colors.LAVENDER);
-            System.out.println(testTaskEvent.getUpdatedDate());
             runServer();
         } catch (IOException ioe) {
             ioe.printStackTrace();
@@ -81,7 +75,7 @@ public class App {
             }
         });
 
-        server.createContext("/testTask", new HttpHandler() {
+        server.createContext("/taskevent", new HttpHandler() {
 
             @Override
             public void handle(HttpExchange htex) throws IOException {
@@ -100,7 +94,7 @@ public class App {
                         BufferedReader reader = new BufferedReader(isReader);
                         StringBuffer sb = new StringBuffer();
                         String reqdata;
-                        while ( (reqdata= reader.readLine()) != null ) {
+                        while ( (reqdata = reader.readLine()) != null ) {
                             sb.append(reqdata);
                         }
                         
@@ -119,12 +113,12 @@ public class App {
                                 }
                                 JsonObject fetchedJson = (JsonObject)dbResult[1];
                                 TaskEvent fetchedTask = new TaskEvent(fetchedJson);
-                                // System.out.println("Hashcode: " + fetchedTask.hashCode() + '\n'
-                                //                 + "Taskname: " + fetchedTask.getName() + "\n"
-                                //                 + "Description: " + fetchedTask.getDescription() + "\n"
-                                //                 + "Date: " + fetchedTask.getDateTime().toLocalDate().toString() + "\n"
-                                //                 + "Hour: " + fetchedTask.getDateTime().toLocalTime().toString() + "\n"
-                                //                 + "Color: " + fetchedTask.getColor());
+                                System.out.println("Hashcode: " + fetchedTask.hashCode() + '\n'
+                                                + "Taskname: " + fetchedTask.getName() + "\n"
+                                                + "Description: " + fetchedTask.getDescription() + "\n"
+                                                + "Date: " + fetchedTask.getDateTime().toLocalDate().toString() + "\n"
+                                                + "Hour: " + fetchedTask.getDateTime().toLocalTime().toString() + "\n"
+                                                + "Color: " + fetchedTask.getColor());
                                 res = fetchedJson.toString() + REGISTERED_NURSE;
                                 status = HTTPStatusCode.HTTP_200_OK;
                                 break;

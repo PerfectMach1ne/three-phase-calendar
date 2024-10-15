@@ -16,10 +16,10 @@ import java.util.Iterator;
 
 import lvsa.tpcalendar.util.IOUtils;
 
-public class DatabaseHandler implements AutoCloseable {
+public class DBConnProvider implements AutoCloseable {
     private Connection conn;
 
-    public DatabaseHandler() throws SQLException {
+    public DBConnProvider() throws SQLException {
         Properties props = loadProperties();
         String url = props.getProperty("url");
         props.remove("url");
