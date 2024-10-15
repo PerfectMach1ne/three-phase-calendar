@@ -9,7 +9,6 @@ import java.sql.ResultSet;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -59,7 +58,6 @@ public class DatabaseHandler implements AutoCloseable {
             colorObj.add("hasColor", 
                 new JsonPrimitive(rs.getString("color") == "" ? false : true));
             colorObj.add("hex", new JsonPrimitive(rs.getString("color")));
-            colorObj.add("hasColor", new JsonPrimitive(true));
             json.add("color", colorObj);
             json.add("isDone", new JsonPrimitive(rs.getBoolean("isdone")));
             json.add("createdAt", new JsonPrimitive(rs.getString("createdat")));

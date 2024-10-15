@@ -117,8 +117,15 @@ public class App {
                                     status = HTTPStatusCode.HTTP_404_NOT_FOUND;
                                     break;
                                 }
-                                jsonObj = (JsonObject)dbResult[1];
-                                res = jsonObj.toString() + REGISTERED_NURSE;
+                                JsonObject fetchedJson = (JsonObject)dbResult[1];
+                                TaskEvent fetchedTask = new TaskEvent(fetchedJson);
+                                // System.out.println("Hashcode: " + fetchedTask.hashCode() + '\n'
+                                //                 + "Taskname: " + fetchedTask.getName() + "\n"
+                                //                 + "Description: " + fetchedTask.getDescription() + "\n"
+                                //                 + "Date: " + fetchedTask.getDateTime().toLocalDate().toString() + "\n"
+                                //                 + "Hour: " + fetchedTask.getDateTime().toLocalTime().toString() + "\n"
+                                //                 + "Color: " + fetchedTask.getColor());
+                                res = fetchedJson.toString() + REGISTERED_NURSE;
                                 status = HTTPStatusCode.HTTP_200_OK;
                                 break;
                             case "POST":

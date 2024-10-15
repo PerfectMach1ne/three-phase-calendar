@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.format.DateTimeParseException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.google.gson.JsonObject;
 
@@ -29,6 +30,37 @@ public class TaskEvent implements Event {
     public TaskEvent(JsonObject jsonObj) {
         super();
 
+        LocalDateTime datetime = null;
+        String strdatetime = jsonObj.get("datetime").getAsString();
+        try {
+            strdatetime = strdatetime.substring(0, 10) 
+                + 'T'
+                + strdatetime.substring(11);
+            // System.out.println(strdatetime);
+            datetime = LocalDateTime.parse(strdatetime, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            setDateTime(datetime);
+        } catch (DateTimeParseException dtpe) {
+            dtpe.printStackTrace();
+        }
+
+        setName(jsonObj.get("name").getAsString());
+        setDescription(jsonObj.get("desc").getAsString());
+        setIsDone(jsonObj.get("isDone").getAsBoolean());
+
+
+        JsonObject colorObj = jsonObj.getAsJsonObject("color");
+        
+        this.hasColor = colorObj.get("hasColor").getAsBoolean();
+        // this is where something statrs to get fucked 
+        if (this.hasColor) {
+            String hexstring = colorObj.get("hex").getAsString();
+            System.out.println(hexstring);
+            // int decColor = Integer.getInteger(unprocessedColor);
+            this.setColor(hexstring);
+        } else {
+            this.setColor(Colors.getColorFromHex(""));
+        }
+        
     }
 
     @Override
@@ -44,6 +76,10 @@ public class TaskEvent implements Event {
     @Override
     public String getDescription() {
         return this.taskDescription;
+    }
+
+    public boolean isDone() {
+        return this.isDone;
     }
 
     @Override
@@ -75,6 +111,10 @@ public class TaskEvent implements Event {
         this.taskDescription = desc;
     }
 
+    public void setIsDone(boolean isDone) {
+        this.isDone = isDone;
+    }
+
     public void setColor(String hexColor) {
         this.color = Colors.getColorFromHex(hexColor);
     }
@@ -98,9 +138,7 @@ public class TaskEvent implements Event {
             sqle.printStackTrace();
         }
 
-        // THE TESTING ONE
         return new Object[]{HTTPStatusCode.HTTP_200_OK, jsonTask};
-        // THE CORRECT ONE
         // return new Object[]{HTTPStatusCode.HTTP_200_OK, new TaskEvent(jsonTask)};
     }
 
@@ -114,22 +152,22 @@ public class TaskEvent implements Event {
         String dateTimeString = jsonObj.get("datetime").getAsString(); 
         try {
             LocalDateTime datetime = LocalDateTime.parse(dateTimeString);
-            this.datetime = datetime;
+            setDateTime(datetime);
         } catch (DateTimeParseException dtpe) {
             dtpe.printStackTrace();
         }
 
-        this.setName(jsonObj.get("name").getAsString());
-        this.setDescription(jsonObj.get("desc").getAsString());
+        setName(jsonObj.get("name").getAsString());
+        setDescription(jsonObj.get("desc").getAsString());
 
         JsonObject colorObj = jsonObj.getAsJsonObject("color");
         this.hasColor = colorObj.get("hasColor").getAsBoolean();
         if (this.hasColor) {
             int decColor = colorObj.get("hex").getAsInt();
             String hexColor = "#" + Integer.toHexString(decColor);
-            this.setColor(hexColor);
+            setColor(hexColor);
         } else {
-            this.setColor(Colors.getColorFromHex(""));
+            setColor(Colors.getColorFromHex(""));
         }
 
         try (
