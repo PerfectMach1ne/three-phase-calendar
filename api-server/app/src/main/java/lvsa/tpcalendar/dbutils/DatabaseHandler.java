@@ -55,6 +55,16 @@ public class DatabaseHandler implements AutoCloseable {
             json.add("datetime", new JsonPrimitive(rs.getString("datetime")));
             json.add("name", new JsonPrimitive(rs.getString("name")));
             json.add("desc", new JsonPrimitive(rs.getString("description")));
+            JsonObject colorObj = new JsonObject();
+            colorObj.add("hasColor", 
+                new JsonPrimitive(rs.getString("color") == "" ? false : true));
+            colorObj.add("hex", new JsonPrimitive(rs.getString("color")));
+            colorObj.add("hasColor", new JsonPrimitive(true));
+            json.add("color", colorObj);
+            json.add("isDone", new JsonPrimitive(rs.getBoolean("isdone")));
+            json.add("createdAt", new JsonPrimitive(rs.getString("createdat")));
+            json.add("updatedAt", new JsonPrimitive(rs.getString("updatedat")));
+
             return json;
         }
     }

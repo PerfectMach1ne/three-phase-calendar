@@ -15,6 +15,7 @@ import java.util.Locale;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 import lvsa.tpcalendar.http.HTTPStatusCode;
 import lvsa.tpcalendar.dbutils.SchemaInitializer;
@@ -27,6 +28,8 @@ public class App {
     private static final InetSocketAddress ADDRESS = new InetSocketAddress(PORT);
     private static final int TCP_BACKLOG = 128; // Re: Note about socket backlogs (https://docs.oracle.com/en/java/javase/21/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html)
     private static HttpServer server = null;
+
+    public static final String REGISTERED_NURSE = "\r\n";
 
     public static void main(String[] args) {
         try {
@@ -96,10 +99,14 @@ public class App {
                         InputStreamReader isReader = new InputStreamReader(is);
                         BufferedReader reader = new BufferedReader(isReader);
                         StringBuffer sb = new StringBuffer();
-                        String str;
-                        while ( (str = reader.readLine()) != null ) {
-                            sb.append(str);
+                        String reqdata;
+                        while ( (reqdata= reader.readLine()) != null ) {
+                            sb.append(reqdata);
                         }
+                        
+                        Headers resh = htex.getResponseHeaders();
+                        resh.set("Content-Type", "application/json");
+                        String res = null;
 
                         JsonObject jsonObj = null;
                         switch (method) {
@@ -110,7 +117,8 @@ public class App {
                                     status = HTTPStatusCode.HTTP_404_NOT_FOUND;
                                     break;
                                 }
-                                System.out.println(jsonObj.get("hashcode"));
+                                jsonObj = (JsonObject)dbResult[1];
+                                res = jsonObj.toString() + REGISTERED_NURSE;
                                 status = HTTPStatusCode.HTTP_200_OK;
                                 break;
                             case "POST":
@@ -141,10 +149,13 @@ public class App {
                                 status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
                         }
 
-                        Headers resh = htex.getResponseHeaders();
-                        resh.set("Content-Type", "application/json");
+                        if (res == null) {
+                            JsonObject resJson = new JsonObject(); 
+                            resJson.add("boink", new JsonPrimitive("wheh"));
+                            res = resJson.getAsString() + REGISTERED_NURSE;
+                        }
 
-                        String res = "{ \"boink\": \"" + "wheh?" + "\" }\n";
+                        // String res = "{ \"boink\": \"" + "wheh?" + "\" }\n";
                         
                         // 0 to use Chunked Transfer Coding
                         // https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding

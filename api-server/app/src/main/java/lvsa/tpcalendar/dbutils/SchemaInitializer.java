@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
 
-public class SchemaInitializer {
+public final class SchemaInitializer {
 	Connection conn;
 
 	public SchemaInitializer() {

@@ -26,6 +26,11 @@ public class TaskEvent implements Event {
         super();
     }
 
+    public TaskEvent(JsonObject jsonObj) {
+        super();
+
+    }
+
     @Override
     public LocalDateTime getDateTime() {
         return this.datetime;
@@ -93,8 +98,10 @@ public class TaskEvent implements Event {
             sqle.printStackTrace();
         }
 
-        System.out.println(jsonTask);
-        return new Object[]{HTTPStatusCode.HTTP_200_OK, new TaskEvent()};
+        // THE TESTING ONE
+        return new Object[]{HTTPStatusCode.HTTP_200_OK, jsonTask};
+        // THE CORRECT ONE
+        // return new Object[]{HTTPStatusCode.HTTP_200_OK, new TaskEvent(jsonTask)};
     }
 
     @Override
