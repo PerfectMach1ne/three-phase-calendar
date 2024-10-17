@@ -3,6 +3,7 @@ package lvsa.tpcalendar;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,22 +11,25 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+import lvsa.tpcalendar.http.APIContexts;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 import lvsa.tpcalendar.dbutils.SchemaInitializer;
 import lvsa.tpcalendar.model.TaskEvent;
-import lvsa.tpcalendar.util.Colors;
-import lvsa.tpcalendar.util.IOUtils;
 
 public class App {
     private static final int PORT = 8057;
     private static final InetSocketAddress ADDRESS = new InetSocketAddress(PORT);
     private static final int TCP_BACKLOG = 128; // Re: Note about socket backlogs (https://docs.oracle.com/en/java/javase/21/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html)
+
     private static HttpServer server = null;
+    private static APIContexts apictxs;
 
     public static final String REGISTERED_NURSE = "\r\n";
 
@@ -35,6 +39,16 @@ public class App {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
+    }
+
+    private APIContexts createAPIContexts() {
+        APIContexts apictxs = new APIContexts(
+            new HashMap<String, String>(Map.of(
+                "/api/cal/task", "?id={int}",
+                "/api/cal/timeblock", "?id={int}",
+                "/api/jrn/text", ""))
+        ); 
+        return apictxs;
     }
 
     private static void runServer() throws IOException {
@@ -48,6 +62,9 @@ public class App {
 
         /*SchemaInitializer schema = */new SchemaInitializer();
 
+        for (APIContexts.HTTPContext htc : apictxs.getContexts()) {
+            server.createContext(htc.getURI(), htc.getHandler());
+        }
         server.createContext("/teapot", new HttpHandler() {
             @Override
             public void handle(HttpExchange htex) throws IOException {
