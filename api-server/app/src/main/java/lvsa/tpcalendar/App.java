@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.google.gson.JsonObject;
@@ -20,6 +21,7 @@ import com.google.gson.JsonPrimitive;
 
 import lvsa.tpcalendar.http.APIContexts;
 import lvsa.tpcalendar.http.HTTPStatusCode;
+import lvsa.tpcalendar.http.QueryParams;
 import lvsa.tpcalendar.dbutils.SchemaInitializer;
 import lvsa.tpcalendar.model.TaskEvent;
 
@@ -29,7 +31,7 @@ public class App {
     private static final int TCP_BACKLOG = 128; // Re: Note about socket backlogs (https://docs.oracle.com/en/java/javase/21/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html)
 
     private static HttpServer server = null;
-    private static APIContexts apictxs;
+    private static APIContexts apictxs = null;
 
     public static final String REGISTERED_NURSE = "\r\n";
 
@@ -41,7 +43,7 @@ public class App {
         }
     }
 
-    private APIContexts createAPIContexts() {
+    private static APIContexts createAPIContexts() {
         APIContexts apictxs = new APIContexts(
             new HashMap<String, String>(Map.of(
                 "/api/cal/task", "?id={int}",
@@ -62,9 +64,16 @@ public class App {
 
         /*SchemaInitializer schema = */new SchemaInitializer();
 
+        apictxs = createAPIContexts();
         for (APIContexts.HTTPContext htc : apictxs.getContexts()) {
-            server.createContext(htc.getURI(), htc.getHandler());
+            if (!htc.getQueryParams().isBlank()) {
+                server.createContext(htc.getURI(), htc.getHandler())
+                    .getFilters().add(new QueryParams());    
+            } else {
+                server.createContext(htc.getURI(), htc.getHandler());
+            }
         }
+
         server.createContext("/teapot", new HttpHandler() {
             @Override
             public void handle(HttpExchange htex) throws IOException {

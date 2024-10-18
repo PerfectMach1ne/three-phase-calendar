@@ -18,9 +18,9 @@ public class APIContexts {
 
 		contextsParamsMap.forEach( (context, queryParam) -> {
 			if (queryParam.isEmpty()) {
-				list.add(new HTTPContext(context, null));
+				list.add(new HTTPContext(context, ""));
 			} else {
-				list.add(new HTTPContext(context, new QueryParams(queryParam)));
+				list.add(new HTTPContext(context, queryParam));
 			}
 		} );
 
@@ -29,22 +29,26 @@ public class APIContexts {
 
 	public class HTTPContext {
 		private final String URI_STRING;
-		private final QueryParams QUERY_PARAMS;
+		private final String QUERY_PARAMS;
+		private HttpHandler HANDLER = null;
 
-		HTTPContext(String uri, QueryParams params) {
+		HTTPContext(String uri, String params) {
 			this.URI_STRING = uri;
 			this.QUERY_PARAMS = params;
 		}
 
 		public HttpHandler getHandler() {
-			return new HttpHandler() {
+			this.HANDLER = new HttpHandler() {
 				@Override
 				public void handle(HttpExchange exchange) throws IOException {
 					new HTTPRequest(exchange);
 				}
 			};
+			return this.HANDLER;
 		}
 
 		public String getURI() { return this.URI_STRING; }
+
+		public String getQueryParams() { return this.QUERY_PARAMS; } 
 	}
 }
