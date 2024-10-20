@@ -48,7 +48,8 @@ public class App {
             new HashMap<String, String>(Map.of(
                 "/api/cal/task", "?id={int}",
                 "/api/cal/timeblock", "?id={int}",
-                "/api/jrn/text", ""))
+                "/api/jrn/text", "",
+                "/api/teapot", "?msg={char[57]}"))
         ); 
         return apictxs;
     }
