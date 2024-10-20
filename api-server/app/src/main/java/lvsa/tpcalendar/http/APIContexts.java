@@ -41,7 +41,19 @@ public class APIContexts {
 			this.HANDLER = new HttpHandler() {
 				@Override
 				public void handle(HttpExchange exchange) throws IOException {
-					new HTTPRequest(exchange);
+					HTTPRequest req = new HTTPRequest(exchange);
+					switch (exchange.getRequestMethod().toUpperCase()) {
+						case "GET":
+						case "POST":
+						case "DELETE":
+						case "PUT":
+						case "HEAD":
+						case "CONNECT":
+						case "OPTIONS":
+						case "TRACE":
+						default:
+							req.endWithStatus(HTTPStatusCode.HTTP_400_BAD_REQUEST, "error", "Invalid HTTP method!");
+					}
 				}
 			};
 			return this.HANDLER;

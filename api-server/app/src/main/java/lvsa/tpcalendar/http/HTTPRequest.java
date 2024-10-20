@@ -11,14 +11,20 @@ import java.util.function.Consumer;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.sun.net.httpserver.Filter;
 
 import lvsa.tpcalendar.http.HTTPStatusCode;
+import lvsa.tpcalendar.http.APIContexts.HTTPContext;
 
 public class HTTPRequest implements BaseRequest {
 	private final HttpExchange HTEX;
 	private final String HTTP_METHOD;
 	private final Map<String, String> QUERY_PARAMS;
+	private HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+
+    public static final String REGISTERED_NURSE = "\r\n";
 
 	@SuppressWarnings("unchecked")
 	HTTPRequest(HttpExchange httpExchange) {
@@ -26,10 +32,21 @@ public class HTTPRequest implements BaseRequest {
 		this.HTTP_METHOD = this.HTEX.getRequestMethod().toUpperCase();
 		this.QUERY_PARAMS = (Map<String, String>) HTEX.getAttribute("queryParams");	
 		System.out.println(HTEX.getAttribute("queryParams").toString());
+		System.out.println(httpExchange.getRequestMethod());
 	}
 
-	@Override
-	public HTTPStatusCode switchMethod(Consumer<HTTPStatusCode> lambda) {
-		return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+	public void endWithStatus(HTTPStatusCode status, String responseType, String responseMessage) throws IOException {	
+		Headers resh = this.HTEX.getResponseHeaders();
+		resh.set("Content-Type", "application/json");
+
+		String res = null;
+		JsonObject resJson = new JsonObject(); 
+		resJson.add(responseType, new JsonPrimitive(responseMessage));
+		res = resJson.getAsString() + REGISTERED_NURSE;
+
+		this.HTEX.sendResponseHeaders(status.getint(), 0);
+		OutputStream os = this.HTEX.getResponseBody();
+		os.write(res.getBytes());
+		os.flush();
 	}
 }
