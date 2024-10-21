@@ -7,7 +7,7 @@ import java.util.HashMap;
 import com.sun.net.httpserver.Filter;
 import com.sun.net.httpserver.HttpExchange;
 
-public class QueryParams extends Filter {
+public class QueryParamsFilter extends Filter {
 	@Override
 	public String description() {
 		return "";
