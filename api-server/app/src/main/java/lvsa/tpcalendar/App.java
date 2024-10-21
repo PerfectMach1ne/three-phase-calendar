@@ -1,31 +1,16 @@
 package lvsa.tpcalendar;
 
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpServer;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.AbstractMap;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
-
 import lvsa.tpcalendar.http.APIContexts;
 import lvsa.tpcalendar.http.APIRoute;
-import lvsa.tpcalendar.http.HTTPStatusCode;
 import lvsa.tpcalendar.http.QueryParamsFilter;
 import lvsa.tpcalendar.dbutils.SchemaInitializer;
-import lvsa.tpcalendar.model.TaskEvent;
 import lvsa.tpcalendar.routes.ImATeapotDoubleColon3;
 import lvsa.tpcalendar.routes.TaskRoute;
 

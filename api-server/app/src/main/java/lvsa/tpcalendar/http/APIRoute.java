@@ -2,6 +2,9 @@ package lvsa.tpcalendar.http;
 
 import com.sun.net.httpserver.HttpExchange;
 
+/*
+ * API route strategy
+ */
 public interface APIRoute {
     public HTTPStatusCode GET(HttpExchange htex);
 
