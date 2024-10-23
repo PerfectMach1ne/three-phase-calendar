@@ -9,6 +9,7 @@ import java.io.IOException;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
+import lvsa.tpcalendar.http.APIContexts;
 import lvsa.tpcalendar.http.APIRoute;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
@@ -16,6 +17,12 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * ImATeapotDoubleColon3
  */
 public class ImATeapotDoubleColon3 implements APIRoute {
+    private String response = "NULL_RESPONSE";
+
+    public String getResponse() {
+        return this.response;
+    }
+
     private void teapot(HttpExchange htex) throws IOException {
         Headers reqHeaders = htex.getRequestHeaders();
         reqHeaders.forEach( (header, value) -> {
@@ -37,14 +44,14 @@ public class ImATeapotDoubleColon3 implements APIRoute {
             System.out.println(str);
         }
 
-        System.out.println("418 /teapot requested");
-        String res = "am a teapot :3\n";
-        htex.sendResponseHeaders(418, res.length());
+        response = "am a teapot :3" + APIContexts.REGISTERED_NURSE;
+        // int status = HTTPStatusCode.HTTP_418_IM_A_TEAPOT.getint();
+        // htex.sendResponseHeaders(status, res.length());
 
-        OutputStream os = htex.getResponseBody();
-        os.write(res.getBytes());
-        os.flush();
-        os.close(); is.close();
+        // OutputStream os = htex.getResponseBody();
+        // os.write(res.getBytes());
+        // os.flush();
+        // os.close(); is.close();
     }
 
     @Override

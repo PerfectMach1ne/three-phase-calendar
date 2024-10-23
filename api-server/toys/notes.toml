@@ -1,24 +1,24 @@
 [Step 1]
 getResquestMethod()
-where = "in APIContexts.HTTPContext.getHandler().handle()"
-where = "in that switch thingy"
+where = HANDLER
 
 [Step 2]
 getRequestHeaders()
-where = "idk"
+where = APIRoute (& HANDLER?)
 
 [Step 3]
 getRequestBody()
-where = "idk"
+where = APIRoute
+where = "in non-safe methods only (RFC 9110): so NONE of {GET,HEAD,OPTIONS,TRACE}"
 
 [Step 4]
 getResponseHeaders()
-where = "idk"
+where = APIRoute & HANDLER
 
 [Step 5]
 sendResponseHeaders()
-where = "idk"
+where = APIRoute & HANDLER
 
 [Step 6]
 getResponseBody()
-where = "idk"
+where = APIRoute & HANDLER

@@ -6,6 +6,8 @@ import com.sun.net.httpserver.HttpExchange;
  * API route strategy
  */
 public interface APIRoute {
+    public String getResponse();
+
     public HTTPStatusCode GET(HttpExchange htex);
 
     public HTTPStatusCode POST(HttpExchange htex);
