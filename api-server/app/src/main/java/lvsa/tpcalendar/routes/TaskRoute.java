@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
@@ -27,9 +28,11 @@ public class TaskRoute implements APIRoute {
         return this.response;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public HTTPStatusCode GET(HttpExchange htex) {
         HTTPStatusCode status;
+        Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
 
         /******** this should go into POST; use query params \/\/\/ */
 		InputStream is = htex.getRequestBody();
