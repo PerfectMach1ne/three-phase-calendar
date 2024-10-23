@@ -39,7 +39,6 @@ public class TaskRoute implements APIRoute {
 
     @Override
     public HTTPStatusCode OPTIONS(HttpExchange htex) {
-        System.out.println("we did it chat!!!!");
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 

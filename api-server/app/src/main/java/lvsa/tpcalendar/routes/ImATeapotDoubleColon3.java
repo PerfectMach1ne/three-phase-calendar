@@ -5,6 +5,8 @@ import java.io.InputStreamReader;
 import java.io.BufferedReader;
 import java.io.OutputStream;
 import java.io.IOException;
+
+import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import lvsa.tpcalendar.http.APIRoute;
@@ -16,6 +18,14 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
 public class ImATeapotDoubleColon3 implements APIRoute {
 
     private void teapot(HttpExchange htex) throws IOException {
+        Headers reqHeaders = htex.getRequestHeaders();
+        reqHeaders.forEach( (header, value) -> {
+            System.out.println(header + ": ");
+            value.forEach((listEl) -> {
+                System.out.println(" " + listEl);
+            });
+        });
+
         InputStream is = htex.getRequestBody();
 
         InputStreamReader isReader = new InputStreamReader(is);
@@ -31,6 +41,7 @@ public class ImATeapotDoubleColon3 implements APIRoute {
         System.out.println("418 /teapot requested");
         String res = "am a teapot :3\n";
 
+        // put this in the switch thingy
         htex.sendResponseHeaders(418, res.length());
 
         OutputStream os = htex.getResponseBody();

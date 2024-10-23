@@ -1,0 +1,24 @@
+[Step 1]
+getResquestMethod()
+where = "in APIContexts.HTTPContext.getHandler().handle()"
+where = "in that switch thingy"
+
+[Step 2]
+getRequestHeaders()
+where = "idk"
+
+[Step 3]
+getRequestBody()
+where = "idk"
+
+[Step 4]
+getResponseHeaders()
+where = "idk"
+
+[Step 5]
+sendResponseHeaders()
+where = "idk"
+
+[Step 6]
+getResponseBody()
+where = "idk"
