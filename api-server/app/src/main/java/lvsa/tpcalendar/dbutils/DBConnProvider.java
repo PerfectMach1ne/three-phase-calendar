@@ -27,6 +27,8 @@ public class DBConnProvider implements AutoCloseable {
     }
 
     private Properties loadProperties() {
+        // GPG encryption here maybe?
+        // https://github.com/getsops/sops
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream is = classLoader.getResourceAsStream("tpc_testing.properties");
 

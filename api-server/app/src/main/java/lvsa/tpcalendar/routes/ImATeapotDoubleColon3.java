@@ -17,13 +17,13 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * ImATeapotDoubleColon3
  */
 public class ImATeapotDoubleColon3 implements APIRoute {
-    private String response = "NULL_RESPONSE";
+    private String response = "INTERNAL_SERVER_ERROR";
 
     public String getResponse() {
         return this.response;
     }
 
-    private void teapot(HttpExchange htex) throws IOException {
+    private HTTPStatusCode teapot(HttpExchange htex) {
         Headers reqHeaders = htex.getRequestHeaders();
         reqHeaders.forEach( (header, value) -> {
             System.out.println(header + ": ");
@@ -38,13 +38,19 @@ public class ImATeapotDoubleColon3 implements APIRoute {
         BufferedReader reader = new BufferedReader(isReader);
         StringBuffer sb = new StringBuffer();
 
-        String str;
-        while ( (str = reader.readLine()) != null ) {
-            sb.append(str);
-            System.out.println(str);
+		String reqdata;
+        try {
+            while ( (reqdata = reader.readLine()) != null ) {
+                sb.append(reqdata);
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
 
         response = "am a teapot :3" + APIContexts.REGISTERED_NURSE;
+
+        return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
         // int status = HTTPStatusCode.HTTP_418_IM_A_TEAPOT.getint();
         // htex.sendResponseHeaders(status, res.length());
 
@@ -56,49 +62,49 @@ public class ImATeapotDoubleColon3 implements APIRoute {
 
     @Override
     public HTTPStatusCode GET(HttpExchange htex) {
-        try { teapot(htex); } catch (IOException ioe) { ioe.printStackTrace(); }
+        teapot(htex);
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
 
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
-        try { teapot(htex); } catch (IOException ioe) { ioe.printStackTrace(); }
+        teapot(htex);
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
 
     @Override
     public HTTPStatusCode PUT(HttpExchange htex) {
-        try { teapot(htex); } catch (IOException ioe) { ioe.printStackTrace(); }
+        teapot(htex);
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
 
     @Override
     public HTTPStatusCode DELETE(HttpExchange htex) {
-        try { teapot(htex); } catch (IOException ioe) { ioe.printStackTrace(); }
+        teapot(htex);
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
 
     @Override
     public HTTPStatusCode HEAD(HttpExchange htex) {
-        try { teapot(htex); } catch (IOException ioe) { ioe.printStackTrace(); }
+        teapot(htex);
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
 
     @Override
     public HTTPStatusCode CONNECT(HttpExchange htex) {
-        try { teapot(htex); } catch (IOException ioe) { ioe.printStackTrace(); }
+        teapot(htex);
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
 
     @Override
     public HTTPStatusCode OPTIONS(HttpExchange htex) {
-        try { teapot(htex); } catch (IOException ioe) { ioe.printStackTrace(); }
+        teapot(htex);
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
 
     @Override
     public HTTPStatusCode TRACE(HttpExchange htex) {
-        try { teapot(htex); } catch (IOException ioe) { ioe.printStackTrace(); }
+        teapot(htex);
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
 }

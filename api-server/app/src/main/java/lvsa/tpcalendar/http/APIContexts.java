@@ -91,13 +91,6 @@ public class APIContexts {
 					os.write(res.getBytes());
 					os.flush();
 					os.close();
-					
-					// 	exchange.sendResponseHeaders(status.getint(), 0);
-					// 	os = exchange.getResponseBody();
-					// 	os.write(res.getBytes());
-					// 	os.flush();
-					// 	os.close();
-					// }
 				}
 			};
 		}

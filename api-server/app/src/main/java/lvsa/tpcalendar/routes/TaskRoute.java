@@ -4,13 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Map;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -23,7 +20,7 @@ import lvsa.tpcalendar.model.TaskEvent;
  * TaskRoute
  */
 public class TaskRoute implements APIRoute {
-    private String response = "NULL_RESPONSE";
+    private String response = "INTERNAL_SERVER_ERROR";
 
     @Override
     public String getResponse() {
@@ -34,6 +31,7 @@ public class TaskRoute implements APIRoute {
     public HTTPStatusCode GET(HttpExchange htex) {
         HTTPStatusCode status;
 
+        /******** this should go into POST; use query params \/\/\/ */
 		InputStream is = htex.getRequestBody();
 		InputStreamReader isReader = new InputStreamReader(is);
     	BufferedReader reader = new BufferedReader(isReader);
@@ -47,12 +45,10 @@ public class TaskRoute implements APIRoute {
             ioe.printStackTrace();
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
-		
-        Headers resh = htex.getResponseHeaders();
-        resh.set("Content-Type", "application/json");
-
         JsonObject jsonObj = null;
         jsonObj = JsonParser.parseString(sb.toString()).getAsJsonObject();
+        /******** this should go into POST; use query params /\/\/\ */
+
         Object[] dbResult = TaskEvent.findAndFetchFromDB(jsonObj.get("hashcode").getAsInt());
         if (dbResult[0] == HTTPStatusCode.HTTP_404_NOT_FOUND && dbResult[1] == null) {
             try {
@@ -81,6 +77,9 @@ public class TaskRoute implements APIRoute {
             + "Hour: " + fetchedTask.getDateTime().toLocalTime().toString() + "\n"
             + "Color: " + fetchedTask.getColor());
         /* possibly to deprecate /\/\/\ */
+
+        Headers resh = htex.getResponseHeaders();
+        resh.set("Content-Type", "application/json");
 
         response = fetchedJson.toString() + APIContexts.REGISTERED_NURSE;
         status = HTTPStatusCode.HTTP_200_OK;
