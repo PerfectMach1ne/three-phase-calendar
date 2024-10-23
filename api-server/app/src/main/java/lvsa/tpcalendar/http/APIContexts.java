@@ -3,12 +3,15 @@ package lvsa.tpcalendar.http;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class APIContexts {
 	private final HashMap<String, Map.Entry<String, APIRoute>> contextsParamsMap;
+
+    public static final String REGISTERED_NURSE = "\r\n";
 
 	public APIContexts(HashMap<String, Map.Entry<String, APIRoute>> contextParamsMap) {
 		this.contextsParamsMap = contextParamsMap;
@@ -72,7 +75,15 @@ public class APIContexts {
 							ROUTE_CLASS.TRACE(exchange);
 							break;
 						default:
-							// req.endWithStatus(HTTPStatusCode.HTTP_400_BAD_REQUEST, "error", "Invalid HTTP method!");
+							System.out.println("400 Invalid method was requested");
+							String res = "Invalid HTTP method" + REGISTERED_NURSE;
+							HTTPStatusCode status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+							exchange.sendResponseHeaders(status.getint(), res.length());
+
+							OutputStream os = exchange.getResponseBody();
+							os.write(res.getBytes());
+							os.flush();
+							os.close();
 					}
 				}
 			};

@@ -16,7 +16,6 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * ImATeapotDoubleColon3
  */
 public class ImATeapotDoubleColon3 implements APIRoute {
-
     private void teapot(HttpExchange htex) throws IOException {
         Headers reqHeaders = htex.getRequestHeaders();
         reqHeaders.forEach( (header, value) -> {
@@ -40,8 +39,6 @@ public class ImATeapotDoubleColon3 implements APIRoute {
 
         System.out.println("418 /teapot requested");
         String res = "am a teapot :3\n";
-
-        // put this in the switch thingy
         htex.sendResponseHeaders(418, res.length());
 
         OutputStream os = htex.getResponseBody();
@@ -97,5 +94,4 @@ public class ImATeapotDoubleColon3 implements APIRoute {
         try { teapot(htex); } catch (IOException ioe) { ioe.printStackTrace(); }
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
-    
 }

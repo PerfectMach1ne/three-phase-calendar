@@ -5,8 +5,10 @@ import com.sun.net.httpserver.HttpExchange;
 import lvsa.tpcalendar.http.APIRoute;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
+/**
+ * TaskRoute
+ */
 public class TaskRoute implements APIRoute {
-
     @Override
     public HTTPStatusCode GET(HttpExchange htex) {
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
@@ -46,5 +48,4 @@ public class TaskRoute implements APIRoute {
     public HTTPStatusCode TRACE(HttpExchange htex) {
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
-    
 }
