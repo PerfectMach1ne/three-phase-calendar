@@ -55,13 +55,13 @@ public class App {
             ioe.printStackTrace();
             System.exit(1);
         }
-        System.out.println("[DEBUG] address == " + ADDRESS);
+        System.out.println("[DEBUG] Serving at " + ADDRESS);
 
         /*SchemaInitializer schema = */new SchemaInitializer();
 
         apictxs = createAPIContexts();
         for (APIContexts.HTTPContext htc : apictxs.getContexts()) {
-            if (!htc.getQueryParams().isBlank()) {
+            if (!htc.getQueryParamsValidator().isBlank()) {
                 server.createContext(htc.getURI(), htc.getHandler())
                     .getFilters().add(new QueryParamsFilter());    
             } else {

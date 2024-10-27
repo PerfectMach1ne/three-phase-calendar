@@ -35,13 +35,13 @@ public class APIContexts {
 
 	public class HTTPContext {
 		private final String URI_STRING;
-		private final String QUERY_PARAMS;
+		private final String QUERY_PARAMS_VALIDATOR;
 		private final APIRoute ROUTE_CLASS;
 		private final HttpHandler HANDLER;
 
 		HTTPContext(String uri, String params, APIRoute route) {
 			this.URI_STRING = uri;
-			this.QUERY_PARAMS = params;
+			this.QUERY_PARAMS_VALIDATOR = params;
 			this.ROUTE_CLASS = route;
 			this.HANDLER = new HttpHandler() {
 				@Override
@@ -99,7 +99,7 @@ public class APIContexts {
 
 		public String getURI() { return this.URI_STRING; }
 
-		public String getQueryParams() { return this.QUERY_PARAMS; } 
+		public String getQueryParamsValidator() { return this.QUERY_PARAMS_VALIDATOR; } 
 
 		public APIRoute getAPIRoute() { return this.ROUTE_CLASS; };
 	}

@@ -3,7 +3,6 @@ package lvsa.tpcalendar.routes;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import java.io.OutputStream;
 import java.io.IOException;
 
 import com.sun.net.httpserver.Headers;
@@ -14,7 +13,7 @@ import lvsa.tpcalendar.http.APIRoute;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
- * ImATeapotDoubleColon3
+ * /teapot
  */
 public class ImATeapotDoubleColon3 implements APIRoute {
     private String response = "INTERNAL_SERVER_ERROR";
@@ -51,13 +50,6 @@ public class ImATeapotDoubleColon3 implements APIRoute {
         response = "am a teapot :3" + APIContexts.REGISTERED_NURSE;
 
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
-        // int status = HTTPStatusCode.HTTP_418_IM_A_TEAPOT.getint();
-        // htex.sendResponseHeaders(status, res.length());
-
-        // OutputStream os = htex.getResponseBody();
-        // os.write(res.getBytes());
-        // os.flush();
-        // os.close(); is.close();
     }
 
     @Override

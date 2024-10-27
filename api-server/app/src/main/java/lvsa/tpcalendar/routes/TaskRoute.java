@@ -6,9 +6,11 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -18,7 +20,7 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
 import lvsa.tpcalendar.model.TaskEvent;
 
 /**
- * TaskRoute
+ * /api/cal/task
  */
 public class TaskRoute implements APIRoute {
     private String response = "INTERNAL_SERVER_ERROR";
@@ -33,24 +35,11 @@ public class TaskRoute implements APIRoute {
     public HTTPStatusCode GET(HttpExchange htex) {
         HTTPStatusCode status;
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
-
-        /******** this should go into POST; use query params \/\/\/ */
-		InputStream is = htex.getRequestBody();
-		InputStreamReader isReader = new InputStreamReader(is);
-    	BufferedReader reader = new BufferedReader(isReader);
-	    StringBuffer sb = new StringBuffer();
-		String reqdata;
-        try {
-            while ( (reqdata = reader.readLine()) != null ) {
-                sb.append(reqdata);
-            }
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
-        }
-        JsonObject jsonObj = null;
-        jsonObj = JsonParser.parseString(sb.toString()).getAsJsonObject();
-        /******** this should go into POST; use query params /\/\/\ */
+        
+        // query params impl go there
+        JsonObject jsonObj = new JsonObject();
+        jsonObj.add("hashcode", new JsonPrimitive(queryParams.get("id")));
+        System.out.println(queryParams.toString());
 
         Object[] dbResult = TaskEvent.findAndFetchFromDB(jsonObj.get("hashcode").getAsInt());
         if (dbResult[0] == HTTPStatusCode.HTTP_404_NOT_FOUND && dbResult[1] == null) {
@@ -91,6 +80,22 @@ public class TaskRoute implements APIRoute {
 
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
+		InputStream is = htex.getRequestBody();
+		InputStreamReader isReader = new InputStreamReader(is);
+    	BufferedReader reader = new BufferedReader(isReader);
+	    StringBuffer sb = new StringBuffer();
+		String reqdata;
+        try {
+            while ( (reqdata = reader.readLine()) != null ) {
+                sb.append(reqdata);
+            }
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        }
+        JsonObject jsonObj = null;
+        jsonObj = JsonParser.parseString(sb.toString()).getAsJsonObject();
+
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 
