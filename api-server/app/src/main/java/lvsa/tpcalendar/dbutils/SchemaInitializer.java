@@ -11,6 +11,7 @@ public final class SchemaInitializer {
 		try(DBConnProvider dbhandler = new DBConnProvider()) {
 			conn = dbhandler.getDBConnection();
 			createTaskEvents(conn);
+			createUsers(conn);
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		}
@@ -30,6 +31,20 @@ public final class SchemaInitializer {
 				createdAt timestamp NOT NULL,
 				updatedAt timestamp NOT NULL
 			);
-			""");
+		""");
+	}
+
+	private void createUsers(Connection conn) throws SQLException {
+		Statement stat = conn.createStatement();
+		stat.execute("""
+			CREATE TABLE IF NOT EXISTS users (
+				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+				name VARCHAR(36),
+				email TEXT,
+				password VARCHAR(36),
+				createdAt timestamp NOT NULL,
+				updatedAt timestamp NOT NULL
+			);
+		""");
 	}
 }

@@ -23,11 +23,12 @@ public class ImATeapotDoubleColon3 implements APIRoute {
     }
 
     private HTTPStatusCode teapot(HttpExchange htex) {
+
         Headers reqHeaders = htex.getRequestHeaders();
         reqHeaders.forEach( (header, value) -> {
-            System.out.println(header + ": ");
+            System.out.print(header + ": ");
             value.forEach((listEl) -> {
-                System.out.println(" " + listEl);
+                System.out.println(listEl);
             });
         });
 

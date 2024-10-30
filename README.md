@@ -13,7 +13,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ### Java + postgres backend server 
 
-#### CALENDARCOINS COLLECTED: 6📅🪙!!!
+#### CALENDARCOINS COLLECTED: 8📅🪙!!!
 
 - [x] Basic HTTP server functionality.
 - [x] Basic internal TaskEvent data handling.

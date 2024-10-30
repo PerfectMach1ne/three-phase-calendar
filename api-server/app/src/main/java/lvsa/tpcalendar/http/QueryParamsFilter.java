@@ -9,7 +9,7 @@ import com.sun.net.httpserver.HttpExchange;
 public class QueryParamsFilter extends Filter {
 	@Override
 	public String description() {
-		return "";
+		return "Parses and validates query parameters.";
 	}
 
 	@Override

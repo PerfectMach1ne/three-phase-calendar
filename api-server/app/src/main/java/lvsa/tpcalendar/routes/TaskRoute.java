@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
@@ -36,10 +35,8 @@ public class TaskRoute implements APIRoute {
         HTTPStatusCode status;
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
         
-        // query params impl go there
         JsonObject jsonObj = new JsonObject();
         jsonObj.add("hashcode", new JsonPrimitive(queryParams.get("id")));
-        System.out.println(queryParams.toString());
 
         Object[] dbResult = TaskEvent.findAndFetchFromDB(jsonObj.get("hashcode").getAsInt());
         if (dbResult[0] == HTTPStatusCode.HTTP_404_NOT_FOUND && dbResult[1] == null) {
@@ -60,15 +57,6 @@ public class TaskRoute implements APIRoute {
             return HTTPStatusCode.HTTP_404_NOT_FOUND;
         }
         JsonObject fetchedJson = (JsonObject)dbResult[1];
-        /* possibly to deprecate \/\/\/ */
-        TaskEvent fetchedTask = new TaskEvent(fetchedJson);
-        System.out.println("Hashcode: " + fetchedTask.hashCode() + '\n'
-            + "Taskname: " + fetchedTask.getName() + "\n"
-            + "Description: " + fetchedTask.getDescription() + "\n"
-            + "Date: " + fetchedTask.getDateTime().toLocalDate().toString() + "\n"
-            + "Hour: " + fetchedTask.getDateTime().toLocalTime().toString() + "\n"
-            + "Color: " + fetchedTask.getColor());
-        /* possibly to deprecate /\/\/\ */
 
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
