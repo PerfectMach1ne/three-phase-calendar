@@ -52,16 +52,19 @@ public class APIContexts {
 					switch (exchange.getRequestMethod().toUpperCase()) {
 						case "GET":
 							status = ROUTE_CLASS.GET(exchange);
+							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "POST":
 							status = ROUTE_CLASS.POST(exchange);
-							res = ROUTE_CLASS.getResponse();
+							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "DELETE":
 							status = ROUTE_CLASS.DELETE(exchange);
+							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "PUT":
 							status = ROUTE_CLASS.PUT(exchange);
+							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "HEAD":
 							status = ROUTE_CLASS.HEAD(exchange);
@@ -81,7 +84,7 @@ public class APIContexts {
 					}
 					if (status != HTTPStatusCode.HTTP_400_BAD_REQUEST ||
 						status != HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED) {
-						res = ROUTE_CLASS.getResponse();
+						res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 					}
 					System.out.println(res);
 					// 0 to use Chunked Transfer Coding

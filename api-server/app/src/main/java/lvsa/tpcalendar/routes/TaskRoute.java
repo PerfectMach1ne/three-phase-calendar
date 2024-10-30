@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 import com.google.gson.JsonObject;
@@ -13,16 +15,36 @@ import com.google.gson.JsonPrimitive;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
+import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.APIContexts;
 import lvsa.tpcalendar.http.APIRoute;
 import lvsa.tpcalendar.http.HTTPStatusCode;
-import lvsa.tpcalendar.model.TaskEvent;
 
 /**
  * /api/cal/task
  */
 public class TaskRoute implements APIRoute {
     private String response = "INTERNAL_SERVER_ERROR";
+
+    public static Object[] findAndFetchFromDB(int hashcode) {
+        JsonObject jsonTask = null;
+
+        try (
+            DBConnProvider db = new DBConnProvider();
+            Connection conn = db.getDBConnection();
+        ) {
+            jsonTask = db.queryByHashcode(hashcode);
+            if (jsonTask.isEmpty()) {
+                return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
+            }
+        } catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
+        return new Object[]{HTTPStatusCode.HTTP_200_OK, jsonTask};
+        // return new Object[]{HTTPStatusCode.HTTP_200_OK, new TaskEvent(jsonTask)};
+    }
+
 
     @Override
     public String getResponse() {
@@ -38,7 +60,7 @@ public class TaskRoute implements APIRoute {
         JsonObject jsonObj = new JsonObject();
         jsonObj.add("hashcode", new JsonPrimitive(queryParams.get("id")));
 
-        Object[] dbResult = TaskEvent.findAndFetchFromDB(jsonObj.get("hashcode").getAsInt());
+        Object[] dbResult = findAndFetchFromDB(jsonObj.get("hashcode").getAsInt());
         if (dbResult[0] == HTTPStatusCode.HTTP_404_NOT_FOUND && dbResult[1] == null) {
             try {
                 jsonObj = JsonParser.parseString("{\"error\": \"404 Not Found\"}").getAsJsonObject();
