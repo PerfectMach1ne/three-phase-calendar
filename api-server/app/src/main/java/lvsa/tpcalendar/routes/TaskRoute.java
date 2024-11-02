@@ -42,7 +42,6 @@ public class TaskRoute implements APIRoute {
         }
 
         return new Object[]{HTTPStatusCode.HTTP_200_OK, jsonTask};
-        // return new Object[]{HTTPStatusCode.HTTP_200_OK, new TaskEvent(jsonTask)};
     }
 
 
