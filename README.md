@@ -21,6 +21,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] TaskEvent database-side implementation.
 - [x] HTTP query parameters/Filter implementation.
 - [x] GET TaskEvent by ID request.
+- [ ] #1
 - [ ] Basic user implementation (to separate events from each separate user & their calendar/journal/planner).
 - [ ] ForeignKey relation + GET all user/calendar events.
 - [ ] DELETE TaskEvent.
@@ -74,9 +75,11 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 **Backend Software Engineer**: me but purple
 
+**Site Reliability Engineer**: me but gray
+
 **Quality Assurance Tester**: me but pink
 
-**UI/UX Designer**: me but blue
+**UI/UX Designer**: me but blue and pink
 
 **Home Barista Maid**: me but blue
 
