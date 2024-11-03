@@ -16,6 +16,7 @@ import lvsa.tpcalendar.dbutils.SchemaInitializer;
 import lvsa.tpcalendar.routes.ImATeapotDoubleColon3;
 import lvsa.tpcalendar.routes.TaskRoute;
 import lvsa.tpcalendar.util.IPUtils;
+import lvsa.tpcalendar.util.PropsService;
 
 public final class App {
     // Re: Note about socket backlogs 

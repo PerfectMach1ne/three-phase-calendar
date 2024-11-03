@@ -1,10 +1,8 @@
-package lvsa.tpcalendar;
+package lvsa.tpcalendar.util;
 
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Properties;
-
-import lvsa.tpcalendar.util.IOUtils;
 
 public final class PropsService {
     private Properties props;
@@ -17,6 +15,10 @@ public final class PropsService {
         return props;
     }
 
+    /**
+     * Get contents of the properties file and return them as a Properties object.
+     * @return contents of .properties file.
+     */
     private Properties loadProperties() {
         ClassLoader classLoader = getClass().getClassLoader();
         InputStream is = classLoader.getResourceAsStream("tpc_testing.properties");
@@ -31,6 +33,10 @@ public final class PropsService {
         return props;
     }
 
+    /**
+     * Get props related to database connection only.
+     * @return truncated Properties object.
+     */
     public Properties getDBProps() {
         Properties truncatedProps = getProps();
 
@@ -40,6 +46,10 @@ public final class PropsService {
         return truncatedProps;
     }
 
+    /**
+     * Get props related to HTTP/HTTPS server setup only. 
+     * @return truncated Properties object.
+     */
     public Properties getIPProps() {
         Properties truncatedProps = getProps();
 

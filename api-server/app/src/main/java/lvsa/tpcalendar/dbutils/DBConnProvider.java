@@ -11,7 +11,7 @@ import java.util.Properties;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import lvsa.tpcalendar.PropsService;
+import lvsa.tpcalendar.util.PropsService;
 
 public class DBConnProvider implements AutoCloseable {
     private Connection conn;

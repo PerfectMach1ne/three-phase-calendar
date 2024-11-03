@@ -7,9 +7,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public final class IOUtils {
-
-    // https://www.baeldung.com/reading-file-in-java
-    // Helper method
+    /**
+     * Helper method for reading .properties files.
+     * https://www.baeldung.com/reading-file-in-java
+     * @param is an <code>InputStream</code>
+     * @return ArrayList<String> of lines 
+     */
     public static ArrayList<String> readPropsFromInputStream(InputStream is) {
         ArrayList<String> propsList = new ArrayList<String>();
 
