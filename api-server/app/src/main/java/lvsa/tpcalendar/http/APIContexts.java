@@ -58,12 +58,16 @@ public class APIContexts {
 							status = ROUTE_CLASS.POST(exchange);
 							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
-						case "DELETE":
-							status = ROUTE_CLASS.DELETE(exchange);
+						case "PATCH":
+							status = ROUTE_CLASS.PATCH(exchange);
 							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "PUT":
 							status = ROUTE_CLASS.PUT(exchange);
+							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
+							break;
+						case "DELETE":
+							status = ROUTE_CLASS.DELETE(exchange);
 							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "HEAD":

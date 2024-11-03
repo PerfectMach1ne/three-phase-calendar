@@ -6,40 +6,21 @@ import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.io.InputStream;
 import java.util.Properties;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import java.util.Iterator;
-
-import lvsa.tpcalendar.util.IOUtils;
+import lvsa.tpcalendar.PropsService;
 
 public class DBConnProvider implements AutoCloseable {
     private Connection conn;
 
     public DBConnProvider() throws SQLException {
-        Properties props = loadProperties();
+        Properties props = new PropsService().getDBProps();
         String url = props.getProperty("url");
         props.remove("url");
         conn = DriverManager.getConnection(url, props);
-    }
-
-    private Properties loadProperties() {
-        // GPG encryption here maybe?
-        // https://github.com/getsops/sops
-        ClassLoader classLoader = getClass().getClassLoader();
-        InputStream is = classLoader.getResourceAsStream("tpc_testing.properties");
-
-        Properties props = new Properties();
-        Iterator<String> iter = IOUtils.readPropsFromInputStream(is).iterator();
-        while (iter.hasNext()) {
-            String[] propPair = iter.next().split("="); 
-            props.setProperty(propPair[0], propPair[1]);
-        }
-
-        return props;
     }
 
     public JsonObject queryByHashcode(int hashcode) throws SQLException {

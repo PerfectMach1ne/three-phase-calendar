@@ -66,6 +66,12 @@ public class ImATeapotDoubleColon3 implements APIRoute {
     }
 
     @Override
+    public HTTPStatusCode PATCH(HttpExchange htex) {
+        teapot(htex);
+        return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
+    }
+
+    @Override
     public HTTPStatusCode PUT(HttpExchange htex) {
         teapot(htex);
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;

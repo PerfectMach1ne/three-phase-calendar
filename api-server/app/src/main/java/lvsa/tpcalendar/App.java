@@ -2,10 +2,12 @@ package lvsa.tpcalendar;
 
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.AbstractMap;
 
 import lvsa.tpcalendar.http.APIContexts;
 import lvsa.tpcalendar.http.APIRoute;
@@ -13,16 +15,30 @@ import lvsa.tpcalendar.http.QueryParamsFilter;
 import lvsa.tpcalendar.dbutils.SchemaInitializer;
 import lvsa.tpcalendar.routes.ImATeapotDoubleColon3;
 import lvsa.tpcalendar.routes.TaskRoute;
+import lvsa.tpcalendar.util.IPUtils;
 
-public class App {
-    private static final int PORT = 8057;
-    private static final InetSocketAddress ADDRESS = new InetSocketAddress(PORT);
-    private static final int TCP_BACKLOG = 128; // Re: Note about socket backlogs (https://docs.oracle.com/en/java/javase/21/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html)
+public final class App {
+    // Re: Note about socket backlogs 
+    // (https://docs.oracle.com/en/java/javase/21/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html)
+    private static final int TCP_BACKLOG = 128;
+    private static final String ADDR_STR = new PropsService().getIPProps().getProperty("ip");
+    private static final int PORT = Integer.valueOf(new PropsService().getIPProps().getProperty("port"));
+    private static InetSocketAddress ADDRESS;
 
     private static HttpServer server = null;
     private static APIContexts apictxs = null;
 
     public static void main(String[] args) {
+        try {
+            ADDRESS = new InetSocketAddress(
+                InetAddress.getByAddress(
+                    ADDR_STR,
+                    IPUtils.getIPbytes(ADDR_STR)),
+                PORT);
+        } catch (UnknownHostException uhe) {
+            uhe.printStackTrace();
+        }
+
         try {
             runServer();
         } catch (IOException ioe) {
@@ -30,6 +46,11 @@ public class App {
         }
     }
 
+    /**
+     * Create the API contexts via <code>APIContexts</code>, <code>HTMLContext</code> wrappers and <code>APIRoute</code> interface
+     * and connect the query parameter validators and classes with API endpoint implementation.
+     * @return  an instance of <code>APIContexts</code>
+     */
     private static APIContexts createAPIContexts() {
         APIContexts apictxs = new APIContexts(
             new HashMap<String, Map.Entry<String, APIRoute>>(
@@ -48,6 +69,10 @@ public class App {
         return apictxs;
     }
 
+    /**
+     * Run an instance of the HTTP server based on <code>com.sun.net.httpserver</code>.
+     * @throws IOException
+     */
     private static void runServer() throws IOException {
         try {
             server = HttpServer.create(ADDRESS, TCP_BACKLOG);

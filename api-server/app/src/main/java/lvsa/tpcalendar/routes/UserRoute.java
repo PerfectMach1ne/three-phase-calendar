@@ -1,7 +1,5 @@
 package lvsa.tpcalendar.routes;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.sun.net.httpserver.HttpExchange;
 import java.util.Map;
 import java.io.IOException;
@@ -9,11 +7,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
+
 import lvsa.tpcalendar.http.APIRoute;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
- * /api/auth
+ * /api/users
  */
 public class UserRoute implements APIRoute {
     private String response = "INTERNAL_SERVER_ERROR";
@@ -59,6 +60,12 @@ public class UserRoute implements APIRoute {
     }
 
     @Override
+    public HTTPStatusCode PATCH(HttpExchange htex) {
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+    }
+
+
+    @Override
     public HTTPStatusCode PUT(HttpExchange htex) {
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
@@ -70,22 +77,21 @@ public class UserRoute implements APIRoute {
 
     @Override
     public HTTPStatusCode HEAD(HttpExchange htex) {
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 
     @Override
     public HTTPStatusCode CONNECT(HttpExchange htex) {
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 
     @Override
     public HTTPStatusCode OPTIONS(HttpExchange htex) {
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 
     @Override
     public HTTPStatusCode TRACE(HttpExchange htex) {
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
-    
 }

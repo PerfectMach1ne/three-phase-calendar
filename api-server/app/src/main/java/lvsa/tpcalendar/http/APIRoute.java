@@ -14,6 +14,8 @@ public interface APIRoute {
     
     public HTTPStatusCode PUT(HttpExchange htex);
 
+    public HTTPStatusCode PATCH(HttpExchange htex);
+
     public HTTPStatusCode DELETE(HttpExchange htex);
 
     public HTTPStatusCode HEAD(HttpExchange htex);

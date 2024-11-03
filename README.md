@@ -21,11 +21,12 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] TaskEvent database-side implementation.
 - [x] HTTP query parameters/Filter implementation.
 - [x] GET TaskEvent by ID request.
-- [ ] https://github.com/PerfectMach1ne/three-phase-calendar/issues/4
-- [ ] Basic user implementation (to separate events from each separate user & their calendar/journal/planner).
-- [ ] ForeignKey relation + GET all user/calendar events.
+- [ ] POST TaskEvent.
 - [ ] DELETE TaskEvent.
-- [ ] PUT TaskEvent.
+- [ ] PUT/PATCH TaskEvent.
+- [ ] https://github.com/PerfectMach1ne/three-phase-calendar/issues/4
+- [ ] Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).
+- [ ] ForeignKey relation + GET all user/calendar events.
 - [ ] PeriodEvent database-side implementation.
 - [ ] PeriodEvent business-logic-side implementation.
 - [ ] PeriodEvent server-context-side implementation.
@@ -34,7 +35,8 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] TextEvent server-context-side implementation.
 - [ ] Server-side database schema initialization and validation (possibly future migration features?).
 - [ ] postgres role for division of database access permissions. 
-- [ ] User authentication with JWT and OAuth 2.0.
+- [ ] Substitute `HttpServer` with `HttpsServer`.
+- [ ] User authentication with JWT, bcrrypt password encryption and OAuth 2.0.
 
 ### JavaScript + Node.js frontend server
 
