@@ -6,15 +6,12 @@ import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 import lvsa.tpcalendar.util.PropsService;
+import lvsa.tpcalendar.schemas.json.*;
 
 public class DBConnProvider implements AutoCloseable {
     private Connection conn;
@@ -36,7 +33,7 @@ public class DBConnProvider implements AutoCloseable {
      * @return a good dream 
      * @throws SQLException
      */
-    public Map<String, String> queryByHashcode(int hashcode) throws SQLException {
+    public String queryByHashcode(int hashcode) throws SQLException {
         PreparedStatement query = this.conn.prepareStatement("""
             SELECT * 
             FROM taskevents
@@ -45,28 +42,25 @@ public class DBConnProvider implements AutoCloseable {
         query.setInt(1, hashcode);
 
         Gson gson = new Gson();
-        Map<String, String> json = new LinkedHashMap<>();
+        String json = "";
 
         ResultSet rs = query.executeQuery();
         if (!rs.next()) {
             return json;
         } else {
-            json.put("hashcode", String.valueOf(rs.getInt("hashcode")));
-            json.put("datetime", rs.getString("datetime"));
-            json.put("name", rs.getString("name"));
-            json.put("desc", rs.getString("description"));
+            Task jsonTask = new Task(
+                rs.getInt("hashcode"), 
+                rs.getString("datetime"),
+                rs.getString("name"),
+                rs.getString("description"),
+                new ColorObj(
+                    rs.getString("color") == "" ? false : true,
+                    rs.getString("color")
+                ),
+                rs.getBoolean("isdone")
+            );
 
-            Map<String, String> colorObj = new LinkedHashMap<>();
-            colorObj.put("hasColor", 
-                String.valueOf(
-                    rs.getString("color") == "" ? false : true));
-            colorObj.put("hex", rs.getString("color"));
-            // Bugged, it just stringifies it, messing with the final
-            // request deserialization on client side.
-            json.put("color", gson.toJson(colorObj));
-            json.put("isDone", String.valueOf(rs.getBoolean("isdone")));
-            json.put("createdAt", rs.getString("createdat"));
-            json.put("updatedAt", rs.getString("updatedat"));
+            json = gson.toJson(jsonTask);
 
             return json;
         }

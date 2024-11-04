@@ -12,8 +12,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.APIContexts;
@@ -32,14 +30,12 @@ public class TaskRoute implements APIRoute {
      * @return a 2-element <code>Object[]</code> array containing the HTTP status code and the Gson-compatible JSON object from db.
      */
     public static Object[] findAndFetchFromDB(int hashcode) {
-        Gson gson = new Gson();
-        Map<String, String> jsonTask = new LinkedHashMap<>();
+        String jsonTask = "";
 
         try (
             DBConnProvider db = new DBConnProvider();
             Connection conn = db.getDBConnection();
         ) {
-            // TODO: nuke this
             jsonTask = db.queryByHashcode(hashcode);
             if (jsonTask.isEmpty()) {
                 return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
@@ -75,7 +71,7 @@ public class TaskRoute implements APIRoute {
 
             return HTTPStatusCode.HTTP_404_NOT_FOUND;
         }
-        String fetchedJson = gson.toJson(dbResult[1]);
+        String fetchedJson = (String)dbResult[1];
 
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
@@ -116,7 +112,7 @@ public class TaskRoute implements APIRoute {
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
 
-        Map<String, String> json= gson.fromJson(sb.toString(), Map.class);
+        Map<String, String> json = gson.fromJson(sb.toString(), Map.class);
         response = gson.toJson(json);
 
         return HTTPStatusCode.HTTP_201_CREATED;
@@ -127,7 +123,7 @@ public class TaskRoute implements APIRoute {
      */
     @Override
     public HTTPStatusCode PUT(HttpExchange htex) {
-        return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
     /**
