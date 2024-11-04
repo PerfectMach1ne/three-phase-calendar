@@ -90,7 +90,6 @@ public class APIContexts {
 						status != HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED) {
 						res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 					}
-					System.out.println(res);
 					// 0 to use Chunked Transfer Coding
 					// https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
 					exchange.sendResponseHeaders(status.getint(), 0);

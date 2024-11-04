@@ -13,9 +13,7 @@ import java.util.Map;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.APIContexts;
@@ -34,12 +32,14 @@ public class TaskRoute implements APIRoute {
      * @return a 2-element <code>Object[]</code> array containing the HTTP status code and the Gson-compatible JSON object from db.
      */
     public static Object[] findAndFetchFromDB(int hashcode) {
-        JsonObject jsonTask = null;
+        Gson gson = new Gson();
+        Map<String, String> jsonTask = new LinkedHashMap<>();
 
         try (
             DBConnProvider db = new DBConnProvider();
             Connection conn = db.getDBConnection();
         ) {
+            // TODO: nuke this
             jsonTask = db.queryByHashcode(hashcode);
             if (jsonTask.isEmpty()) {
                 return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
@@ -63,64 +63,63 @@ public class TaskRoute implements APIRoute {
     @Override
     public HTTPStatusCode GET(HttpExchange htex) {
         Gson gson = new Gson();
-        HTTPStatusCode status;
-        Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
-        
-        String jsonObj;
-        int hashcode = Integer.valueOf(queryParams.get("id"));
 
+        Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
+        int hashcode = Integer.valueOf(queryParams.get("id"));
         Object[] dbResult = findAndFetchFromDB(hashcode);
+
         if (dbResult[0] == HTTPStatusCode.HTTP_404_NOT_FOUND && dbResult[1] == null) {
-            try {
-                Map<String, String> errMap = new LinkedHashMap<>();
-                errMap.put("error", "404 Not Found");
-                jsonObj = gson.toJson(errMap);
-            } catch (JsonParseException jpe) {
-                jpe.printStackTrace();
-                return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
-            }
-            try {
-                // GSON what the fuck. WHy does this throw UOE???
-                // response = jsonObj.getAsString() + APIContexts.REGISTERED_NURSE;
-                response = jsonObj + APIContexts.REGISTERED_NURSE;
-            } catch (UnsupportedOperationException uoe) {
-                uoe.printStackTrace();
-                return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
-            }
+            Map<String, String> errMap = new LinkedHashMap<>();
+            errMap.put("error", "404 Not Found");
+            response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
+
             return HTTPStatusCode.HTTP_404_NOT_FOUND;
         }
-        JsonObject fetchedJson = (JsonObject)dbResult[1];
+        String fetchedJson = gson.toJson(dbResult[1]);
 
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
 
         response = fetchedJson.toString() + APIContexts.REGISTERED_NURSE;
-        status = HTTPStatusCode.HTTP_200_OK;
-        return status;
+        return HTTPStatusCode.HTTP_200_OK;
     }
 
     /**
      * POST /api/cal/task [-d application/json]
      */
+    @SuppressWarnings("unchecked")
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
+        Gson gson = new Gson();
+
 		InputStream is = htex.getRequestBody();
 		InputStreamReader isReader = new InputStreamReader(is);
     	BufferedReader reader = new BufferedReader(isReader);
 	    StringBuffer sb = new StringBuffer();
 		String reqdata;
+
         try {
             while ( (reqdata = reader.readLine()) != null ) {
                 sb.append(reqdata);
             }
         } catch (IOException ioe) {
+            // log: IOException at StringBuffer in POST /api/cal/task
             ioe.printStackTrace();
+            
+            Map<String, String> errMap = new LinkedHashMap<>();
+            errMap.put("error", "500 Internal Server Error");
+            response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
+
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
-        JsonObject jsonObj = null;
-        jsonObj = JsonParser.parseString(sb.toString()).getAsJsonObject();
 
-        return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
+        Headers resh = htex.getResponseHeaders();
+        resh.set("Content-Type", "application/json");
+
+        Map<String, String> json= gson.fromJson(sb.toString(), Map.class);
+        response = gson.toJson(json);
+
+        return HTTPStatusCode.HTTP_201_CREATED;
     }
 
     /**
@@ -144,7 +143,7 @@ public class TaskRoute implements APIRoute {
      */
     @Override
     public HTTPStatusCode DELETE(HttpExchange htex) {
-        return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
     @Override

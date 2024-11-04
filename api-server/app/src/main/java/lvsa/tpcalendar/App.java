@@ -85,6 +85,9 @@ public final class App {
 
         /*SchemaInitializer schema = */new SchemaInitializer();
 
+        /**
+         * Connect a default query param filter to each HTTP context.
+         */
         apictxs = createAPIContexts();
         for (APIContexts.HTTPContext htc : apictxs.getContexts()) {
             if (!htc.getQueryParamsValidator().isBlank()) {

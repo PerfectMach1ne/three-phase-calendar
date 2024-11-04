@@ -13,7 +13,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ### Java + postgres backend server 
 
-#### CALENDARCOINS COLLECTED: 8📅🪙!!!
+#### CALENDARCOINS COLLECTED: 9📅🪙!!!
 
 - [x] Basic HTTP server functionality.
 - [x] Basic internal TaskEvent data handling.
@@ -24,7 +24,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] POST TaskEvent.
 - [ ] DELETE TaskEvent.
 - [ ] PUT/PATCH TaskEvent.
-- [ ] https://github.com/PerfectMach1ne/three-phase-calendar/issues/4
+- [x] ~~https://github.com/PerfectMach1ne/three-phase-calendar/issues/4~~
 - [ ] Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).
 - [ ] ForeignKey relation + GET all user/calendar events.
 - [ ] PeriodEvent database-side implementation.
