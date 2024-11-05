@@ -35,7 +35,7 @@ public class DBConnProvider implements AutoCloseable {
      */
     public String queryByHashcode(int hashcode) throws SQLException {
         PreparedStatement query = this.conn.prepareStatement("""
-            SELECT * 
+            SELECT hashcode, datetime, name, description, color, isdone
             FROM taskevents
             WHERE hashcode = ?;
         """);
@@ -61,7 +61,6 @@ public class DBConnProvider implements AutoCloseable {
             );
 
             json = gson.toJson(jsonTask);
-
             return json;
         }
     }
