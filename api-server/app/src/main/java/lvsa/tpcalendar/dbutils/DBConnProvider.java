@@ -28,9 +28,9 @@ public class DBConnProvider implements AutoCloseable {
     }
 
     /**
-     * Pretty function that has done nothing wrong ever~! <3
+     * Query a task from a database by its hashcode.
      * @param hashcode
-     * @return a good dream 
+     * @return a task from database as JSON object. 
      * @throws SQLException
      */
     public String queryByHashcode(int hashcode) throws SQLException {
@@ -63,6 +63,21 @@ public class DBConnProvider implements AutoCloseable {
             json = gson.toJson(jsonTask);
             return json;
         }
+    }
+
+    /**
+     * <b>[WIP]</b> Insert a task into the database.
+     * @param hashcode
+     * @return operation status code.
+     * @throws SQLException
+     */
+    public short insertTask(int hashcode) throws SQLException {
+        PreparedStatement stat = this.conn.prepareStatement("""
+            INSERT INTO taskevents 
+            (hashcode, datetime, name, description, color, isdone)
+            VALUES (?, ?, ?, ?, ?, ?);           
+        """);
+        return 0;
     }
 
     @Override

@@ -36,7 +36,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] Server-side database schema initialization and validation (possibly future migration features?).
 - [ ] postgres role for division of database access permissions. 
 - [ ] Substitute `HttpServer` with `HttpsServer` (#5).
-- [ ] User authentication with JWT, bcrrypt password encryption and OAuth 2.0.
+- [ ] User authentication with JWT, bcrypt password encryption and OAuth 2.0.
 
 ### JavaScript + Node.js frontend server
 

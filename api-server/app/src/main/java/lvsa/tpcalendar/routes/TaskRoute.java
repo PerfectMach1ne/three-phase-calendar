@@ -22,7 +22,14 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * /api/cal/task
  */
 public class TaskRoute implements APIRoute {
-    private String response = "INTERNAL_SERVER_ERROR";
+    private String response = "";
+
+    public TaskRoute() {
+        Gson gson = new Gson();
+        Map<String, String> errMap = new LinkedHashMap<>();
+        errMap.put("error", "500 Internal Server Error");
+        response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
+    }
 
     /**
      * Find and fetch the task from the database; Gson JSON object returned is null if task can't be found.
@@ -53,7 +60,8 @@ public class TaskRoute implements APIRoute {
     }
 
     /**
-     * GET /api/cal/task?id={hashcode}
+     * <b>GET</b> <code>/api/cal/task?id={hashcode}.</code>
+     * <p>Uses the following method:</p> <pre>static Object[] findAndFetchFromDB(int hashcode)</pre>
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -67,7 +75,7 @@ public class TaskRoute implements APIRoute {
         if (dbResult[0] == HTTPStatusCode.HTTP_404_NOT_FOUND && dbResult[1] == null) {
             Map<String, String> errMap = new LinkedHashMap<>();
             errMap.put("error", "404 Not Found");
-            response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
+            response = gson.toJson(errMap);
 
             return HTTPStatusCode.HTTP_404_NOT_FOUND;
         }
@@ -76,14 +84,13 @@ public class TaskRoute implements APIRoute {
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
 
-        response = fetchedJson.toString() + APIContexts.REGISTERED_NURSE;
+        response = fetchedJson.toString();
         return HTTPStatusCode.HTTP_200_OK;
     }
 
     /**
-     * POST /api/cal/task [-d application/json]
+     * <b>POST</b> <code>/api/cal/task [-d application/json]</code>
      */
-    @SuppressWarnings("unchecked")
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
         Gson gson = new Gson();
@@ -104,7 +111,7 @@ public class TaskRoute implements APIRoute {
             
             Map<String, String> errMap = new LinkedHashMap<>();
             errMap.put("error", "500 Internal Server Error");
-            response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
+            response = gson.toJson(errMap);
 
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
@@ -112,53 +119,83 @@ public class TaskRoute implements APIRoute {
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
 
-        Map<String, String> json = gson.fromJson(sb.toString(), Map.class);
-        response = gson.toJson(json);
+        Map<String, String> resMap = new LinkedHashMap<>();
+        resMap.put("result", "201 Created");
+        // Map<String, String> json = gson.fromJson(sb.toString(), Map.class);
+        response = gson.toJson(resMap);
 
         return HTTPStatusCode.HTTP_201_CREATED;
     }
 
     /**
-     * PUT /api/cal/task?id={hashcode} [-d application/json]
+     * <b>PUT</b> <code>/api/cal/task?id={hashcode} [-d application/json]</code>
      */
     @Override
     public HTTPStatusCode PUT(HttpExchange htex) {
+        Gson gson = new Gson();
+        Map<String, String> errMap = new LinkedHashMap<>();
+        errMap.put("error", "501 Method Not Implemented");
+        response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
     /**
-     * PATCH /api/cal/task?id={hashcode} [-d application/json]
+     * <b>PATCH</b> <code>/api/cal/task?id={hashcode} [-d application/json]</code>
      */
     @Override
     public HTTPStatusCode PATCH(HttpExchange htex) {
+        Gson gson = new Gson();
+        Map<String, String> errMap = new LinkedHashMap<>();
+        errMap.put("error", "501 Method Not Implemented");
+        response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
     /**
-     * DELETE /api/cal/task?id={hashcode}
+     * <b>DELETE</b> <code>/api/cal/task?id={hashcode}</code>
      */
     @Override
     public HTTPStatusCode DELETE(HttpExchange htex) {
+        Gson gson = new Gson();
+        Map<String, String> errMap = new LinkedHashMap<>();
+        errMap.put("error", "501 Method Not Implemented");
+        response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
     @Override
     public HTTPStatusCode HEAD(HttpExchange htex) {
+        Gson gson = new Gson();
+        Map<String, String> errMap = new LinkedHashMap<>();
+        errMap.put("error", "405 Method Not Allowed");
+        response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 
     @Override
     public HTTPStatusCode CONNECT(HttpExchange htex) {
+        Gson gson = new Gson();
+        Map<String, String> errMap = new LinkedHashMap<>();
+        errMap.put("error", "405 Method Not Allowed");
+        response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 
     @Override
     public HTTPStatusCode OPTIONS(HttpExchange htex) {
+        Gson gson = new Gson();
+        Map<String, String> errMap = new LinkedHashMap<>();
+        errMap.put("error", "405 Method Not Allowed");
+        response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 
     @Override
     public HTTPStatusCode TRACE(HttpExchange htex) {
+        Gson gson = new Gson();
+        Map<String, String> errMap = new LinkedHashMap<>();
+        errMap.put("error", "405 Method Not Allowed");
+        response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 }

@@ -1,11 +1,13 @@
 package lvsa.tpcalendar.http;
 
+import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class APIContexts {
@@ -46,29 +48,26 @@ public class APIContexts {
 			this.HANDLER = new HttpHandler() {
 				@Override
 				public void handle(HttpExchange exchange) throws IOException {
+					Gson gson = new Gson();
 					HTTPStatusCode status;
 					// Default response based on unimplemented methods of APIRoute strategy.
-					String res = "HTTP 405 : Method Not Allowed." + REGISTERED_NURSE; 					OutputStream os = exchange.getResponseBody();
+					String res = "HTTP 405 : Method Not Allowed." + REGISTERED_NURSE;
+					OutputStream os = exchange.getResponseBody();
 					switch (exchange.getRequestMethod().toUpperCase()) {
 						case "GET":
 							status = ROUTE_CLASS.GET(exchange);
-							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "POST":
 							status = ROUTE_CLASS.POST(exchange);
-							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "PATCH":
 							status = ROUTE_CLASS.PATCH(exchange);
-							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "PUT":
 							status = ROUTE_CLASS.PUT(exchange);
-							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "DELETE":
 							status = ROUTE_CLASS.DELETE(exchange);
-							res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
 							break;
 						case "HEAD":
 							status = ROUTE_CLASS.HEAD(exchange);
@@ -83,18 +82,23 @@ public class APIContexts {
 							status = ROUTE_CLASS.TRACE(exchange);
 							break;
 						default:
-							res = "HTTP 400 : Invalid HTTP method" + REGISTERED_NURSE;
+							System.out.println("helo?");
 							status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+							Map<String, String> errMap = new LinkedHashMap<>();
+							errMap.put("error", "400 Invalid Request");
+							res = gson.toJson(errMap) + REGISTERED_NURSE;
 					}
-					if (status != HTTPStatusCode.HTTP_400_BAD_REQUEST ||
-						status != HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED) {
-						res = ROUTE_CLASS.getResponse() + REGISTERED_NURSE;
-					}
+					
+					// Wacky ternary to avoid \r\n duplication.
+					res = ROUTE_CLASS.getResponse() 
+						+ (ROUTE_CLASS.getResponse().endsWith(REGISTERED_NURSE) ? "" : REGISTERED_NURSE);
 					// 0 to use Chunked Transfer Coding
 					// https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
 					exchange.sendResponseHeaders(status.getint(), 0);
+
 					os = exchange.getResponseBody();
 					os.write(res.getBytes());
+
 					os.flush();
 					os.close();
 				}
