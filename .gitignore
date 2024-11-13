@@ -1,4 +1,6 @@
 <<<<<<< HEAD
+
+.$architecture.drawio.bkp
 .gradle
 **/build/
 !src/**/build/

@@ -1,4 +1,3 @@
-
 package lvsa.tpcalendar.dbutils;
 
 import java.sql.Connection;
@@ -9,6 +8,7 @@ import java.sql.ResultSet;
 import java.util.Properties;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 
 import lvsa.tpcalendar.util.PropsService;
 import lvsa.tpcalendar.schemas.json.*;
@@ -48,7 +48,7 @@ public class DBConnProvider implements AutoCloseable {
         if (!rs.next()) {
             return json;
         } else {
-            Task jsonTask = new Task(
+            TaskOut jsonTask = new TaskOut(
                 rs.getInt("hashcode"), 
                 rs.getString("datetime"),
                 rs.getString("name"),
@@ -71,12 +71,39 @@ public class DBConnProvider implements AutoCloseable {
      * @return operation status code.
      * @throws SQLException
      */
-    public short insertTask(int hashcode) throws SQLException {
+    public short insertTask(String json) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
             INSERT INTO taskevents 
             (hashcode, datetime, name, description, color, isdone)
             VALUES (?, ?, ?, ?, ?, ?);           
         """);
+
+        Gson gson = new Gson();
+        TaskIn taskin;
+        try {
+            taskin = gson.fromJson(json, TaskIn.class);        
+            System.out.println(json);
+            System.out.println(taskin.hashCode());
+        } catch (JsonSyntaxException jse) {
+            jse.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    /**
+     * <b>[WIP]</b> Delete a task from the database. Queries the task by hashcode.
+     * @param hashcode
+     * @return
+     * @throws SQLException
+     */
+    public short deleteTask(int hashcode) throws SQLException {
+        PreparedStatement stat = this.conn.prepareStatement("""
+            
+        """);
+
+        /* TODO */
+        
         return 0;
     }
 

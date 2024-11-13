@@ -116,6 +116,16 @@ public class TaskRoute implements APIRoute {
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
 
+        try (
+            DBConnProvider db = new DBConnProvider();
+            Connection conn = db.getDBConnection();
+        ) {
+            db.insertTask(sb.toString());
+        }
+        catch(SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
 

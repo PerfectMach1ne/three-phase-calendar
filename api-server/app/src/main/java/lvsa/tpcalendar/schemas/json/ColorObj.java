@@ -8,4 +8,9 @@ public class ColorObj {
         this.hasColor = hasColor;
         this.hex = hex;
     }
+
+    @Override
+    public int hashCode() {
+        return (hasColor ? Integer.decode("0x" + this.hex.substring(1)) : 0);
+    }
 }
