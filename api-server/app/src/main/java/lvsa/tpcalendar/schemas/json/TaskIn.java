@@ -17,11 +17,10 @@ public class TaskIn {
         this.desc = desc;
         this.color = color;
         this.isDone = isDone;
-        
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() throws NullPointerException {
         LocalDateTime ldt = null;
         try {
             ldt = LocalDateTime.parse(this.datetime); 
@@ -31,7 +30,7 @@ public class TaskIn {
             ldt = LocalDateTime.parse(this.datetime); 
             if (ldt == null) {
                 dtpe.printStackTrace();
-                /* then make it die */
+                throw new NullPointerException("datetime attribute parsing in TaskIn.hashCode() failed horribly.");
             }
         }
         
@@ -42,5 +41,29 @@ public class TaskIn {
                           * (this.isDone ? 1 : -1);
 
         return this.hashcode;
+    }
+
+    public int getHashcode() {
+        return hashcode;
+    }
+
+    public String getDatetime() {
+        return datetime;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public ColorObj getColor() {
+        return color;
+    }
+
+    public boolean isDone() {
+        return isDone;
     }
 }

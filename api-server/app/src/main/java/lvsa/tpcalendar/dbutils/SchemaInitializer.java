@@ -28,7 +28,7 @@ public final class SchemaInitializer {
 				description TEXT,
 				color VARCHAR(7) NOT NULL,
 				isDone BOOLEAN NOT NULL,
-				createdAt timestamp NOT NULL,
+				createdAt timestamp NOT NULL now(),
 				updatedAt timestamp NOT NULL
 			);
 		""");

@@ -2,6 +2,10 @@ package lvsa.tpcalendar.dbutils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.temporal.TemporalField;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +15,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import lvsa.tpcalendar.util.PropsService;
+import lvsa.tpcalendar.http.HTTPStatusCode;
 import lvsa.tpcalendar.schemas.json.*;
 
 public class DBConnProvider implements AutoCloseable {
@@ -48,7 +53,7 @@ public class DBConnProvider implements AutoCloseable {
         if (!rs.next()) {
             return json;
         } else {
-            TaskOut jsonTask = new TaskOut(
+            TaskOut task = new TaskOut(
                 rs.getInt("hashcode"), 
                 rs.getString("datetime"),
                 rs.getString("name"),
@@ -60,7 +65,7 @@ public class DBConnProvider implements AutoCloseable {
                 rs.getBoolean("isdone")
             );
 
-            json = gson.toJson(jsonTask);
+            json = gson.toJson(task);
             return json;
         }
     }
@@ -71,7 +76,7 @@ public class DBConnProvider implements AutoCloseable {
      * @return operation status code.
      * @throws SQLException
      */
-    public short insertTask(String json) throws SQLException {
+    public HTTPStatusCode insertTask(String json) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
             INSERT INTO taskevents 
             (hashcode, datetime, name, description, color, isdone)
@@ -79,16 +84,30 @@ public class DBConnProvider implements AutoCloseable {
         """);
 
         Gson gson = new Gson();
-        TaskIn taskin;
+        TaskIn task;
         try {
-            taskin = gson.fromJson(json, TaskIn.class);        
-            System.out.println(json);
-            System.out.println(taskin.hashCode());
+            try {
+                task = gson.fromJson(json, TaskIn.class);        
+            } catch (NullPointerException e) {
+                return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+            }
         } catch (JsonSyntaxException jse) {
             jse.printStackTrace();
+            return HTTPStatusCode.HTTP_400_BAD_REQUEST;
         }
 
-        return 0;
+        stat.setInt(1, task.getHashcode());
+        LocalDateTime ldt = LocalDateTime.parse(task.getDatetime()); 
+        stat.setTimestamp(2, new Timestamp(ldt.toInstant(ZoneOffset.UTC).toEpochMilli()));
+        stat.setString(3, task.getName());
+        stat.setString(4, task.getDesc());
+        System.out.println("#" + task.getColor().getHex());
+        stat.setString(5, "#" + task.getColor().getHex());
+        stat.setBoolean(6, task.isDone());
+
+        stat.executeUpdate();
+
+        return HTTPStatusCode.HTTP_201_CREATED;
     }
 
     /**

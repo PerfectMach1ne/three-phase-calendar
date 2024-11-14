@@ -116,23 +116,32 @@ public class TaskRoute implements APIRoute {
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
 
+        Headers resh = htex.getResponseHeaders();
+        resh.set("Content-Type", "application/json");
+
         try (
             DBConnProvider db = new DBConnProvider();
             Connection conn = db.getDBConnection();
         ) {
-            db.insertTask(sb.toString());
+            HTTPStatusCode status;
+            Map<String, String> resMap = new LinkedHashMap<>();
+            status = db.insertTask(sb.toString());
+            if (status == HTTPStatusCode.HTTP_201_CREATED) {
+                resMap.put("result", "201 Created");
+                response = gson.toJson(resMap);
+            } else if (status.getint() >= 400 && status.getint() < 500) {
+                resMap.put("result", "400 Bad Request");
+                response = gson.toJson(resMap);
+                return HTTPStatusCode.HTTP_400_BAD_REQUEST;
+            } else {
+                resMap.put("result", "500 Internal Server Error");
+                response = gson.toJson(resMap);
+                return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+            }
         }
-        catch(SQLException sqle) {
+        catch (SQLException sqle) {
             sqle.printStackTrace();
         }
-
-        Headers resh = htex.getResponseHeaders();
-        resh.set("Content-Type", "application/json");
-
-        Map<String, String> resMap = new LinkedHashMap<>();
-        resMap.put("result", "201 Created");
-        // Map<String, String> json = gson.fromJson(sb.toString(), Map.class);
-        response = gson.toJson(resMap);
 
         return HTTPStatusCode.HTTP_201_CREATED;
     }
