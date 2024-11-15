@@ -40,7 +40,16 @@ public class TaskIn {
                           + this.color.hashCode())
                           * (this.isDone ? 1 : -1);
 
+        System.out.println(this.hashcode);
         return this.hashcode;
+    }
+
+    /**
+     * An atrocity that's a price to pay for my stupidity.
+     * @param taskIn
+     */
+    public static void initHashCode(TaskIn taskIn) {
+        taskIn.hashCode();
     }
 
     public int getHashcode() {

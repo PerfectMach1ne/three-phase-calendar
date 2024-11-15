@@ -87,7 +87,9 @@ public class DBConnProvider implements AutoCloseable {
         TaskIn task;
         try {
             try {
-                task = gson.fromJson(json, TaskIn.class);        
+                task = gson.fromJson(json, TaskIn.class);
+                TaskIn.initHashCode(task);
+                System.out.println(task.getHashcode());
             } catch (NullPointerException e) {
                 return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
             }

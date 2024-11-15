@@ -1,8 +1,5 @@
 package lvsa.tpcalendar.schemas.json;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-
 public class TaskOut {
     private int hashcode;
     private String datetime;
