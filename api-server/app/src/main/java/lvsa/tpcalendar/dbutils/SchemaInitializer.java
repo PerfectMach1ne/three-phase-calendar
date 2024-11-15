@@ -11,6 +11,7 @@ public final class SchemaInitializer {
 		try(DBConnProvider dbhandler = new DBConnProvider()) {
 			conn = dbhandler.getDBConnection();
 			createTaskEvents(conn);
+			createTablespace(conn);
 			createUsers(conn);
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -27,10 +28,17 @@ public final class SchemaInitializer {
 				name TEXT,
 				description TEXT,
 				color VARCHAR(7) NOT NULL,
-				isDone BOOLEAN NOT NULL,
-				createdAt timestamp NOT NULL now(),
-				updatedAt timestamp NOT NULL
+				isdone BOOLEAN NOT NULL,
+				created_at timestamp NOT NULL DEFAULT now(),
+				updated_at timestamp NOT NULL DEFAULT now()
 			);
+		""");
+	}
+
+	private void createTablespace(Connection conn) throws SQLException {
+		Statement stat = conn.createStatement();
+		stat.execute("""
+
 		""");
 	}
 
@@ -42,8 +50,8 @@ public final class SchemaInitializer {
 				name VARCHAR(36),
 				email TEXT,
 				password VARCHAR(36),
-				createdAt timestamp NOT NULL,
-				updatedAt timestamp NOT NULL
+				created_at timestamp NOT NULL DEFAULT now(),
+				updated_at timestamp NOT NULL DEFAULT now()
 			);
 		""");
 	}
