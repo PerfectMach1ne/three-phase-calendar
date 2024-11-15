@@ -1,5 +1,6 @@
 package lvsa.tpcalendar.schemas.json;
 
+@SuppressWarnings("unused")
 public class TaskOut {
     private int hashcode;
     private String datetime;

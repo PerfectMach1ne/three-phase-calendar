@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.TemporalField;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -120,10 +119,11 @@ public class DBConnProvider implements AutoCloseable {
      */
     public short deleteTask(int hashcode) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
-            
+            SELECT 'do' AS to; 
         """);
 
         /* TODO */
+        stat.executeUpdate();
         
         return 0;
     }

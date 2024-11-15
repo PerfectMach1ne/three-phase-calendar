@@ -10,7 +10,7 @@ public final class IPUtils {
      * @return IP as byte array.
      * @throws UnknownHostException
      */
-    public static byte[] getIPbytes(String ipString) throws UnknownHostException{
+    public static byte[] getIPbytes(String ipString) throws UnknownHostException {
         InetAddress ip = InetAddress.getByName(ipString);
         byte[] bytes = ip.getAddress();
         
