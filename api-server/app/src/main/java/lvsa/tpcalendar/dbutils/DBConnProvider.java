@@ -102,7 +102,6 @@ public class DBConnProvider implements AutoCloseable {
         stat.setTimestamp(2, new Timestamp(ldt.toInstant(ZoneOffset.UTC).toEpochMilli()));
         stat.setString(3, task.getName());
         stat.setString(4, task.getDesc());
-        System.out.println("#" + task.getColor().getHex());
         stat.setString(5, "#" + task.getColor().getHex());
         stat.setBoolean(6, task.isDone());
 
