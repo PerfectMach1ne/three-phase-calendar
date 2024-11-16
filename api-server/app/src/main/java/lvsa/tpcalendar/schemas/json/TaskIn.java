@@ -9,14 +9,14 @@ public class TaskIn {
     private String name;
     private String desc;
     private ColorObj color;
-    private boolean isDone;
+    private boolean isdone;
 
-    public TaskIn(String datetime, String name, String desc, ColorObj color, boolean isDone) {
+    public TaskIn(String datetime, String name, String desc, ColorObj color, boolean isdone) {
         this.datetime = datetime;
         this.name = name;
         this.desc = desc;
         this.color = color;
-        this.isDone = isDone;
+        this.isdone = isdone;
     }
 
     @Override
@@ -38,7 +38,7 @@ public class TaskIn {
                           + this.name.hashCode()
                           + this.desc.hashCode()
                           + this.color.hashCode())
-                          * (this.isDone ? 1 : -1);
+                          * (this.isdone ? 1 : -1);
 
         System.out.println(this.hashcode);
         return this.hashcode;
@@ -73,6 +73,6 @@ public class TaskIn {
     }
 
     public boolean isDone() {
-        return isDone;
+        return isdone;
     }
 }

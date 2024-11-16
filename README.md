@@ -23,7 +23,8 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] GET TaskEvent by ID request.
 - [x] POST TaskEvent.
 - [ ] DELETE TaskEvent.
-- [ ] PUT/PATCH TaskEvent.
+- [ ] PUT TaskEvent (difficulty? easy peasy).
+- [ ] PATCH TaskEvent (difficulty? lemon squezy (not easy)).
 - [x] ~~https://github.com/PerfectMach1ne/three-phase-calendar/issues/4~~
 - [ ] Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).
 - [ ] ForeignKey relation + GET all user/calendar events.
