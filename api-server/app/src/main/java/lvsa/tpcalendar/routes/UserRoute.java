@@ -61,7 +61,6 @@ public class UserRoute implements APIRoute {
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
-
     @Override
     public HTTPStatusCode PUT(HttpExchange htex) {
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;

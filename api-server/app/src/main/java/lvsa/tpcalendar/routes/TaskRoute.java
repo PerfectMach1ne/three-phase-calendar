@@ -23,6 +23,7 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  */
 public class TaskRoute implements APIRoute {
     private String response = "";
+    private final int PGERR_UNIQUE_VIOLATION = 23505;
 
     public TaskRoute() {
         Gson gson = new Gson();
@@ -90,6 +91,7 @@ public class TaskRoute implements APIRoute {
 
     /**
      * <b>POST</b> <code>/api/cal/task [-d application/json]</code>
+     * <p>Uses the following method:</p> <pre>HTTPStatusCode insertTask(String json)</pre>
      */
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
@@ -140,10 +142,38 @@ public class TaskRoute implements APIRoute {
             }
         }
         catch (SQLException sqle) {
+            if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
+                Map<String, String> resMap = new LinkedHashMap<>();
+                resMap.put("result", "409 Conflict");
+                response = gson.toJson(resMap);
+                return HTTPStatusCode.HTTP_409_CONFLICT;
+            }
             sqle.printStackTrace();
         }
 
         return HTTPStatusCode.HTTP_201_CREATED;
+    }
+
+    /**
+     * <b>DELETE</b> <code>/api/cal/task?id={hashcode}</code>
+     */
+    @Override
+    public HTTPStatusCode DELETE(HttpExchange htex) {
+        Gson gson = new Gson();
+
+        try (
+            DBConnProvider db = new DBConnProvider();
+            Connection conn = db.getDBConnection();
+        ) {
+            
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
+        Map<String, String> errMap = new LinkedHashMap<>();
+        errMap.put("error", "501 Method Not Implemented");
+        response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
     /**
@@ -170,17 +200,9 @@ public class TaskRoute implements APIRoute {
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
-    /**
-     * <b>DELETE</b> <code>/api/cal/task?id={hashcode}</code>
-     */
-    @Override
-    public HTTPStatusCode DELETE(HttpExchange htex) {
-        Gson gson = new Gson();
-        Map<String, String> errMap = new LinkedHashMap<>();
-        errMap.put("error", "501 Method Not Implemented");
-        response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
-    }
+    /******************************************************
+     ************* HTTP 405 boilerplate below *************
+     ******************************************************/
 
     @Override
     public HTTPStatusCode HEAD(HttpExchange htex) {
