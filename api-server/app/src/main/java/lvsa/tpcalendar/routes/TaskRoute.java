@@ -28,7 +28,7 @@ public class TaskRoute implements APIRoute {
     public TaskRoute() {
         Gson gson = new Gson();
         Map<String, String> errMap = new LinkedHashMap<>();
-        errMap.put("error", "500 Internal Server Error");
+        errMap.put("result", "500 Internal Server Error");
         response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
     }
 
@@ -50,6 +50,7 @@ public class TaskRoute implements APIRoute {
             }
         } catch(SQLException sqle) {
             sqle.printStackTrace();
+            return new Object[]{HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR, null};
         }
 
         return new Object[]{HTTPStatusCode.HTTP_200_OK, jsonTask};
@@ -75,7 +76,7 @@ public class TaskRoute implements APIRoute {
 
         if (dbResult[0] == HTTPStatusCode.HTTP_404_NOT_FOUND && dbResult[1] == null) {
             Map<String, String> errMap = new LinkedHashMap<>();
-            errMap.put("error", "404 Not Found");
+            errMap.put("result", "404 Not Found");
             response = gson.toJson(errMap);
 
             return HTTPStatusCode.HTTP_404_NOT_FOUND;
@@ -112,7 +113,7 @@ public class TaskRoute implements APIRoute {
             ioe.printStackTrace();
             
             Map<String, String> errMap = new LinkedHashMap<>();
-            errMap.put("error", "500 Internal Server Error");
+            errMap.put("result", "500 Internal Server Error");
             response = gson.toJson(errMap);
 
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
@@ -121,12 +122,13 @@ public class TaskRoute implements APIRoute {
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
 
+        Map<String, String> resMap = new LinkedHashMap<>();
         try (
             DBConnProvider db = new DBConnProvider();
             Connection conn = db.getDBConnection();
         ) {
             HTTPStatusCode status;
-            Map<String, String> resMap = new LinkedHashMap<>();
+            
             status = db.insertTask(sb.toString());
             if (status == HTTPStatusCode.HTTP_201_CREATED) {
                 resMap.put("result", "201 Created");
@@ -140,15 +142,17 @@ public class TaskRoute implements APIRoute {
                 response = gson.toJson(resMap);
                 return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
             }
-        }
-        catch (SQLException sqle) {
+        } catch (SQLException sqle) {
             if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
-                Map<String, String> resMap = new LinkedHashMap<>();
                 resMap.put("result", "409 Conflict");
                 response = gson.toJson(resMap);
                 return HTTPStatusCode.HTTP_409_CONFLICT;
             }
+
+            resMap.put("result", "500 Internal Server Error");
+            response = gson.toJson(resMap);
             sqle.printStackTrace();
+            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
 
         return HTTPStatusCode.HTTP_201_CREATED;

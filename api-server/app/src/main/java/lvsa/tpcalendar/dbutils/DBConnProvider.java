@@ -118,7 +118,7 @@ public class DBConnProvider implements AutoCloseable {
      */
     public short deleteTask(int hashcode) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
-            SELECT 'do' AS to; 
+            DELETE FROM taskevents WHERE hashcode = ?;
         """);
 
         /* TODO */

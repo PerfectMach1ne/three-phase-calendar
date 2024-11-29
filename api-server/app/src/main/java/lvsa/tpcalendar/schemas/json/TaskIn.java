@@ -38,7 +38,7 @@ public class TaskIn {
                           + this.name.hashCode()
                           + this.desc.hashCode()
                           + this.color.hashCode())
-                          * (this.isdone ? 1 : -1);
+                          * (this.isdone ? -1 : 1);
 
         System.out.println(this.hashcode);
         return this.hashcode;
