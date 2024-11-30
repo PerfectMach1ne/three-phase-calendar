@@ -14,7 +14,7 @@ public final class SchemaInitializer {
 			createTypes(conn);
 
 			createTaskEvents(conn);
-			createTablespace(conn);
+			// createCalendarspace(conn);
 			createUsers(conn);
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
@@ -38,11 +38,11 @@ public final class SchemaInitializer {
 		stat.execute("""
 			CREATE TABLE IF NOT EXISTS taskevents (
 				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-			hashcode INT UNIQUE NOT NULL,
+				hashcode INT UNIQUE NOT NULL,
 				datetime timestamp NOT NULL,
 				name TEXT,
 				description TEXT,
-				viewtype taskview,
+				viewtype taskview NOT NULL,
 				color VARCHAR(7) NOT NULL,
 				isdone BOOLEAN NOT NULL,
 				created_at timestamp NOT NULL DEFAULT now(),
@@ -51,10 +51,18 @@ public final class SchemaInitializer {
 		""");
 	}
 
-	private void createTablespace(Connection conn) throws SQLException {
+	private void createCalendarspace(Connection conn) throws SQLException {
 		Statement stat = conn.createStatement();
 		stat.execute("""
-
+			CREATE TABLE IF NOT EXISTS calendarspace (
+				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+				user_id INT FOREIGN KEY,
+				tasksevents_id_arr integer[],	
+				periodevents_id_arr integer[],
+				textevents_id_arr integer[],
+				created_at timestamp NOT NULL DEFAULT now(),
+				updated_at timestamp NOT NULL DEFAULT now()
+			);
 		""");
 	}
 

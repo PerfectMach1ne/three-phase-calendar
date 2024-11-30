@@ -3,6 +3,7 @@ package lvsa.tpcalendar.dbutils;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.sql.DriverManager;
@@ -78,8 +79,8 @@ public class DBConnProvider implements AutoCloseable {
     public HTTPStatusCode insertTask(String json) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
             INSERT INTO taskevents 
-            (hashcode, datetime, name, description, color, isdone)
-            VALUES (?, ?, ?, ?, ?, ?);           
+            (hashcode, datetime, name, description, viewtype, color, isdone)
+            VALUES (?, ?, ?, ?, ?, ?, ?);           
         """);
 
         Gson gson = new Gson();
@@ -88,7 +89,7 @@ public class DBConnProvider implements AutoCloseable {
             try {
                 task = gson.fromJson(json, TaskIn.class);
                 TaskIn.initHashCode(task);
-                System.out.println(task.getHashcode());
+                if (task.getViewType() == null) return HTTPStatusCode.HTTP_400_BAD_REQUEST;
             } catch (NullPointerException e) {
                 return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
             }
@@ -102,8 +103,9 @@ public class DBConnProvider implements AutoCloseable {
         stat.setTimestamp(2, new Timestamp(ldt.toInstant(ZoneOffset.UTC).toEpochMilli()));
         stat.setString(3, task.getName());
         stat.setString(4, task.getDesc());
-        stat.setString(5, "#" + task.getColor().getHex());
-        stat.setBoolean(6, task.isDone());
+        stat.setObject(5, task.getViewType(), Types.OTHER);
+        stat.setString(6, "#" + task.getColor().getHex());
+        stat.setBoolean(7, task.isDone());
 
         stat.executeUpdate();
 

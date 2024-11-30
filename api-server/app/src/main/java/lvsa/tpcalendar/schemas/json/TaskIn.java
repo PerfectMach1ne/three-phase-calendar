@@ -8,13 +8,16 @@ public class TaskIn {
     private String datetime;
     private String name;
     private String desc;
+    @SuppressWarnings("unused")
+    private ViewType viewtype;
     private ColorObj color;
     private boolean isdone;
 
-    public TaskIn(String datetime, String name, String desc, ColorObj color, boolean isdone) {
+    public TaskIn(String datetime, String name, String desc, ViewType viewType, ColorObj color, boolean isdone) {
         this.datetime = datetime;
         this.name = name;
         this.desc = desc;
+        this.viewtype = viewType;
         this.color = color;
         this.isdone = isdone;
     }
@@ -66,6 +69,10 @@ public class TaskIn {
 
     public String getDesc() {
         return desc;
+    }
+
+    public ViewType getViewType() {
+        return viewtype;
     }
 
     public ColorObj getColor() {

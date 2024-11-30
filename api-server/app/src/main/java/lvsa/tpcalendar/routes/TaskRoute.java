@@ -127,9 +127,8 @@ public class TaskRoute implements APIRoute {
             DBConnProvider db = new DBConnProvider();
             Connection conn = db.getDBConnection();
         ) {
-            HTTPStatusCode status;
-            
-            status = db.insertTask(sb.toString());
+            HTTPStatusCode status = db.insertTask(sb.toString());
+
             if (status == HTTPStatusCode.HTTP_201_CREATED) {
                 resMap.put("result", "201 Created");
                 response = gson.toJson(resMap);
