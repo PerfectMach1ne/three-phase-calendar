@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 pwd=$(pwd)
 if [[ "${pwd:(-5):5}" != "/toys" ]]; then
@@ -15,9 +15,10 @@ old_ip=$(awk '/^ip=[0-9.]+$/ {print $0;}' ../app/src/main/resources/tpc_testing.
 old_ip=${old_ip:3:${#old_ip}};
 
 # Fetch the current local IP from current network.
-new_ip=$(ifconfig | grep inet | grep -v inet6 | grep -v 'inet 127' | awk '{$1=""; print $2}');
-new_ip=("$new_ip");
 
+new_ip=("$new_ip");
+new_ip=$(ifconfig | grep inet | grep -v inet6 | grep -v 'inet 127' | grep -v 'inet 172' | awk '{$1=""; print $2}');
+# new_ip=$(echo $new_ip | grep -v '172.17.0.1' | grep -v '172.18.0.1');
 printf "::old_props:\n$props\n";
 echo "::old_ip=$old_ip";
 echo "::new_ip=$new_ip";

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 # find_word.sh
 ##############
 # Find all occurrences of a specified word in a Lua/Luau file,
