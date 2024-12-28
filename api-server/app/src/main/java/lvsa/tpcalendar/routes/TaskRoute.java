@@ -75,6 +75,7 @@ public class TaskRoute implements APIRoute {
             } else if (status.getint() >= 400 && status.getint() < 500) {
                 return HTTPStatusCode.HTTP_400_BAD_REQUEST;
             } else {
+                // If you ever add a redirect spaghetti noodle to your code and get internal server errors, this is why.
                 return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
             }
         } catch (SQLException sqle) {
