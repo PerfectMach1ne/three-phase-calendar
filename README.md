@@ -15,13 +15,13 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 #### CALENDARCOINS COLLECTED: 10📅🪙!!!
 
-- [x] Basic HTTP server functionality.
-- [x] Basic internal TaskEvent data handling.
-- [x] Basic postgres database & connectivity setup.
-- [x] TaskEvent database-side implementation.
-- [x] HTTP query parameters/Filter implementation.
-- [x] GET TaskEvent by ID request.
-- [x] POST TaskEvent.
+- [x] ~~Basic HTTP server functionality.~~
+- [x] ~~Basic internal TaskEvent data handling.~~
+- [x] ~~Basic postgres database & connectivity setup.~~
+- [x] ~~TaskEvent database-side implementation.~~
+- [x] ~~HTTP query parameters/Filter implementation.~~
+- [x] ~~GET TaskEvent by ID request.~~
+- [x] ~~POST TaskEvent.~~
 - [ ] DELETE TaskEvent.
 - [ ] PUT TaskEvent (difficulty? easy peasy).
 - [ ] PATCH TaskEvent (difficulty? lemon squezy (not easy)).
@@ -62,8 +62,8 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ### C + ncurses CLI frontend
 
-- [x] Integrate ncurses and libcurl into the build.
-- [x] Implement day-of-the-week, monthday and hour label windows.
+- [x] ~~Integrate ncurses and libcurl into the build.~~
+- [x] ~~Implement day-of-the-week, monthday and hour label windows.~~
 - [ ] Implement weekday windows.
 - [ ] Implement Vim motions for navigating the calendar.
 - [ ] Implement libcurl data fetching.

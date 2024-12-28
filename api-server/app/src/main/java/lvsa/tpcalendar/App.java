@@ -63,6 +63,8 @@ public final class App {
                     "/api/cal/text", new AbstractMap.SimpleEntry<String, APIRoute>(
                         "", new TaskRoute()),
                     "/teapot", new AbstractMap.SimpleEntry<String, APIRoute>(
+                        "?msg={char[57]}", new ImATeapotDoubleColon3()),
+                    "/api/teapot", new AbstractMap.SimpleEntry<String, APIRoute>(
                         "?msg={char[57]}", new ImATeapotDoubleColon3())
                 )
             )

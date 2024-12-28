@@ -1,13 +1,11 @@
 package lvsa.tpcalendar.http;
 
-import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class APIContexts {
@@ -48,10 +46,9 @@ public class APIContexts {
 			this.HANDLER = new HttpHandler() {
 				@Override
 				public void handle(HttpExchange exchange) throws IOException {
-					Gson gson = new Gson();
-					HTTPStatusCode status;
+					HTTPStatusCode status = HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
 					// Default response based on unimplemented methods of APIRoute strategy.
-					String res = "HTTP 405 : Method Not Allowed." + REGISTERED_NURSE;
+					String res = status.wrapAsJsonRes() + REGISTERED_NURSE;
 					OutputStream os = exchange.getResponseBody();
 					switch (exchange.getRequestMethod().toUpperCase()) {
 						case "GET":
@@ -82,11 +79,8 @@ public class APIContexts {
 							status = ROUTE_CLASS.TRACE(exchange);
 							break;
 						default:
-							System.out.println("helo?");
 							status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
-							Map<String, String> errMap = new LinkedHashMap<>();
-							errMap.put("error", "400 Invalid Request");
-							res = gson.toJson(errMap) + REGISTERED_NURSE;
+							res = status.wrapAsJsonRes() + REGISTERED_NURSE;
 					}
 					
 					// Wacky ternary to avoid \r\n duplication.
