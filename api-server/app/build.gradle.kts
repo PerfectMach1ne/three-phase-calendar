@@ -18,12 +18,12 @@ repositories {
 
 dependencies {
     // Use JUnit Jupiter for testing.
-    testImplementation(libs.junit.jupiter)
+    // testImplementation(libs.junit.jupiter)
 
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
     // This dependency is used by the application.
-    implementation(libs.guava)
+    // implementation(libs.guava)
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("org.dmfs:oauth2-essentials:0.22.0")
     implementation("org.dmfs:httpurlconnection-executor:1.21.3")
