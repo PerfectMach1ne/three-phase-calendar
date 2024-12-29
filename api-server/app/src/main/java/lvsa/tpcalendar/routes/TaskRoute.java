@@ -61,15 +61,7 @@ public class TaskRoute implements APIRoute {
             Connection conn = db.getDBConnection();
         ) {
             HTTPStatusCode status = db.insertTask(buffer);
-
-            if (status.getint() == 201) {
-                return HTTPStatusCode.HTTP_201_CREATED;
-            } else if (status.getint() >= 400 && status.getint() < 500) {
-                return HTTPStatusCode.HTTP_400_BAD_REQUEST;
-            } else {
-                // If you ever add a redirect spaghetti noodle to your code and get internal server errors, this is why.
-                return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
-            }
+            return status;
         } catch (SQLException sqle) {
             if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
                 return HTTPStatusCode.HTTP_409_CONFLICT;
