@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import lvsa.tpcalendar.http.APIContexts;
 import lvsa.tpcalendar.http.APIRoute;
@@ -22,8 +23,9 @@ public final class App {
     // Re: Note about socket backlogs 
     // (https://docs.oracle.com/en/java/javase/21/docs/api/jdk.httpserver/com/sun/net/httpserver/HttpServer.html)
     private static final int TCP_BACKLOG = 128;
-    private static final String ADDR_STR = new PropsService().getIPProps().getProperty("ip");
-    private static final int PORT = Integer.valueOf(new PropsService().getIPProps().getProperty("port"));
+    private static final Properties ipProps = new PropsService().getIPProps();
+    private static final String ADDR_STR = ipProps.getProperty("ip");
+    private static final int PORT = Integer.valueOf(ipProps.getProperty("port"));
     private static InetSocketAddress ADDRESS;
 
     private static HttpServer server = null;
@@ -38,12 +40,14 @@ public final class App {
                 PORT);
         } catch (UnknownHostException uhe) {
             uhe.printStackTrace();
+            System.exit(1);
         }
 
         try {
             runServer();
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            System.exit(1);
         }
     }
 
@@ -69,6 +73,7 @@ public final class App {
                 )
             )
         );
+
         return apictxs;
     }
 

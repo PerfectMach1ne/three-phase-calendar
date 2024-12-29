@@ -21,14 +21,6 @@ public class TaskRoute implements APIRoute {
     private String response = "";
     private final int PGERR_UNIQUE_VIOLATION = 23505;
 
-    public TaskRoute() {
-        // TODO: is this really necessary? APIContext should do more prep-work for us.
-        // Gson gson = new Gson();
-        // Map<String, String> errMap = new LinkedHashMap<>();
-        // errMap.put("result", "500 Internal Server Error");
-        // response = gson.toJson(errMap) + APIContexts.REGISTERED_NURSE;
-    }
-
     @Override
     public String getResponse() {
         return this.response;
@@ -70,7 +62,7 @@ public class TaskRoute implements APIRoute {
         ) {
             HTTPStatusCode status = db.insertTask(buffer);
 
-            if (status == HTTPStatusCode.HTTP_201_CREATED) {
+            if (status.getint() == 201) {
                 return HTTPStatusCode.HTTP_201_CREATED;
             } else if (status.getint() >= 400 && status.getint() < 500) {
                 return HTTPStatusCode.HTTP_400_BAD_REQUEST;

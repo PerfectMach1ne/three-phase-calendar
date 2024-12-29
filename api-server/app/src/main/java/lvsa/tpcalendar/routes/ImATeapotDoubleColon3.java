@@ -16,7 +16,7 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * /teapot
  */
 public class ImATeapotDoubleColon3 implements APIRoute {
-    private String response = "INTERNAL_SERVER_ERROR";
+    private String response = "";
 
     public String getResponse() {
         return this.response;
@@ -33,23 +33,22 @@ public class ImATeapotDoubleColon3 implements APIRoute {
         });
 
         InputStream is = htex.getRequestBody();
-
         InputStreamReader isReader = new InputStreamReader(is);
         BufferedReader reader = new BufferedReader(isReader);
         StringBuffer sb = new StringBuffer();
-
 		String reqdata;
+
         try {
             while ( (reqdata = reader.readLine()) != null ) {
                 sb.append(reqdata);
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
+            response = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR.wrapAsJsonRes();
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
 
         response = "am a teapot :3" + APIContexts.REGISTERED_NURSE;
-
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
 
