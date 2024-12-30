@@ -1,6 +1,5 @@
 # Dockerfile todolist:
 # Move to minimal image
-# Expose port 8057
 # LATER_0: handle .properties secrets better (sops integration?)
 # LATER_1: Docker Compose
 
@@ -9,22 +8,22 @@
 # gradle:8.12-jdk21-alpine = https://github.com/keeganwitt/docker-gradle/blob/master/jdk21-alpine/Dockerfile 
 FROM eclipse-temurin:21-jdk-alpine
 
+RUN sed -i 's/^root:/starr4ever:/' /etc/passwd && \
+    sed -i 's/^root:/starr4ever:/' /etc/shadow
 WORKDIR /src
 
 COPY ./gradle ./gradle
-COPY ./gradlew ./settings.gradle.kts .
+ADD ./gradlew ./settings.gradle.kts .
 COPY ./app/src ./app/src
 COPY ./tpc_docker_test.properties ./app/src/main/resources/tpc_testing.properties
 COPY ./app/build.gradle.kts ./app
-COPY ./toys/update_local_ip.sh .
+COPY --chmod=0755 ./toys/docker_ip.sh .
 
-CMD ["./gradlew", "run"]
-# WORKDIR ..
-
-# CMD ["/bin/sh"]
-# RUN ls && tree;
+ENTRYPOINT ["./docker_ip.sh"]
+# CMD ["./gradlew", "run", "--debug"]
 
 # FROM eclipse-temurin:21-jdk-alpine
 # copy update_local_ip.sh and run it
 
+USER starr4ever
 EXPOSE 8057

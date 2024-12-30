@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16.6-alpine
+    restart: always
+    # Set shared memory limit when using docker-compose
+    shm_size: 128mb
+    ports: 
+      - "5432"
+    environment:
+      POSTGRES_DB: tpc_testing
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: hahahano
+    hostname: postgres
+    volumes:
+      - ./toys/testing_role.sql:/docker-entrypoint-initdb.d/init.sql
+    
+  apisrv:
+    build: .
+    restart: always
+    ports:
+      - "58057:8057"

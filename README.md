@@ -15,8 +15,8 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 #### CALENDARCOINS COLLECTED: 10📅🪙!!!
 
-- [ ] Dockerize your app properly
-- [ ] Also integrate Minikube (optional?)
+- [x] ~~Dockerize your app properly~~
+- [x] ~~Also integrate Minikube (optional?)~~
 - [x] ~~Basic HTTP server functionality.~~
 - [x] ~~Basic internal TaskEvent data handling.~~
 - [x] ~~Basic postgres database & connectivity setup.~~

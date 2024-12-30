@@ -83,6 +83,7 @@ public final class App {
      */
     private static void runServer() throws IOException {
         try {
+            System.out.println(ADDRESS.toString());
             server = HttpServer.create(ADDRESS, TCP_BACKLOG);
         } catch (IOException ioe) {
             ioe.printStackTrace();
