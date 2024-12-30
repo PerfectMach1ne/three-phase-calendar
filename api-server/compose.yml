@@ -8,7 +8,7 @@ services:
       - "5432"
     environment:
       POSTGRES_DB: tpc_testing
-      POSTGRES_USER: root
+      POSTGRES_USER: starr4ever
       POSTGRES_PASSWORD: hahahano
     hostname: postgres
     volumes:
