@@ -5,7 +5,7 @@ services:
     # Set shared memory limit when using docker-compose
     shm_size: 128mb
     ports: 
-      - "5432"
+      - "5432" # This exposes it to host. Assuming it won't break anything, maybe we should remove this?
     environment:
       POSTGRES_DB: tpc_testing
       POSTGRES_USER: starr4ever

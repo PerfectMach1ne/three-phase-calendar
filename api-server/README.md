@@ -1,8 +1,8 @@
 # tpc API Server
 
 Universal Java HTTP server & API backend for every tpc frontend.
-Utilizes postgres as RDBMC.
+Utilizes postgres as RDBMS.
 
 ## How to run
 
-#### `./gradlew run`
+#### `docker compose up`

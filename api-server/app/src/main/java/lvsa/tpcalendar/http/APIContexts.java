@@ -46,10 +46,12 @@ public class APIContexts {
 			this.HANDLER = new HttpHandler() {
 				@Override
 				public void handle(HttpExchange exchange) throws IOException {
-					HTTPStatusCode status = HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
 					// Default response based on unimplemented methods of APIRoute strategy.
+					HTTPStatusCode status = HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
 					String res = status.wrapAsJsonRes() + REGISTERED_NURSE;
+
 					OutputStream os = exchange.getResponseBody();
+
 					switch (exchange.getRequestMethod().toUpperCase()) {
 						case "GET":
 							status = ROUTE_CLASS.GET(exchange);
@@ -88,6 +90,7 @@ public class APIContexts {
 						res = ROUTE_CLASS.getResponse() 
 							+ (ROUTE_CLASS.getResponse().endsWith(REGISTERED_NURSE) ? "" : REGISTERED_NURSE);
 					}
+
 					// 0 to use Chunked Transfer Coding
 					// https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
 					exchange.sendResponseHeaders(status.getint(), 0);

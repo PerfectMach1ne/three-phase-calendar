@@ -21,7 +21,6 @@ COPY --chmod=0755 ./toys/docker_ip.sh .
 
 ENTRYPOINT ["./docker_ip.sh"]
 # CMD ["./gradlew", "run", "--debug"]
-
 # FROM eclipse-temurin:21-jdk-alpine
 # copy update_local_ip.sh and run it
 
