@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
   destroy_win(hours_W);
 
   if (curl) {
-    curl_easy_setopt(curl, CURLOPT_URL, "http://192.168.1.177:8057/teapot");
+    curl_easy_setopt(curl, CURLOPT_URL, "http://172.18.0.3:8057/api/teapot");
     /* Do not do the transfer - only connect to host */
     // curl_easy_setopt(curl, CURLOPT_CONNECT_ONLY, 1L);
 

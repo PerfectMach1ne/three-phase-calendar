@@ -71,7 +71,7 @@ public class DBConnProvider implements AutoCloseable {
     }
 
     /**
-     * <b>[WIP]</b> Insert a task into the database.
+     * Insert a task into the database.
      * @param hashcode
      * @return operation status code.
      * @throws SQLException

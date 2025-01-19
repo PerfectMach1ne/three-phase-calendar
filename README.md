@@ -24,12 +24,12 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~HTTP query parameters/Filter implementation.~~
 - [x] ~~GET TaskEvent by ID request.~~
 - [x] ~~POST TaskEvent.~~
-- [ ] DELETE TaskEvent.
-- [ ] PUT TaskEvent (difficulty? easy peasy).
-- [ ] PATCH TaskEvent (difficulty? lemon squezy (not easy)).
-- [ ] Integrate event types (`static`, `history`, `routine`)
-- [ ] `created_at` & `updated_at` function triggers.
-- [ ] Implement PeriodEvent & TextEvent tables.
+- [ ] **DELETE TaskEvent.**
+- [ ] **PUT TaskEvent (difficulty? easy peasy).**
+- [ ] **PATCH TaskEvent (difficulty? lemon squezy (not easy)).**
+- [ ] **Integrate event types (`static`, `history`, `routine`)**
+- [ ] **`created_at` & `updated_at` function triggers.**
+- [ ] **Implement PeriodEvent & TextEvent tables.**
 - [ ] Server-side database schema initialization and validation (possibly future migration features?).
 - [ ] postgres role for division of database access permissions. 
 - [ ] Substitute `HttpServer` with `HttpsServer` (#5).
@@ -42,7 +42,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] TextEvent business-logic-side implementation.
 - [ ] TextEvent server-context-side implementation.
 
-### JavaScript + Node.js frontend server
+### Tauri x Vue.js 3 desktop + mobile + web app
 
 - [ ] Basic HTTP server functionality.
 - [ ] Basic calendar component structure (vCalendar dead project reimplementation).
@@ -54,13 +54,6 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] Journal prototype implenentation.
 - [ ] Planner prototype implementation.
 - [ ] User authentication GUI.
-
-### Kotlin mobile app
-
-- [ ] Basic Android project & build setup.
-- [ ] Basic Jetpack Compose project setup.
-- [ ] Basic connectivity with the server.
-- [ ] Basic calendar UI elements.
 
 ### C + ncurses CLI frontend
 

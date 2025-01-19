@@ -27,7 +27,7 @@ public class TaskRoute implements APIRoute {
     }
 
     /**
-     * Find and fetch the task from the database; Gson JSON object returned is null if task can't be found.
+     * Find and fetch the task from the database; Gson JSON object returned is null if task can't be found or something else goes wrong.
      * @param hashcode
      * @return a 2-element <code>Object[]</code> array containing the HTTP status code and the Gson-compatible JSON object from db.
      */
@@ -51,7 +51,7 @@ public class TaskRoute implements APIRoute {
     }
 
     /**
-     * []
+     * Attempt to insert a new task into the database, and return the HTTP status code representing the result of the operation.
      * @param
      * @return a <code>HTTPStatusCode</code> array containing the HTTP status code.
      */

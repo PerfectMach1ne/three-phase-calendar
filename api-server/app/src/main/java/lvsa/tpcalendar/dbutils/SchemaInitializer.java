@@ -51,6 +51,24 @@ public final class SchemaInitializer {
 		""");
 	}
 
+	private void createPeriodEvents(Connection conn) throws SQLException {
+		Statement stat = conn.createStatement();
+		stat.execute("""
+			CREATE TABLE IF NOT EXISTS periodevents (
+				# TODO
+			);
+		""");
+	}
+
+	private void createTextEvents(Connection conn) throws SQLException {
+		Statement stat = conn.createStatement();
+		stat.execute("""
+			CREATE TABLE IF NOT EXISTS textevents (
+				# TODO
+			);
+		""");
+	}
+
 	private void createCalendarspace(Connection conn) throws SQLException {
 		Statement stat = conn.createStatement();
 		stat.execute("""
