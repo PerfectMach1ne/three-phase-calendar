@@ -11,6 +11,13 @@ public enum ViewType {
         return viewType;
     }
 
+    public static ViewType toViewType(String str) {
+        return str == static_task.toString()   ? static_task : (
+               str == historic_task.toString() ? historic_task :
+                                                 routine_task
+        );
+    }
+
     ViewType(String viewType) {
         this.viewType = viewType;
     }

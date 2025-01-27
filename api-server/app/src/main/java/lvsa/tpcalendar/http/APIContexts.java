@@ -85,7 +85,7 @@ public class APIContexts {
 							res = status.wrapAsJsonRes() + REGISTERED_NURSE;
 					}
 					
-					if (status.getint() != 400) {
+					if (status != HTTPStatusCode.HTTP_400_BAD_REQUEST) {
 						// Wacky ternary to avoid \r\n duplication.
 						res = ROUTE_CLASS.getResponse() 
 							+ (ROUTE_CLASS.getResponse().endsWith(REGISTERED_NURSE) ? "" : REGISTERED_NURSE);

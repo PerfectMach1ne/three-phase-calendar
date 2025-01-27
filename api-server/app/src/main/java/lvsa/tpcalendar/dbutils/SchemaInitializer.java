@@ -1,7 +1,7 @@
 package lvsa.tpcalendar.dbutils;
 
-import java.sql.SQLException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 public final class SchemaInitializer {

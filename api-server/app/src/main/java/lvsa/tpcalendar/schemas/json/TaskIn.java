@@ -8,7 +8,6 @@ public class TaskIn {
     private String datetime;
     private String name;
     private String desc;
-    @SuppressWarnings("unused")
     private ViewType viewtype;
     private ColorObj color;
     private boolean isdone;

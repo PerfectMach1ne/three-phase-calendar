@@ -4,12 +4,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Properties;
+import java.util.concurrent.Callable;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -20,6 +21,10 @@ import lvsa.tpcalendar.schemas.json.*;
 
 public class DBConnProvider implements AutoCloseable {
     private Connection conn;
+
+    private <T> ViewType invoke(Callable<ViewType> c) throws Exception {
+        return c.call();
+    }
 
     public DBConnProvider() throws SQLException {
         Properties props = new PropsService().getDBProps();
@@ -40,7 +45,7 @@ public class DBConnProvider implements AutoCloseable {
      */
     public String queryByHashcode(int hashcode) throws SQLException {
         PreparedStatement query = this.conn.prepareStatement("""
-            SELECT hashcode, datetime, name, description, color, isdone
+            SELECT hashcode, datetime, name, description, viewtype, color, isdone
             FROM taskevents
             WHERE hashcode = ?;
         """);
@@ -49,25 +54,32 @@ public class DBConnProvider implements AutoCloseable {
         Gson gson = new Gson();
         String json = "";
 
-        ResultSet rs = query.executeQuery();
-        if (!rs.next()) {
-            return json;
-        } else {
-            TaskOut task = new TaskOut(
-                rs.getInt("hashcode"), 
-                rs.getString("datetime"),
-                rs.getString("name"),
-                rs.getString("description"),
-                new ColorObj(
-                    rs.getString("color") == "" ? false : true,
-                    rs.getString("color")
-                ),
-                rs.getBoolean("isdone")
-            );
+        try {
+            ResultSet rs = query.executeQuery();
+            if (!rs.next()) {
+                return json;
+            } else {
+                TaskOut task = new TaskOut(
+                    rs.getInt("hashcode"), 
+                    rs.getString("datetime"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    invoke(() -> { return ViewType.toViewType(rs.getString("viewtype")); }),
+                    new ColorObj(
+                        rs.getString("color") == "" ? false : true,
+                        rs.getString("color")
+                    ),
+                    rs.getBoolean("isdone")
+                );
 
-            json = gson.toJson(task);
-            return json;
+                json = gson.toJson(task);
+                return json;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+       
+        return "{ \"error\": \"Something went really wrong at DB interface layer while dealing with GET /api/cal/task! \"}";
     }
 
     /**
