@@ -79,7 +79,7 @@ public class DBConnProvider implements AutoCloseable {
             e.printStackTrace();
         }
        
-        return "{ \"error\": \"Something went really wrong at DB interface layer while dealing with GET /api/cal/task! \"}";
+        return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR.wrapAsJsonRes();
     }
 
     /**
@@ -102,7 +102,7 @@ public class DBConnProvider implements AutoCloseable {
                 task = gson.fromJson(json, TaskIn.class);
                 TaskIn.initHashCode(task);
                 if (task.getViewType() == null) return HTTPStatusCode.HTTP_400_BAD_REQUEST;
-            } catch (NullPointerException e) {
+            } catch (Exception e) {
                 return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
             }
         } catch (JsonSyntaxException jse) {

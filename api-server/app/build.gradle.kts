@@ -24,10 +24,10 @@ dependencies {
 
     // This dependency is used by the application.
     // implementation(libs.guava)
+    implementation("org.postgresql:postgresql:42.7.5")
     implementation("com.google.code.gson:gson:2.11.0")
-    implementation("org.dmfs:oauth2-essentials:0.22.0")
-    implementation("org.dmfs:httpurlconnection-executor:1.21.3")
-    implementation("org.postgresql:postgresql:42.7.4")
+    // implementation("org.dmfs:oauth2-essentials:0.22.0")
+    // implementation("org.dmfs:httpurlconnection-executor:1.21.3")
     // implementation("org.slf4j:slf4j-api:1.7.36")
     // implementation("org.xerial:sqlite-jdbc:3.46.1.0")
 }

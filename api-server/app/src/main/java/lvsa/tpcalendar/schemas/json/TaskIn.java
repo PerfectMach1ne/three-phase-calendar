@@ -32,8 +32,8 @@ public class TaskIn {
             ldt = LocalDateTime.parse(this.datetime); 
             if (ldt == null) {
                 dtpe.printStackTrace();
-                throw new NullPointerException("datetime attribute parsing in TaskIn.hashCode() failed horribly.");
-            }
+                throw new Exception("datetime attribute parsing in TaskIn.hashCode() failed horribly.");
+            
         }
         
         this.hashcode = ((ldt.getYear() + ldt.getMonthValue() + ldt.getDayOfMonth() + ldt.getHour() + ldt.getMinute() + ldt.getSecond())

@@ -12,7 +12,7 @@ public enum ViewType {
     }
 
     public static ViewType toViewType(String str) {
-        return str == static_task.toString()   ? static_task : (
+        return str == static_task.toString()   ? static_task   : (
                str == historic_task.toString() ? historic_task :
                                                  routine_task
         );

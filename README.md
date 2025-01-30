@@ -31,7 +31,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] **`created_at` & `updated_at` function triggers.**
 - [ ] **Implement PeriodEvent & TextEvent tables.**
 - [ ] Server-side database schema initialization and validation (possibly future migration features?).
-- [ ] postgres role for division of database access permissions. 
+- [ ] postgres role for division of database access permissions.
 - [ ] Substitute `HttpServer` with `HttpsServer` (#5).
 - [ ] User authentication with JWT, bcrypt password encryption and OAuth 2.0.
 - [x] ~~https://github.com/PerfectMach1ne/three-phase-calendar/issues/4~~
@@ -66,6 +66,8 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ## Project members
 
+**Chief Enterprise Officer**: deceased
+
 **Chief Technology Officer**: me but teal
 
 **Product Manager**: me but orange
@@ -81,5 +83,9 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 **UI/UX Designer**: me but blue and pink
 
 **Home Barista Maid**: me but blue
+
+**Scrum Master**: deceased
+
+**Agile Coach**: deceased
 
 **Recruitment Manager**: we don't need this guy.
