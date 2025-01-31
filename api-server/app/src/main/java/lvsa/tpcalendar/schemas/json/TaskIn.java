@@ -22,7 +22,7 @@ public class TaskIn {
     }
 
     @Override
-    public int hashCode() throws NullPointerException {
+    public int hashCode() {
         LocalDateTime ldt = null;
         try {
             ldt = LocalDateTime.parse(this.datetime); 
@@ -32,15 +32,19 @@ public class TaskIn {
             ldt = LocalDateTime.parse(this.datetime); 
             if (ldt == null) {
                 dtpe.printStackTrace();
-                throw new Exception("datetime attribute parsing in TaskIn.hashCode() failed horribly.");
-            
+            }
         }
         
-        this.hashcode = ((ldt.getYear() + ldt.getMonthValue() + ldt.getDayOfMonth() + ldt.getHour() + ldt.getMinute() + ldt.getSecond())
-                          + this.name.hashCode()
-                          + this.desc.hashCode()
-                          + this.color.hashCode())
-                          * (this.isdone ? -1 : 1);
+        this.hashcode = ((ldt.getYear()
+                          + ldt.getMonthValue()
+                          + ldt.getDayOfMonth()
+                          + ldt.getHour()
+                          + ldt.getMinute()
+                          + ldt.getSecond())
+                        + this.name.hashCode()
+                        + this.desc.hashCode()
+                        + this.color.hashCode())
+                        * (this.isdone ? -1 : 1);
 
         System.out.println(this.hashcode);
         return this.hashcode;

@@ -130,20 +130,21 @@ public class DBConnProvider implements AutoCloseable {
      * @return
      * @throws SQLException
      */
-    public short deleteTask(int hashcode) throws SQLException {
+    public HTTPStatusCode deleteTask(int hashcode) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
             DELETE FROM taskevents WHERE hashcode = ?;
         """);
 
-        /* TODO */
-        stat.executeUpdate();
-        
-        return 0;
+        stat.setInt(1, hashcode);
+        final int PG_STATUS = stat.executeUpdate();
+
+        return PG_STATUS > 0 ?
+            HTTPStatusCode.HTTP_200_OK :
+            HTTPStatusCode.HTTP_404_NOT_FOUND;
     }
 
     @Override
     public void close() throws SQLException {
         conn.close();
     }
-
 }
