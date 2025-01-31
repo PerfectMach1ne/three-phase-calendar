@@ -1,4 +1,4 @@
-package lvsa.tpcalendar.util;
+package lvsa.tpcalendar.utils;
 
 import java.io.InputStream;
 import java.util.Iterator;

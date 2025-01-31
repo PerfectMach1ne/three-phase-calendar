@@ -15,9 +15,9 @@ import java.util.concurrent.Callable;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
-import lvsa.tpcalendar.util.PropsService;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 import lvsa.tpcalendar.schemas.json.*;
+import lvsa.tpcalendar.utils.PropsService;
 
 public class DBConnProvider implements AutoCloseable {
     private Connection conn;

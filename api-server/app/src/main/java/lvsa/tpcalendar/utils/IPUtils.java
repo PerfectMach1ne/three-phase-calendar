@@ -1,4 +1,4 @@
-package lvsa.tpcalendar.util;
+package lvsa.tpcalendar.utils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

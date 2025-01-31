@@ -1,4 +1,4 @@
-package lvsa.tpcalendar.util;
+package lvsa.tpcalendar.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
