@@ -125,7 +125,7 @@ public class DBConnProvider implements AutoCloseable {
     }
 
     /**
-     * <b>[WIP]</b> Delete a task from the database. Queries the task by hashcode.
+     * Delete a task from the database. Queries the task by hashcode.
      * @param hashcode
      * @return
      * @throws SQLException
@@ -134,6 +134,28 @@ public class DBConnProvider implements AutoCloseable {
         PreparedStatement stat = this.conn.prepareStatement("""
             DELETE FROM taskevents WHERE hashcode = ?;
         """);
+
+        stat.setInt(1, hashcode);
+        final int PG_STATUS = stat.executeUpdate();
+
+        return PG_STATUS > 0 ?
+            HTTPStatusCode.HTTP_200_OK :
+            HTTPStatusCode.HTTP_404_NOT_FOUND;
+    }
+
+    /**
+     * Update the whole task in the database.
+     * @param
+     * @return
+     */
+    public HTTPStatusCode updateWholeTask(int hashcode) throws SQLException {
+        PreparedStatement stat = this.conn.prepareStatement("""
+            UPDATE taskevents SET 
+                datetime = ?, name = ?, description = ?,
+                viewtype = ?, color = ?, isdone = ?
+            WHERE hashcode = ?;
+        """);
+        // TODO: What about updating the hashcode to match the new state of the task? Or should those be preserved?
 
         stat.setInt(1, hashcode);
         final int PG_STATUS = stat.executeUpdate();
