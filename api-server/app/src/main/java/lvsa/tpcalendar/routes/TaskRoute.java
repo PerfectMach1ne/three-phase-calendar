@@ -18,7 +18,7 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * <h3><code>/api/cal/task</code> endpoint</h3>
  */
 public class TaskRoute implements APIRoute {
-    private String response = "";
+    private String response = "\"response\": \"nothing\"";
     private final int PGERR_UNIQUE_VIOLATION = 23505;
 
     @Override
@@ -36,23 +36,22 @@ public class TaskRoute implements APIRoute {
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
         int hashcode = Integer.valueOf(queryParams.get("id"));
         Object[] dbResult = findAndFetchFromDB(hashcode);
+        HTTPStatusCode status = (HTTPStatusCode)dbResult[0];
+        Object fetchedJsonOrNull = dbResult[1];
 
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
 
-        if (dbResult[0] == HTTPStatusCode.HTTP_404_NOT_FOUND && dbResult[1] == null) {
+        if (status == HTTPStatusCode.HTTP_404_NOT_FOUND && fetchedJsonOrNull == null) {
             response = HTTPStatusCode.HTTP_404_NOT_FOUND.wrapAsJsonRes();
-            return HTTPStatusCode.HTTP_404_NOT_FOUND;
+            return status;
         } else if (dbResult[0] != HTTPStatusCode.HTTP_200_OK) {
-            HTTPStatusCode status = (HTTPStatusCode)dbResult[0];
             response = status.wrapAsJsonRes();
             return status;
         }
 
-        String fetchedJson = (String)dbResult[1];
-        response = fetchedJson.toString();
-
-        return HTTPStatusCode.HTTP_200_OK;
+        response = fetchedJsonOrNull.toString();
+        return status;
     }
 
     /**
@@ -67,7 +66,7 @@ public class TaskRoute implements APIRoute {
 	    StringBuffer sb = new StringBuffer();
 
 		String reqdata;
-        HTTPStatusCode status;
+        HTTPStatusCode status; // Return value of insertTaskIntoDB()
 
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
@@ -85,7 +84,6 @@ public class TaskRoute implements APIRoute {
 
         status = insertTaskIntoDB(sb.toString());
         response = status.wrapAsJsonRes(); 
-
         return status;
     }
 
@@ -101,6 +99,9 @@ public class TaskRoute implements APIRoute {
         // A (in)sane default.
         HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
 
+        Headers resh = htex.getResponseHeaders();
+        resh.set("Content-Type", "application/json");
+
         try (
             DBConnProvider db = new DBConnProvider();
             Connection conn = db.getDBConnection();
@@ -112,11 +113,7 @@ public class TaskRoute implements APIRoute {
             return status;
         }
 
-        Headers resh = htex.getResponseHeaders();
-        resh.set("Content-Type", "application/json");
-
         response = status.wrapAsJsonRes();
-
         return status;
     }
 
@@ -163,10 +160,10 @@ public class TaskRoute implements APIRoute {
     }
 
     /**
-     * Find and fetch the task from the database; Gson JSON object returned is null if task can't be found or something else goes wrong.
+     * Find and fetch the task from the database and return it alongside its HTTP status code.
      * 
      * @param   hashcode    an <code>int</code> hashcode of a given task.
-     * @return  a 2-element <code>Object[]</code> array containing the HTTP status code and the Gson-compatible JSON object from db.
+     * @return  a 2-element <code>Object[]</code> array containing HTTPStatusCode and either a Gson-compatible JSON object from db or a <code>null</code> value.
      */
     private Object[] findAndFetchFromDB(int hashcode) {
         String jsonTask = "";
@@ -191,7 +188,7 @@ public class TaskRoute implements APIRoute {
      * Attempt to insert a new task into the database, and return the HTTP status code representing the result of the operation.
      * 
      * @param   buffer  a string buffer containing the request JSON data to be inserted into the database.
-     * @return  a <code>HTTPStatusCode</code> array containing the HTTP status code.
+     * @return  a <code>HTTPStatusCode</code>.
      */
     private HTTPStatusCode insertTaskIntoDB(String buffer) {
         try (
