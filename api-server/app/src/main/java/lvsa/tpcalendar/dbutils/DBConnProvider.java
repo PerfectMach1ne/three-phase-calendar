@@ -89,7 +89,7 @@ public class DBConnProvider implements AutoCloseable {
      * @return operation status code.
      * @throws SQLException
      */
-    public HTTPStatusCode insertTask(String json) throws SQLException {
+    public HTTPStatusCode createTask(String json) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
             INSERT INTO taskevents 
             (hashcode, datetime, name, description, viewtype, color, isdone)
@@ -227,7 +227,7 @@ public class DBConnProvider implements AutoCloseable {
      * @return operation status code.
      * @throws SQLException
      */
-    public HTTPStatusCode updateTask(int hashcode) throws SQLException {
+    public HTTPStatusCode updatePartialTask(int hashcode) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
             UPDATE taskevents SET 
                 datetime = ?, name = ?, description = ?,

@@ -26,21 +26,27 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~POST TaskEvent.~~
 - [x] ~~DELETE TaskEvent.~~
 - [x] ~~PUT TaskEvent (difficulty? easy peasy).~~
-- [ ] **PATCH TaskEvent (difficulty? lemon squezy (not easy)).**
+- [ ] PATCH TaskEvent (difficulty? lemon squezy (not easy)).
 - [x] ~~Integrate event types (`static`, `history`, `routine`)~~
 - [ ] **`created_at` & `updated_at` function triggers.**
 - [ ] **Implement PeriodEvent & TextEvent tables.**
+- [ ] GET PeriodEvent.
+- [ ] POST PeriodEvent.
+- [ ] PUT PeriodEvent.
+- [ ] DELETE PeriodEvent.
+- [ ] GET TextEvent.
+- [ ] POST TextEvent.
+- [ ] PUT TextEvent.
+- [ ] DELETE TextEvent.
+- [ ] Make the QueryParam "validator strings" actually do something.
+- [ ] Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).
+- [ ] ForeignKey relation + GET all user/calendar events.
+- [ ] User authentication with JWT, bcrypt password encryption and OAuth 2.0.
 - [ ] Server-side database schema initialization and validation (possibly future migration features?).
 - [ ] postgres role for division of database access permissions.
 - [ ] Substitute `HttpServer` with `HttpsServer` (#5).
-- [ ] User authentication with JWT, bcrypt password encryption and OAuth 2.0.
 - [x] ~~https://github.com/PerfectMach1ne/three-phase-calendar/issues/4~~
-- [ ] Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).
-- [ ] ForeignKey relation + GET all user/calendar events.
-- [ ] PeriodEvent business-logic-side implementation.
-- [ ] PeriodEvent server-context-side implementation.
-- [ ] TextEvent business-logic-side implementation.
-- [ ] TextEvent server-context-side implementation.
+
 
 ### Tauri x Vue.js 3 desktop + mobile + web app
 

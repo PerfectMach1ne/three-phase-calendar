@@ -55,7 +55,15 @@ public final class SchemaInitializer {
 		Statement stat = conn.createStatement();
 		stat.execute("""
 			CREATE TABLE IF NOT EXISTS periodevents (
-				# TODO
+				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+				hashcode INT UNIQUE NOT NULL,
+				start_datetime timestamp NOT NULL,
+				end_datetime timestamp NOT NULL,
+				name TEXT,
+				description TEXT,
+				viewtype taskview NOT NULL,
+				color VARCHAR(7) NOT NULL,
+				isdone BOOLEAN NOT NULL,
 			);
 		""");
 	}
@@ -64,7 +72,8 @@ public final class SchemaInitializer {
 		Statement stat = conn.createStatement();
 		stat.execute("""
 			CREATE TABLE IF NOT EXISTS textevents (
-				# TODO
+				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+				hashcode INT UNIQUE NOT NULL,
 			);
 		""");
 	}

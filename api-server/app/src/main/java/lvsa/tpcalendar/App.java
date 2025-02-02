@@ -65,7 +65,7 @@ public final class App {
                     "/api/cal/timeblock", new AbstractMap.SimpleEntry<String, APIRoute>(
                         "?id={int}", new TaskRoute()),
                     "/api/cal/text", new AbstractMap.SimpleEntry<String, APIRoute>(
-                        "", new TaskRoute()),
+                        "?id={base64}", new TaskRoute()),
                     "/teapot", new AbstractMap.SimpleEntry<String, APIRoute>(
                         "?msg={char[57]}", new ImATeapotDoubleColon3()),
                     "/api/teapot", new AbstractMap.SimpleEntry<String, APIRoute>(

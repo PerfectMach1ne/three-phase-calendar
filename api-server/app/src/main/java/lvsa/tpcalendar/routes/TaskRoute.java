@@ -232,7 +232,7 @@ public class TaskRoute implements APIRoute {
             DBConnProvider db = new DBConnProvider();
             Connection conn = db.getDBConnection();
         ) {
-            HTTPStatusCode status = db.insertTask(buffer);
+            HTTPStatusCode status = db.createTask(buffer);
             return status;
         } catch (SQLException sqle) {
             if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {

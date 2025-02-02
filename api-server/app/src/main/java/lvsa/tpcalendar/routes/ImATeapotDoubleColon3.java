@@ -48,6 +48,9 @@ public class ImATeapotDoubleColon3 implements APIRoute {
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
 
+        Headers resh = htex.getResponseHeaders();
+        resh.set("Content-Type", "text/plain");
+
         response = "am a teapot :3" + APIContexts.REGISTERED_NURSE;
         return HTTPStatusCode.HTTP_418_IM_A_TEAPOT;
     }
