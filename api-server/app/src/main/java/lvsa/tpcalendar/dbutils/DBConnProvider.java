@@ -41,7 +41,7 @@ public class DBConnProvider implements AutoCloseable {
     /**
      * Query a task from a database by its hashcode.
      * @param hashcode
-     * @return a task from database as JSON object. 
+     * @return a task from database as JSON object or a JSON server error response. 
      * @throws SQLException
      */
     public String queryByHashcode(int hashcode) throws SQLException {
@@ -129,7 +129,7 @@ public class DBConnProvider implements AutoCloseable {
     /**
      * Delete a task from the database. Queries the task by hashcode.
      * @param hashcode
-     * @return
+     * @return operation status code.
      * @throws SQLException
      */
     public HTTPStatusCode deleteTask(int hashcode) throws SQLException {
@@ -147,10 +147,87 @@ public class DBConnProvider implements AutoCloseable {
 
     /**
      * Update the whole task in the database.
-     * @param
-     * @return
+     * @param hashcode
+     * @return operation status code.
+     * @throws SQLException
      */
-    public HTTPStatusCode updateWholeTask(int hashcode) throws SQLException {
+    public HTTPStatusCode updateWholeTask(int hashcode, String json) throws SQLException {
+        
+        PreparedStatement hashcodeQuery = this.conn.prepareStatement("""
+            SELECT hashcode, datetime, name, description,
+                   viewtype, color, isdone
+            FROM taskevents
+            WHERE hashcode = ?;         
+        """);
+        hashcodeQuery.setInt(1, hashcode);
+        Gson gson = new Gson();
+        TaskOut taskCheck;
+        try {
+            ResultSet rs = hashcodeQuery.executeQuery();
+            if (!rs.next()) {
+                return HTTPStatusCode.HTTP_404_NOT_FOUND;
+            } else {
+                taskCheck = new TaskOut(
+                    rs.getInt("hashcode"), 
+                    rs.getString("datetime"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    invoke(() -> { return ViewType.toViewType(rs.getString("viewtype")); }),
+                    new ColorObj(
+                        rs.getString("color") == "" ? false : true,
+                        rs.getString("color")
+                    ),
+                    rs.getBoolean("isdone")
+                );
+
+                if (gson.toJson(taskCheck) != json) {
+                    // Should this be an error server or a client error? 
+                    // return HTTPStatusCode.HTTP_404_NOT_FOUND;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // TODO: What about updating the hashcode to match the new state of the task? Or should those be preserved?
+        PreparedStatement updateStat = this.conn.prepareStatement("""
+            UPDATE taskevents SET 
+                datetime = ?, name = ?, description = ?,
+                viewtype = ?, color = ?, isdone = ?
+            WHERE hashcode = ?;
+        """);
+
+        TaskIn task;
+        try {
+            task = gson.fromJson(json, TaskIn.class);
+        } catch (JsonSyntaxException jse) {
+            jse.printStackTrace();
+            return HTTPStatusCode.HTTP_400_BAD_REQUEST;
+        }
+
+        LocalDateTime ldt = LocalDateTime.parse(task.getDatetime()); 
+        updateStat.setTimestamp(1, new Timestamp(ldt.toInstant(ZoneOffset.UTC).toEpochMilli()));
+        updateStat.setString(2, task.getName());
+        updateStat.setString(3, task.getDesc());
+        updateStat.setObject(4, task.getViewType(), Types.OTHER);
+        updateStat.setString(5, "#" + task.getColor().getHex());
+        updateStat.setBoolean(6, task.isDone());
+        updateStat.setInt(7, hashcode);
+
+        final int PG_STATUS = updateStat.executeUpdate();
+
+        return PG_STATUS > 0 ?
+            HTTPStatusCode.HTTP_200_OK :
+            HTTPStatusCode.HTTP_404_NOT_FOUND;
+    }
+
+    /**
+     * Partially the task in the database.
+     * @param hashcode
+     * @return operation status code.
+     * @throws SQLException
+     */
+    public HTTPStatusCode updateTask(int hashcode) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
             UPDATE taskevents SET 
                 datetime = ?, name = ?, description = ?,

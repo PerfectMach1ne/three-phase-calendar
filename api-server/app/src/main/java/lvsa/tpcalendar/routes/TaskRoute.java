@@ -120,10 +120,47 @@ public class TaskRoute implements APIRoute {
     /**
      * <b>PUT</b> <code>/api/cal/task?id={hashcode} [-d application/json]</code>
      */
+    @SuppressWarnings("unchecked")
     @Override
     public HTTPStatusCode PUT(HttpExchange htex) {
-        response = HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED.wrapAsJsonRes();
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
+        int hashcode = Integer.valueOf(queryParams.get("id"));
+
+		InputStream is = htex.getRequestBody();
+		InputStreamReader isReader = new InputStreamReader(is);
+    	BufferedReader reader = new BufferedReader(isReader);
+	    StringBuffer sb = new StringBuffer();
+
+		String reqdata;
+        // A (in)sane default.
+        HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+
+        Headers resh = htex.getResponseHeaders();
+        resh.set("Content-Type", "application/json");
+
+        try {
+            while ( (reqdata = reader.readLine()) != null ) {
+                sb.append(reqdata);
+            }
+        } catch (IOException ioe) {
+            // log: IOException at StringBuffer in POST /api/cal/task
+            ioe.printStackTrace();
+            // Default is HTTP 500 Internal Server Error anyway.
+            response = status.wrapAsJsonRes();
+            return status;
+        }
+
+        try (
+            DBConnProvider db = new DBConnProvider();
+            Connection conn = db.getDBConnection();
+        ) {
+            status = db.updateWholeTask(hashcode, sb.toString());
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        }
+
+        response = status.wrapAsJsonRes();
+        return status;
     }
 
     /**
