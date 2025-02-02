@@ -22,7 +22,7 @@ public class TaskIn {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode() throws DateTimeParseException {
         LocalDateTime ldt = null;
         try {
             ldt = LocalDateTime.parse(this.datetime); 
@@ -46,7 +46,7 @@ public class TaskIn {
                         + this.color.hashCode())
                         * (this.isdone ? -1 : 1);
 
-        System.out.println(this.hashcode);
+        System.out.println("[DEBUG] TaskIn.hashcode == " + this.hashcode);
         return this.hashcode;
     }
 

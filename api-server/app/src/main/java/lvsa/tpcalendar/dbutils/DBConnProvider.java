@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeParseException;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
@@ -98,12 +99,13 @@ public class DBConnProvider implements AutoCloseable {
         Gson gson = new Gson();
         TaskIn task;
         try {
+            task = gson.fromJson(json, TaskIn.class);
             try {
-                task = gson.fromJson(json, TaskIn.class);
                 TaskIn.initHashCode(task);
                 if (task.getViewType() == null) return HTTPStatusCode.HTTP_400_BAD_REQUEST;
-            } catch (Exception e) {
-                return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+            } catch (DateTimeParseException dtpe) {
+                dtpe.printStackTrace();
+                return HTTPStatusCode.HTTP_400_BAD_REQUEST;
             }
         } catch (JsonSyntaxException jse) {
             jse.printStackTrace();
