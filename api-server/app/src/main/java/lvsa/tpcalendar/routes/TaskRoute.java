@@ -76,7 +76,7 @@ public class TaskRoute implements APIRoute {
                 sb.append(reqdata);
             }
         } catch (IOException ioe) {
-            // log: IOException at StringBuffer in POST /api/cal/task
+            // TODO: log: IOException at StringBuffer in POST /api/cal/task
             ioe.printStackTrace();
             response = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR.wrapAsJsonRes();
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
@@ -143,7 +143,7 @@ public class TaskRoute implements APIRoute {
                 sb.append(reqdata);
             }
         } catch (IOException ioe) {
-            // log: IOException at StringBuffer in POST /api/cal/task
+            // TODO: log: IOException at StringBuffer in POST /api/cal/task
             ioe.printStackTrace();
             // Default is HTTP 500 Internal Server Error anyway.
             response = status.wrapAsJsonRes();

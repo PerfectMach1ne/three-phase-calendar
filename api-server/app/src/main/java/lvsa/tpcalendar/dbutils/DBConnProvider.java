@@ -152,7 +152,6 @@ public class DBConnProvider implements AutoCloseable {
      * @throws SQLException
      */
     public HTTPStatusCode updateWholeTask(int hashcode, String json) throws SQLException {
-        
         PreparedStatement hashcodeQuery = this.conn.prepareStatement("""
             SELECT hashcode, datetime, name, description,
                    viewtype, color, isdone
@@ -181,8 +180,7 @@ public class DBConnProvider implements AutoCloseable {
                 );
 
                 if (gson.toJson(taskCheck) != json) {
-                    // Should this be an error server or a client error? 
-                    // return HTTPStatusCode.HTTP_404_NOT_FOUND;
+                    return HTTPStatusCode.HTTP_404_NOT_FOUND;
                 }
             }
         } catch (Exception e) {

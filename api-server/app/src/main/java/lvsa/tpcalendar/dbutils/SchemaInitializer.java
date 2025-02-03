@@ -14,6 +14,8 @@ public final class SchemaInitializer {
 			createTypes(conn);
 
 			createTaskEvents(conn);
+			createPeriodEvents(conn);
+			createTextEvents(conn);
 			// createCalendarspace(conn);
 			createUsers(conn);
 		} catch (SQLException sqle) {
@@ -54,7 +56,7 @@ public final class SchemaInitializer {
 	private void createPeriodEvents(Connection conn) throws SQLException {
 		Statement stat = conn.createStatement();
 		stat.execute("""
-			CREATE TABLE IF NOT EXISTS periodevents (
+			CREATE TABLE IF NOT EXISTS timeblockevents (
 				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				hashcode INT UNIQUE NOT NULL,
 				start_datetime timestamp NOT NULL,
@@ -63,17 +65,20 @@ public final class SchemaInitializer {
 				description TEXT,
 				viewtype taskview NOT NULL,
 				color VARCHAR(7) NOT NULL,
-				isdone BOOLEAN NOT NULL,
+				isdone BOOLEAN NOT NULL
 			);
 		""");
 	}
 
 	private void createTextEvents(Connection conn) throws SQLException {
 		Statement stat = conn.createStatement();
+		// TODO: In the future, substitute text for XML to support SOME features of HTML.
+		// TODO: (unless we realize this idea sucks ass LOL)
 		stat.execute("""
 			CREATE TABLE IF NOT EXISTS textevents (
 				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				hashcode INT UNIQUE NOT NULL,
+				content TEXT
 			);
 		""");
 	}
@@ -85,7 +90,7 @@ public final class SchemaInitializer {
 				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				user_id INT FOREIGN KEY,
 				tasksevents_id_arr integer[],	
-				periodevents_id_arr integer[],
+				timeblockevents_id_arr integer[],
 				textevents_id_arr integer[],
 				created_at timestamp NOT NULL DEFAULT now(),
 				updated_at timestamp NOT NULL DEFAULT now()
