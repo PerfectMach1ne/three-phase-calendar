@@ -13,7 +13,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ### Java + postgres backend server 
 
-#### CALENDARCOINS COLLECTED: 17📅🪙!!!
+#### CALENDARCOINS COLLECTED: 18📅🪙!!!
 
 - [x] ~~Dockerize your app properly~~
 - [x] ~~Also integrate Minikube (optional?)~~

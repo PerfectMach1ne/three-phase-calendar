@@ -1,26 +1,26 @@
 -- Schema step 2 builders
 CREATE OR REPLACE FUNCTION add_created_at_col(tablename regclass)
 RETURNS BOOLEAN AS $$
-	BEGIN
-		EXECUTE format('
-			ALTER TABLE %s
-			ADD COLUMN IF NOT EXISTS
-				created_at timestamp without time zone NOT NULL DEFAULT now();
-		', tablename);
-	RETURN true;
-	END;
+BEGIN
+	EXECUTE format('
+		ALTER TABLE %s
+		ADD COLUMN IF NOT EXISTS
+			created_at timestamp without time zone NOT NULL DEFAULT now();
+	', tablename);
+RETURN true;
+END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION add_updated_at_col(tablename regclass)
 RETURNS BOOLEAN AS $$
-	BEGIN
-		EXECUTE format('
-			ALTER TABLE %s
-			ADD COLUMN IF NOT EXISTS
-				updated_at timestamp without time zone NOT NULL DEFAULT now();
-		', tablename);
-	RETURN true;
-	END;
+BEGIN
+	EXECUTE format('
+		ALTER TABLE %s
+		ADD COLUMN IF NOT EXISTS
+			updated_at timestamp without time zone NOT NULL DEFAULT now();
+	', tablename);
+RETURN true;
+END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_tstamp(tablename regclass)
@@ -33,7 +33,8 @@ RETURNS BOOLEAN AS $$
 	END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION alter_all_tables() RETURNS BOOLEAN AS $$
+CREATE OR REPLACE FUNCTION alter_all_tables()
+RETURNS BOOLEAN AS $$
 DECLARE
 	table_name_record RECORD;
 	table_name_regclass regclass;
