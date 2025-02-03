@@ -13,7 +13,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ### Java + postgres backend server 
 
-#### CALENDARCOINS COLLECTED: 18📅🪙!!!
+#### CALENDARCOINS COLLECTED: 20📅🪙!!!
 
 - [x] ~~Dockerize your app properly~~
 - [x] ~~Also integrate Minikube (optional?)~~
@@ -31,10 +31,12 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~`created_at` & `updated_at` adder functions.~~
 - [x] ~~`updated_at` triggers.~~
 - [x] ~~Implement PeriodEvent & TextEvent tables.~~
-- [ ] GET PeriodEvent.
-- [ ] POST PeriodEvent.
-- [ ] PUT PeriodEvent.
-- [ ] DELETE PeriodEvent.
+- [ ] Refactor "route"s to be "router"s instead.
+- [ ] **Decouple database interfacing for routers from DBConnProvider (bridge or proxy of some kind)**
+- [ ] **GET PeriodEvent.**
+- [ ] **POST PeriodEvent.**
+- [ ] **PUT PeriodEvent.**
+- [ ] **DELETE PeriodEvent.**
 - [ ] GET TextEvent.
 - [ ] POST TextEvent.
 - [ ] PUT TextEvent.
@@ -52,7 +54,8 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 ### Tauri x Vue.js 3 desktop + mobile + web app
 
 - [ ] Basic HTTP server functionality.
-- [ ] Basic calendar component structure (vCalendar dead project reimplementation).
+- [x] ~~Basic calendar component structure (vCalendar dead project reimplementation).~~
+- [x] ~~Independent web app build. (Makefile or git subsomething?)~~
 - [ ] Basic Fetch API integration & API server connection.
 - [ ] Basic event fetching.
 - [ ] Calendar styling.
