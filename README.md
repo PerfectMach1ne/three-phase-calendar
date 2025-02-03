@@ -13,7 +13,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ### Java + postgres backend server 
 
-#### CALENDARCOINS COLLECTED: 15📅🪙!!!
+#### CALENDARCOINS COLLECTED: 17📅🪙!!!
 
 - [x] ~~Dockerize your app properly~~
 - [x] ~~Also integrate Minikube (optional?)~~
@@ -28,8 +28,9 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~PUT TaskEvent (difficulty? easy peasy).~~
 - [ ] PATCH TaskEvent (difficulty? lemon squezy (not easy)).
 - [x] ~~Integrate event types (`static`, `history`, `routine`)~~
-- [ ] **`created_at` & `updated_at` function triggers.**
-- [ ] **Implement PeriodEvent & TextEvent tables.**
+- [x] ~~`created_at` & `updated_at` adder functions.~~
+- [ ] **`updated_at` triggers.**
+- [x] ~~Implement PeriodEvent & TextEvent tables.~~
 - [ ] GET PeriodEvent.
 - [ ] POST PeriodEvent.
 - [ ] PUT PeriodEvent.
