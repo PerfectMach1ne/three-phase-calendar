@@ -29,7 +29,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] PATCH TaskEvent (difficulty? lemon squezy (not easy)).
 - [x] ~~Integrate event types (`static`, `history`, `routine`)~~
 - [x] ~~`created_at` & `updated_at` adder functions.~~
-- [ ] **`updated_at` triggers.**
+- [x] ~~`updated_at` triggers.~~
 - [x] ~~Implement PeriodEvent & TextEvent tables.~~
 - [ ] GET PeriodEvent.
 - [ ] POST PeriodEvent.
