@@ -141,13 +141,11 @@ public final class SchemaInitializer {
 			END;
 			$$ LANGUAGE plpgsql;
 
-			CREATE OR REPLACE FUNCTION update_tstamp(tablename regclass)
-			RETURNS BOOLEAN AS $$
+			CREATE OR REPLACE FUNCTION update_tstamp()
+			RETURNS TRIGGER AS $$
 				BEGIN
-					EXECUTE format('
-						UPDATE %s SET updated_at = now();
-					', tablename);
-				RETURN true;
+					NEW.updated_at = now();
+					RETURN NEW;
 				END;
 			$$ LANGUAGE plpgsql;
 
@@ -166,14 +164,18 @@ public final class SchemaInitializer {
 					PERFORM add_created_at_col(table_name_regclass);
 					PERFORM add_updated_at_col(table_name_regclass);
 
-					CREATE OR REPLACE TRIGGER tg_updated_at
-					AFTER UPDATE ON table_name_regclass
-					FOR EACH ROW
-					EXECUTE FUNCTION update_tstamp(table_name_regclass);
+					EXECUTE format('
+						CREATE OR REPLACE TRIGGER tg_updated_at
+						AFTER UPDATE ON %I
+						FOR EACH ROW
+						EXECUTE FUNCTION update_tstamp();
+					', table_name_regclass);
 				END LOOP;
 			RETURN true;
 			END;
 			$$ LANGUAGE plpgsql;
+
+			SELECT alter_all_tables();
 		""");
 	}
 }

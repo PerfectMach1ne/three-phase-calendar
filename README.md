@@ -11,9 +11,9 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ## Milestones/feature ToDo list
 
-### Java + postgres backend server 
-
 #### CALENDARCOINS COLLECTED: 20📅🪙!!!
+
+### Java + postgres backend server 
 
 - [x] ~~Dockerize your app properly~~
 - [x] ~~Also integrate Minikube (optional?)~~
