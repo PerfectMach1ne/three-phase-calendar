@@ -1,20 +1,18 @@
 <script setup>
-import { RouterView } from 'vue-router';
-</script>
+import { RouterView, useRouter } from 'vue-router';
 
-<script>
-export default {
-  methods: {
-    goToHome() {
-      this.$router.push('/');
-    },
-    goToTasks() {
-      this.$router.push('/tasks');
-    },
-    goToAbout() {
-      this.$router.push('/about');
-    }
-  }
+const router = useRouter();
+
+function goToHome() {
+  router.push('/');
+}
+
+function goToTasks() {
+  router.push('/tasks');
+}
+
+function goToAbout() {
+  router.push('/about');
 }
 </script>
 
