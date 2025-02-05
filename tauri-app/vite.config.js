@@ -21,11 +21,21 @@ export default defineConfig(async () => ({
           protocol: "ws",
           host,
           port: 1421,
+          cors: {
+            origin: [ "http://172.18.0.2:8057", "http://localhost:1420" ],
+            methods: "GET,POST,PUT,DELETE,PATCH,HEAD",
+            optionsSuccessStatus: 204
+          }
         }
       : undefined,
     watch: {
       // 3. tell vite to ignore watching `src-tauri`
       ignored: ["**/src-tauri/**"],
     },
+    cors: {
+      origin: [ "http://172.18.0.2:8057", "http://localhost:1420" ],
+      methods: "GET,POST,PUT,DELETE,PATCH,HEAD",
+      optionsSuccessStatus: 204
+    }
   },
 }));

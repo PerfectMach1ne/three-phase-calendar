@@ -12,6 +12,11 @@ export default defineConfig({
     }
   },
   server: {
-    host: '127.0.0.1'
+    host: '127.0.0.1',
+    cors: {
+      origin: [ "http://172.18.0.2:8057", "http://localhost:1420" ],
+      methods: "GET,POST,PUT,DELETE,PATCH,HEAD",
+      optionsSuccessStatus: 204
+    }
   }
 })

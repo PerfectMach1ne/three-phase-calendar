@@ -37,6 +37,6 @@ export default {
   </div>
   <footer>
     <p>Helo this is the footer</p>
-    <p>04.2023 - 06.2023</p>
+    <p>04.2023 - 02.2025</p>
   </footer>
 </template>

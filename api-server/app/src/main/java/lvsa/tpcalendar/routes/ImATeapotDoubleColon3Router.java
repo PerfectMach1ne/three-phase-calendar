@@ -13,7 +13,8 @@ import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
- * /teapot
+ * <h3><code>/teapot</code> endpoint</h3>
+ * <h3><code>/api/teapot</code> endpoint</h3>
  */
 public class ImATeapotDoubleColon3Router implements APIRouter {
     private String response = "";
