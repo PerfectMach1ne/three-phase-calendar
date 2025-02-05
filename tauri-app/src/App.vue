@@ -1,5 +1,5 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from 'vue-router';
 </script>
 
 <script>
@@ -25,18 +25,17 @@ export default {
   -->
   <header>
     <img @click="goToHome" src="./assets/logo.png" alt="tpc placeholder logo" class="logo" width="80" height="80"/>
-    <nav> <!-- do NOT mistake this with "Navbar" as in component NavbarContainer and all related components -->
+    <nav>
       <button @click="goToHome" class="router">Home</button>
       <button @click="goToTasks" class="router">Tasks</button>
       <button @click="goToAbout" class="router">About</button>
     </nav>
   </header>
-  <div class="wrapper">
-    <!-- <HelloWorld msg="You did it!" /> -->
+  <main class="wrapper">
     <RouterView />
-  </div>
+  </main>
   <footer>
-    <p>Helo this is the footer</p>
+    <p><em>One Calendar App to rule them all, One Calendar App to find them; One Calendar App to bring them all and in the darkness bind them.</em></p>
     <p>04.2023 - 02.2025</p>
   </footer>
 </template>

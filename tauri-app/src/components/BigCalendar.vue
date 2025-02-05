@@ -160,7 +160,7 @@ export default {
     this.currentWeek = this.getTodaysWeek();
 
     // silly print testing
-    console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstWeekday + ', ' + this.currentLastWeekday + ', ' + this.currentYear)
+    console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstWeekday + ', ' + this.currentLastWeekday + ', ' + this.currentYear);
     
     // Easy fix for yearmonth__display class element being sized correctly - steal weekday__box's width after render. >:)
     this.weekdayBoxWidth = document.getElementById('weekdaybox-width-source').offsetWidth + 'px';
@@ -178,7 +178,6 @@ export default {
       <ChangeWeek
         :character="left"
         @past-week="goToPastWeek()" />
-      <!-- <span>&#10094;</span> move "left" button -->
       <TodaysWeek
         :character="today"
         @todays-week="goToTodaysWeek()" />
