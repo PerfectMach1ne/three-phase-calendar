@@ -11,13 +11,13 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import lvsa.tpcalendar.dbutils.DBConnProvider;
-import lvsa.tpcalendar.http.APIRoute;
+import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
  * <h3><code>/api/cal/task</code> endpoint</h3>
  */
-public class TaskRoute implements APIRoute {
+public class TaskRouter implements APIRouter {
     private String response = "\"response\": \"nothing\"";
     private final int PGERR_UNIQUE_VIOLATION = 23505;
 

@@ -9,13 +9,13 @@ import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
 import lvsa.tpcalendar.http.APIContexts;
-import lvsa.tpcalendar.http.APIRoute;
+import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
  * /teapot
  */
-public class ImATeapotDoubleColon3 implements APIRoute {
+public class ImATeapotDoubleColon3Router implements APIRouter {
     private String response = "";
 
     public String getResponse() {

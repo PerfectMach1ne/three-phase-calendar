@@ -7,13 +7,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 
-import lvsa.tpcalendar.http.APIRoute;
+import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
  * /api/users
  */
-public class UserRoute implements APIRoute {
+public class UserRouter implements APIRouter {
     private String response = "INTERNAL_SERVER_ERROR";
 
     @Override

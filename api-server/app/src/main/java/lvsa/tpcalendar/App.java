@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.Properties;
 
 import lvsa.tpcalendar.http.APIContexts;
-import lvsa.tpcalendar.http.APIRoute;
+import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.QueryParamsFilter;
 import lvsa.tpcalendar.dbutils.SchemaInitializer;
-import lvsa.tpcalendar.routes.ImATeapotDoubleColon3;
-import lvsa.tpcalendar.routes.TaskRoute;
+import lvsa.tpcalendar.routes.ImATeapotDoubleColon3Router;
+import lvsa.tpcalendar.routes.TaskRouter;
 import lvsa.tpcalendar.utils.IPUtils;
 import lvsa.tpcalendar.utils.PropsService;
 
@@ -58,18 +58,18 @@ public final class App {
      */
     private static APIContexts createAPIContexts() {
         APIContexts apictxs = new APIContexts(
-            new HashMap<String, Map.Entry<String, APIRoute>>(
+            new HashMap<String, Map.Entry<String, APIRouter>>(
                 Map.of(
-                    "/api/cal/task", new AbstractMap.SimpleEntry<String, APIRoute>(
-                        "?id={int}", new TaskRoute()),
-                    "/api/cal/timeblock", new AbstractMap.SimpleEntry<String, APIRoute>(
-                        "?id={int}", new TaskRoute()),
-                    "/api/cal/text", new AbstractMap.SimpleEntry<String, APIRoute>(
-                        "?id={base64}", new TaskRoute()),
-                    "/teapot", new AbstractMap.SimpleEntry<String, APIRoute>(
-                        "?msg={char[57]}", new ImATeapotDoubleColon3()),
-                    "/api/teapot", new AbstractMap.SimpleEntry<String, APIRoute>(
-                        "?msg={char[57]}", new ImATeapotDoubleColon3())
+                    "/api/cal/task", new AbstractMap.SimpleEntry<String, APIRouter>(
+                        "?id={int}", new TaskRouter()),
+                    "/api/cal/timeblock", new AbstractMap.SimpleEntry<String, APIRouter>(
+                        "?id={int}", new TaskRouter()),
+                    "/api/cal/text", new AbstractMap.SimpleEntry<String, APIRouter>(
+                        "?id={base64}", new TaskRouter()),
+                    "/teapot", new AbstractMap.SimpleEntry<String, APIRouter>(
+                        "?msg={char[57]}", new ImATeapotDoubleColon3Router()),
+                    "/api/teapot", new AbstractMap.SimpleEntry<String, APIRouter>(
+                        "?msg={char[57]}", new ImATeapotDoubleColon3Router())
                 )
             )
         );

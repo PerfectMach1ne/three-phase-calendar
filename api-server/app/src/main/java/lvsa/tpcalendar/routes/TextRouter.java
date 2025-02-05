@@ -2,13 +2,13 @@ package lvsa.tpcalendar.routes;
 
 import com.sun.net.httpserver.HttpExchange;
 
-import lvsa.tpcalendar.http.APIRoute;
+import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
- * <h3><code>/api/cal/timeblock</code> endpoint</h3>
+ * <h3><code>/api/cal/text</code> endpoint</h3>
  */
-public class TimeblockRoute implements APIRoute {
+public class TextRouter implements APIRouter {
     private String response = "\"response\": \"nothing\"";
 
     @Override
@@ -17,7 +17,7 @@ public class TimeblockRoute implements APIRoute {
     }
 
     /**
-     * <b>GET</b> <code>/api/cal/timeblock?id={hashcode}.</code>
+     * <b>GET</b> <code>/api/cal/text?id={base64encodedstr}.</code>
      */
     @Override
     public HTTPStatusCode GET(HttpExchange htex) {
@@ -26,7 +26,7 @@ public class TimeblockRoute implements APIRoute {
     }
 
     /**
-     * <b>POST</b> <code>/api/cal/timeblock [-d application/json].</code>
+     * <b>POST</b> <code>/api/cal/text [-d application/xml].</code>
      */
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
@@ -35,7 +35,7 @@ public class TimeblockRoute implements APIRoute {
     }
 
     /**
-     * <b>PUT</b> <code>/api/cal/timeblock?id={hashcode} [-d application/json].</code>
+     * <b>PUT</b> <code>/api/cal/text?id={base64encodedstr} [-d application/xml].</code>
      */
     @Override
     public HTTPStatusCode PUT(HttpExchange htex) {
@@ -44,7 +44,7 @@ public class TimeblockRoute implements APIRoute {
     }
 
     /**
-     * <b>PATCH</b> <code>/api/cal/timeblock?id={hashcode} [-d application/json].</code>
+     * <b>PATCH</b> <code>/api/cal/text?id={base64encodedstr} [-d application/xml].</code>
      */
     @Override
     public HTTPStatusCode PATCH(HttpExchange htex) {
@@ -53,7 +53,7 @@ public class TimeblockRoute implements APIRoute {
     }
 
     /**
-     * <b>DELETE</b> <code>/api/cal/timeblock?id={hashcode}.</code>
+     * <b>DELETE</b> <code>/api/cal/text?id={base64encodedstr}.</code>
      */
     @Override
     public HTTPStatusCode DELETE(HttpExchange htex) {

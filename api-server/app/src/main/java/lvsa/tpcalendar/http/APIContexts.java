@@ -9,11 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class APIContexts {
-	private final HashMap<String, Map.Entry<String, APIRoute>> contextsParamsMap;
+	private final HashMap<String, Map.Entry<String, APIRouter>> contextsParamsMap;
 
     public static final String REGISTERED_NURSE = "\r\n";
 
-	public APIContexts(HashMap<String, Map.Entry<String, APIRoute>> contextParamsMap) {
+	public APIContexts(HashMap<String, Map.Entry<String, APIRouter>> contextParamsMap) {
 		this.contextsParamsMap = contextParamsMap;
 	}
 
@@ -22,7 +22,7 @@ public class APIContexts {
 
 		contextsParamsMap.forEach( (context, entryPair) -> {
 			String queryParam = entryPair.getKey();
-			APIRoute apiRoute = entryPair.getValue();
+			APIRouter apiRoute = entryPair.getValue();
 			if (queryParam.isEmpty()) {
 				list.add(new HTTPContext(context, "", apiRoute));
 			} else {
@@ -36,17 +36,17 @@ public class APIContexts {
 	public class HTTPContext {
 		private final String URI_STRING;
 		private final String QUERY_PARAMS_VALIDATOR;
-		private final APIRoute ROUTE_CLASS;
+		private final APIRouter ROUTER;
 		private final HttpHandler HANDLER;
 
-		HTTPContext(String uri, String params, APIRoute route) {
+		HTTPContext(String uri, String params, APIRouter route) {
 			this.URI_STRING = uri;
 			this.QUERY_PARAMS_VALIDATOR = params;
-			this.ROUTE_CLASS = route;
+			this.ROUTER = route;
 			this.HANDLER = new HttpHandler() {
 				@Override
 				public void handle(HttpExchange exchange) throws IOException {
-					// Default response based on unimplemented methods of APIRoute strategy.
+					// Default response based on unimplemented methods of APIRouter strategy.
 					HTTPStatusCode status = HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
 					String res = status.wrapAsJsonRes() + REGISTERED_NURSE;
 
@@ -54,31 +54,31 @@ public class APIContexts {
 
 					switch (exchange.getRequestMethod().toUpperCase()) {
 						case "GET":
-							status = ROUTE_CLASS.GET(exchange);
+							status = ROUTER.GET(exchange);
 							break;
 						case "POST":
-							status = ROUTE_CLASS.POST(exchange);
+							status = ROUTER.POST(exchange);
 							break;
 						case "PATCH":
-							status = ROUTE_CLASS.PATCH(exchange);
+							status = ROUTER.PATCH(exchange);
 							break;
 						case "PUT":
-							status = ROUTE_CLASS.PUT(exchange);
+							status = ROUTER.PUT(exchange);
 							break;
 						case "DELETE":
-							status = ROUTE_CLASS.DELETE(exchange);
+							status = ROUTER.DELETE(exchange);
 							break;
 						case "HEAD":
-							status = ROUTE_CLASS.HEAD(exchange);
+							status = ROUTER.HEAD(exchange);
 							break;
 						case "CONNECT":
-							status = ROUTE_CLASS.CONNECT(exchange);
+							status = ROUTER.CONNECT(exchange);
 							break;
 						case "OPTIONS":
-							status = ROUTE_CLASS.OPTIONS(exchange);
+							status = ROUTER.OPTIONS(exchange);
 							break;
 						case "TRACE":
-							status = ROUTE_CLASS.TRACE(exchange);
+							status = ROUTER.TRACE(exchange);
 							break;
 						default:
 							status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
@@ -86,8 +86,8 @@ public class APIContexts {
 					}
 					
 					// Wacky ternary to avoid \r\n duplication.
-					res = ROUTE_CLASS.getResponse() 
-						+ (ROUTE_CLASS.getResponse().endsWith(REGISTERED_NURSE) ? "" : REGISTERED_NURSE);
+					res = ROUTER.getResponse() 
+						+ (ROUTER.getResponse().endsWith(REGISTERED_NURSE) ? "" : REGISTERED_NURSE);
 
 					// 0 to use Chunked Transfer Coding
 					// https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
@@ -108,6 +108,6 @@ public class APIContexts {
 
 		public String getQueryParamsValidator() { return this.QUERY_PARAMS_VALIDATOR; } 
 
-		public APIRoute getAPIRoute() { return this.ROUTE_CLASS; };
+		public APIRouter getAPIRoute() { return this.ROUTER; };
 	}
 }
