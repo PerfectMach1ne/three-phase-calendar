@@ -24,4 +24,16 @@ export default {
 .nav__isolator {
   display: flex;
 }
+
+.about {
+  display: flex;
+}
+
+.about__container {
+  margin: 5px;
+  border: 1px solid gray;
+  padding: 0;
+  max-height: 56vh;
+  width: 85%
+}
 </style>

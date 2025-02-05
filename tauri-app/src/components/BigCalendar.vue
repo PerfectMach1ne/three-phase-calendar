@@ -221,3 +221,112 @@ export default {
     </div>
   </div>
 </template>
+
+<style>
+.wrapper__big__calendar {
+  margin: 0;
+  padding: 0;
+}
+
+.yearmonth__display {
+  display: inline-flex;
+  align-items: center; /* prevents text from being aligned "annoyingly upwards" */
+  gap: 15px;
+  border: 1px solid lightgray;
+  margin: 0;
+  padding: 20px 0;
+  content: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-variant-caps: small-caps;
+  font-size: 1.5rem;
+  color: #424242;
+}
+
+.long__task__display {
+  display: flex;
+}
+
+.weekday__box {
+  display: inline-flex;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.filler__cell {
+  border: 1px solid lightgray;
+  margin: 0;
+  padding: 0;
+  content: 0;
+  width: 60px;
+}
+
+.weekday__label {
+  border: 1px solid lightgray;
+  margin: 0;
+  padding: 25px 34px;
+  content: 0;
+  min-width: 150px;
+  text-align: center;
+  vertical-align: middle;
+  font-family: Arial, Helvetica, sans-serif;
+  font-variant-caps: small-caps;
+  font-size: 1.5rem;
+  color: #767676;
+}
+
+.calendar__with__hours {
+  --nothing-there: '';
+}
+
+.calendar__hour__row {
+  display: inline-flex;
+  padding: 0;
+  margin: 0;
+  content: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.hour__box {
+  border: 1px solid lightgray;
+  margin: 0;
+  padding: 24.8px 0;
+  content: 0;
+  width: 60px;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+  color: #767676;
+}
+
+.hour__row__day {
+  border: 1px solid lightgray;
+  margin: 0;
+  padding: 34px;
+  content: 0;
+  min-width: 150px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+button.change__week {
+  margin: 0;
+  border: 1px solid gray;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  background-color: aquamarine;
+  font-size: 1.2rem;
+  color: #000;
+}
+
+button.change__week:hover {
+  background-color: turquoise;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+button.change__week:not(:hover) {
+  transition: all 0.3s ease;
+}
+</style>

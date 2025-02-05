@@ -19,3 +19,16 @@ export default {
     <TaskBar/>
   </div>
 </template>
+
+<style>
+.navbar__container {
+  margin: 5px;
+  border: 1px solid gray;
+  padding: 5px;
+  width: revert;
+  height: 20vh; 
+  display: inline-flex;
+  flex-direction: row;
+  gap: 25px;
+}
+</style>

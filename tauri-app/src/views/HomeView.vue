@@ -26,4 +26,8 @@ export default {
 .nav__isolator {
   display: flex;
 }
+
+.home {
+  display: flex;
+}
 </style>
