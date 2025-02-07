@@ -17,8 +17,8 @@ export default {
   created() {
     this.displayChar = this.character;
     
-    if (Number(this.displayChar.slice(2,7)) == 10094) this.buttonType = 'left'
-    else if (Number(this.displayChar.slice(2,7)) == 10095) this.buttonType = 'right';
+    if ( Number(this.displayChar.slice(2,7)) == 10094 ) this.buttonType = 'left';
+    else if ( Number(this.displayChar.slice(2,7)) == 10095 ) this.buttonType = 'right';
   }
 }
 </script>

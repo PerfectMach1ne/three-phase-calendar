@@ -31,14 +31,14 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~`created_at` & `updated_at` adder functions.~~
 - [x] ~~`updated_at` triggers.~~
 - [x] ~~Implement PeriodEvent & TextEvent tables.~~
-- [x] Refactor "route"s to be "router"s instead.
+- [x] ~~Refactor "route"s to be "router"s instead.~~
 - [ ] **Decouple database interfacing for routers from DBConnProvider (bridge or proxy of some kind)**
 - [ ] **GET PeriodEvent.**
 - [ ] **POST PeriodEvent.**
 - [ ] **PUT PeriodEvent.**
 - [ ] **DELETE PeriodEvent.**
-- [ ] GET TextEvent.
-- [ ] POST TextEvent.
+- [ ] **GET TextEvent.**
+- [ ] **POST TextEvent.**
 - [ ] PUT TextEvent.
 - [ ] DELETE TextEvent.
 - [ ] Make the QueryParam "validator strings" actually do something.
@@ -53,13 +53,17 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ### Tauri x Vue.js 3 desktop + mobile + web app
 
-- [ ] Basic HTTP server functionality.
 - [x] ~~Basic calendar component structure (vCalendar dead project reimplementation).~~
 - [x] ~~Independent web app build. (Makefile or git subsomething?)~~
-- [ ] Basic Fetch API integration & API server connection.
-- [ ] Basic event fetching.
-- [ ] Calendar styling.
-- [ ] Event object positioning & styling.
+- [ ] **Refactor BigCalendar.**
+- [ ] (OPTIONAL) Move most of the complex date handling to Rust "middleend".
+- [ ] **Implement a dark/light mode toggle.**
+- [ ] **Implement the three modes (calendar, planner, journal; could replace Home, Tasks and About views with these).**
+- [ ] **Make Rust "middleend" be able to talk to the appropriate backend server.**
+- [ ] **Basic event fetching.**
+- [ ] Refurbish calendar styling.
+- [ ] A settings popup/page.
+- [ ] **Event object positioning & styling.**
 - [ ] Event creation forms.
 - [ ] Journal prototype implenentation.
 - [ ] Planner prototype implementation.

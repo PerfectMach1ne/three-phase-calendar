@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
+import lvsa.tpcalendar.dbutils.BaseCRUD;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
@@ -241,5 +242,12 @@ public class TaskRouter implements APIRouter {
             sqle.printStackTrace();
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
+    }
+
+    class TaskCRUD extends BaseCRUD {
+        TaskCRUD(DBConnProvider dbConnProvider) {
+            super(dbConnProvider);
+        }
+        // TODO overload those shits
     }
 }
