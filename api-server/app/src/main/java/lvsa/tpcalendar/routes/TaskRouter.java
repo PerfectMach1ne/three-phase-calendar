@@ -10,7 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import lvsa.tpcalendar.dbutils.BaseCRUD;
+import lvsa.tpcalendar.dbutils.BaseDBProxy;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
@@ -208,6 +208,19 @@ public class TaskRouter implements APIRouter {
 
         try (
             DBConnProvider db = new DBConnProvider();
+            TaskCRUD proxy = new TaskCRUD(db);
+        ) {
+            jsonTask = db.queryByHashcode(hashcode);
+            if (jsonTask.isEmpty()) {
+                return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+            return new Object[]{HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR, null};
+        }
+
+        try (
+            DBConnProvider db = new DBConnProvider();
             Connection conn = db.getDBConnection();
         ) {
             jsonTask = db.queryByHashcode(hashcode);
@@ -244,10 +257,34 @@ public class TaskRouter implements APIRouter {
         }
     }
 
-    class TaskCRUD extends BaseCRUD {
+    class TaskCRUD extends BaseDBProxy implements AutoCloseable {
         TaskCRUD(DBConnProvider dbConnProvider) {
             super(dbConnProvider);
         }
-        // TODO overload those shits
+        
+        public HTTPStatusCode create(String json) throws SQLException {
+            return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        }
+
+        public String read(int hashcode) throws SQLException {
+            return "";
+        }
+
+        public HTTPStatusCode updateWhole(int hashcode, String json) throws SQLException {
+            return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        }
+
+        public HTTPStatusCode updatePartial(int hashcode, String json) throws SQLException {
+            return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        }
+
+        public HTTPStatusCode delete(int hashcode) throws SQLException {
+            return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        }
+
+        @Override
+        public void close() throws SQLException {
+            conn.close();
+        }
     }
 }

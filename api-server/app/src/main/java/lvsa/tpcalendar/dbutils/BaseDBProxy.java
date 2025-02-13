@@ -5,13 +5,13 @@ import java.sql.SQLException;
 
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
-public abstract class BaseCRUD {
-    public DBConnProvider db;
-    public Connection conn;
+public abstract class BaseDBProxy {
+    private DBConnProvider db;
+    protected Connection conn;
 
-    public BaseCRUD(DBConnProvider dbConnProvider) {
+    protected BaseDBProxy(DBConnProvider dbConnProvider) {
         this.db = dbConnProvider;
-        conn = db.getDBConnection();
+        this.conn = db.getDBConnection();
     }
 
     public HTTPStatusCode create(String json) throws SQLException {
