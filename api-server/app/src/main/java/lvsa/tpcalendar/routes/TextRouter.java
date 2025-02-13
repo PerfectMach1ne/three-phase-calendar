@@ -9,12 +9,10 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * <h3><code>/api/cal/text</code> endpoint</h3>
  */
 public class TextRouter implements APIRouter {
-    private String response = "\"response\": \"nothing\"";
+    private String response = "{ \"response\": \"nothing\" }";
 
     @Override
-    public String getResponse() {
-        return this.response;
-    }
+    public String getResponse() { return this.response; }
 
     /**
      * <b>GET</b> <code>/api/cal/text?id={base64encodedstr}.</code>

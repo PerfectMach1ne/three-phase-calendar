@@ -12,7 +12,10 @@ public class TaskIn {
     private ColorObj color;
     private boolean isdone;
 
-    public TaskIn(String datetime, String name, String desc, ViewType viewType, ColorObj color, boolean isdone) {
+    /* Somehow doesn't need to be public, as it never gets directly 
+     * instantiated in the API.
+     */
+    TaskIn(String datetime, String name, String desc, ViewType viewType, ColorObj color, boolean isdone) {
         this.datetime = datetime;
         this.name = name;
         this.desc = desc;
@@ -32,6 +35,8 @@ public class TaskIn {
             ldt = LocalDateTime.parse(this.datetime); 
             if (ldt == null) {
                 dtpe.printStackTrace();
+                this.hashcode = 0; // In case of nullptr access.
+                return this.hashcode;
             }
         }
         
@@ -51,7 +56,7 @@ public class TaskIn {
     }
 
     /**
-     * An atrocity that's a price to pay for my stupidity.
+     * An atrocity that's a price to pay for my stupidity; ensure Java's default object hashcode is overriden by running the code in <code>hashCode()</code>.
      * @param taskIn
      */
     public static void initHashCode(TaskIn taskIn) {

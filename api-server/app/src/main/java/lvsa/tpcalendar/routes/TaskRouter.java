@@ -6,12 +6,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 
-import lvsa.tpcalendar.dbutils.BaseDBProxy;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
+import lvsa.tpcalendar.dbutils.proxies.TaskDBProxy;
 import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
@@ -19,13 +18,11 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * <h3><code>/api/cal/task</code> endpoint</h3>
  */
 public class TaskRouter implements APIRouter {
-    private String response = "\"response\": \"nothing\"";
+    private String response = "{ \"response\": \"nothing\" }";
     private final int PGERR_UNIQUE_VIOLATION = 23505;
 
     @Override
-    public String getResponse() {
-        return this.response;
-    }
+    public String getResponse() { return this.response; }
 
     /**
      * <b>GET</b> <code>/api/cal/task?id={hashcode}.</code>
@@ -105,9 +102,9 @@ public class TaskRouter implements APIRouter {
 
         try (
             DBConnProvider db = new DBConnProvider();
-            Connection conn = db.getDBConnection();
+            TaskDBProxy proxy = new TaskDBProxy(db);
         ) {
-            status = db.deleteTask(hashcode);
+            status = proxy.delete(hashcode);
         } catch (SQLException sqle) {
             sqle.printStackTrace();
             response = status.wrapAsJsonRes();
@@ -153,9 +150,9 @@ public class TaskRouter implements APIRouter {
 
         try (
             DBConnProvider db = new DBConnProvider();
-            Connection conn = db.getDBConnection();
+            TaskDBProxy proxy = new TaskDBProxy(db)
         ) {
-            status = db.updateWholeTask(hashcode, sb.toString());
+            status = proxy.updateWhole(hashcode, sb.toString());
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
@@ -208,9 +205,9 @@ public class TaskRouter implements APIRouter {
 
         try (
             DBConnProvider db = new DBConnProvider();
-            TaskCRUD proxy = new TaskCRUD(db);
+            TaskDBProxy proxy = new TaskDBProxy(db);
         ) {
-            jsonTask = db.queryByHashcode(hashcode);
+            jsonTask = proxy.read(hashcode);
             if (jsonTask.isEmpty()) {
                 return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
             }
@@ -221,9 +218,9 @@ public class TaskRouter implements APIRouter {
 
         try (
             DBConnProvider db = new DBConnProvider();
-            Connection conn = db.getDBConnection();
+            TaskDBProxy proxy = new TaskDBProxy(db);
         ) {
-            jsonTask = db.queryByHashcode(hashcode);
+            jsonTask = proxy.read(hashcode);
             if (jsonTask.isEmpty()) {
                 return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
             }
@@ -244,9 +241,9 @@ public class TaskRouter implements APIRouter {
     private HTTPStatusCode insertTaskIntoDB(String buffer) {
         try (
             DBConnProvider db = new DBConnProvider();
-            Connection conn = db.getDBConnection();
+            TaskDBProxy proxy = new TaskDBProxy(db);
         ) {
-            HTTPStatusCode status = db.createTask(buffer);
+            HTTPStatusCode status = proxy.create(buffer);
             return status;
         } catch (SQLException sqle) {
             if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
@@ -254,37 +251,6 @@ public class TaskRouter implements APIRouter {
             }
             sqle.printStackTrace();
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
-        }
-    }
-
-    class TaskCRUD extends BaseDBProxy implements AutoCloseable {
-        TaskCRUD(DBConnProvider dbConnProvider) {
-            super(dbConnProvider);
-        }
-        
-        public HTTPStatusCode create(String json) throws SQLException {
-            return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
-        }
-
-        public String read(int hashcode) throws SQLException {
-            return "";
-        }
-
-        public HTTPStatusCode updateWhole(int hashcode, String json) throws SQLException {
-            return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
-        }
-
-        public HTTPStatusCode updatePartial(int hashcode, String json) throws SQLException {
-            return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
-        }
-
-        public HTTPStatusCode delete(int hashcode) throws SQLException {
-            return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
-        }
-
-        @Override
-        public void close() throws SQLException {
-            conn.close();
         }
     }
 }

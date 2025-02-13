@@ -12,9 +12,7 @@ public class TimeblockRouter implements APIRouter {
     private String response = "\"response\": \"nothing\"";
 
     @Override
-    public String getResponse() {
-        return this.response;
-    }
+    public String getResponse() { return this.response; }
 
     /**
      * <b>GET</b> <code>/api/cal/timeblock?id={hashcode}.</code>

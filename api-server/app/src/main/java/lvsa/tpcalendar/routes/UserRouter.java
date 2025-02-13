@@ -14,12 +14,10 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * /api/users
  */
 public class UserRouter implements APIRouter {
-    private String response = "INTERNAL_SERVER_ERROR";
+    private String response = "\"response\": \"nothing\"";
 
     @Override
-    public String getResponse() {
-        return this.response;
-    }
+    public String getResponse() { return this.response; }
 
     /**
      * Fetch basic user data.

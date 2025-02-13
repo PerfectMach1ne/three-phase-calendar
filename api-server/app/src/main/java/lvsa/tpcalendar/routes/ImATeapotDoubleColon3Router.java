@@ -17,7 +17,7 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * <h3><code>/api/teapot</code> endpoint</h3>
  */
 public class ImATeapotDoubleColon3Router implements APIRouter {
-    private String response = "";
+    private String response = "\"response\": \"nothing\"";
 
     public String getResponse() {
         return this.response;
@@ -27,7 +27,7 @@ public class ImATeapotDoubleColon3Router implements APIRouter {
 
         Headers reqHeaders = htex.getRequestHeaders();
         reqHeaders.forEach( (header, value) -> {
-            System.out.print(header + ": ");
+            System.out.print("[DEBUG] " + header + ": ");
             value.forEach((listEl) -> {
                 System.out.println(listEl);
             });
