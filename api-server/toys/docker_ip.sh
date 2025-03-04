@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -euo
+
 # Save .properties contents to props.
 props=$(cat ./app/src/main/resources/tpc_testing.properties);
 

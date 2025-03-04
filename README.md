@@ -33,6 +33,9 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~Implement PeriodEvent & TextEvent tables.~~
 - [x] ~~Refactor "route"s to be "router"s instead.~~
 - [x] ~~Decouple database interfacing for routers from DBConnProvider (bridge or proxy of some kind)~~
+- [ ] **Another stupid rework of Task and Timeblock schema.**
+###### \/\/\/ NOOO THIS IS STUPID DON'T DO THAT ONE NO NO NO NO ######
+- [ ] ~~Another stupid refactor (SharedEventImpl -> TaskDBProxy & TimeblockDBPRoxy)~~
 - [ ] **GET PeriodEvent.**
 - [ ] **POST PeriodEvent.**
 - [ ] **PUT PeriodEvent.**
@@ -40,7 +43,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] **GET TextEvent.**
 - [ ] **POST TextEvent.**
 - [ ] PUT TextEvent.
-- [ ] DELETE TextEvent.
+- [ ] **DELETE TextEvent.**
 - [ ] Make the QueryParam "validator strings" actually do something.
 - [ ] Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).
 - [ ] ForeignKey relation + GET all user/calendar events.
@@ -49,7 +52,6 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] postgres role for division of database access permissions.
 - [ ] Substitute `HttpServer` with `HttpsServer` (#5).
 - [x] ~~https://github.com/PerfectMach1ne/three-phase-calendar/issues/4~~
-
 
 ### Tauri x Vue.js 3 desktop + mobile + web app
 

@@ -216,19 +216,6 @@ public class TaskRouter implements APIRouter {
             return new Object[]{HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR, null};
         }
 
-        try (
-            DBConnProvider db = new DBConnProvider();
-            TaskDBProxy proxy = new TaskDBProxy(db);
-        ) {
-            jsonTask = proxy.read(hashcode);
-            if (jsonTask.isEmpty()) {
-                return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
-            }
-        } catch(SQLException sqle) {
-            sqle.printStackTrace();
-            return new Object[]{HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR, null};
-        }
-
         return new Object[]{HTTPStatusCode.HTTP_200_OK, jsonTask};
     }
 

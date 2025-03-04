@@ -11,6 +11,7 @@ public final class SchemaInitializer {
 		try(DBConnProvider dbhandler = new DBConnProvider()) {
 			conn = dbhandler.getDBConnection();
 
+			// nukeAndPave(conn);
 			createTypes(conn);
 
 			createTaskEvents(conn);
@@ -23,6 +24,18 @@ public final class SchemaInitializer {
 		} catch (SQLException sqle) {
 			sqle.printStackTrace();
 		}
+	}
+
+	/**
+	 * Keeping this on prod is straight up vile.
+	 * @param conn
+	 * @throws SQLException
+	 */
+	public static void nukeAndPave(Connection conn) throws SQLException {
+		Statement nuclearCode = conn.createStatement();
+		nuclearCode.execute("""
+			DROP TABLE taskevents, textevents, timeblockevents, users;
+		""");
 	}
 
 	private void createTypes(Connection conn) throws SQLException {
@@ -48,9 +61,7 @@ public final class SchemaInitializer {
 				description TEXT,
 				viewtype taskview NOT NULL,
 				color VARCHAR(7) NOT NULL,
-				isdone BOOLEAN NOT NULL,
-				created_at timestamp NOT NULL DEFAULT now(),
-				updated_at timestamp NOT NULL DEFAULT now()
+				isdone BOOLEAN NOT NULL
 			);
 		""");
 	}
@@ -66,8 +77,7 @@ public final class SchemaInitializer {
 				name TEXT,
 				description TEXT,
 				viewtype taskview NOT NULL,
-				color VARCHAR(7) NOT NULL,
-				isdone BOOLEAN NOT NULL
+				color VARCHAR(7) NOT NULL
 			);
 		""");
 	}

@@ -41,11 +41,11 @@ public class TaskIn {
         }
         
         this.hashcode = ((ldt.getYear()
-                          + ldt.getMonthValue()
-                          + ldt.getDayOfMonth()
-                          + ldt.getHour()
-                          + ldt.getMinute()
-                          + ldt.getSecond())
+                        + ldt.getMonthValue()
+                        + ldt.getDayOfMonth()
+                        + ldt.getHour()
+                        + ldt.getMinute()
+                        + ldt.getSecond())
                         + this.name.hashCode()
                         + this.desc.hashCode()
                         + this.color.hashCode())

@@ -21,6 +21,7 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
     private <T> ViewType invoke(Callable<ViewType> c) throws Exception {
         return c.call();
     }
+
     public TaskDBProxy(DBConnProvider dbConnProvider) {
         super(dbConnProvider);
     }
@@ -57,7 +58,9 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
 
         stat.setInt(1, task.getHashcode());
         LocalDateTime ldt = LocalDateTime.parse(task.getDatetime()); 
-        stat.setTimestamp(2, new Timestamp(ldt.toInstant(ZoneOffset.UTC).toEpochMilli()));
+        // TODO: ZoneOffset.of(...) should be configurable to allow user to adjust their timezone.
+        // Previously this was UTC, but I changed it to make it Work On My Machine(TM).
+        stat.setTimestamp(2, new Timestamp(ldt.toInstant(ZoneOffset.of("+1")).toEpochMilli()));
         stat.setString(3, task.getName());
         stat.setString(4, task.getDesc());
         stat.setObject(5, task.getViewType(), Types.OTHER);
@@ -137,6 +140,11 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
             if (!rs.next()) {
                 return HTTPStatusCode.HTTP_404_NOT_FOUND;
             } else {
+				/*
+				 * This is supposed to check if the task from database is identical
+				 * to the one we're trying to insert. In which case, return
+				 * HTTP_304_NOT_MODIFIED.
+				 */
                 taskCheck = new TaskOut(
                     rs.getInt("hashcode"), 
                     rs.getString("datetime"),
@@ -149,9 +157,14 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
                     ),
                     rs.getBoolean("isdone")
                 );
-
-                if (gson.toJson(taskCheck) != json) {
-                    return HTTPStatusCode.HTTP_404_NOT_FOUND;
+				
+				System.out.println(json.stripLeading());
+				System.out.println(gson.toJson(taskCheck));
+				/** 
+				 * FIXME: https://discord.com/channels/927484270543503361/1218919564310745128/1339697003722047599
+				 */
+                if (gson.toJson(taskCheck) == json.stripLeading()) {
+                    return HTTPStatusCode.HTTP_304_NOT_MODIFIED;
                 }
             }
         } catch (Exception e) {
