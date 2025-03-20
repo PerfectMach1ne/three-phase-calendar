@@ -15,7 +15,7 @@ public final class SchemaInitializer {
 			createTypes(conn);
 
 			createTaskEvents(conn);
-			createPeriodEvents(conn);
+			createTimeblockEvents(conn);
 			createTextEvents(conn);
 			// createCalendarspace(conn);
 			createUsers(conn);
@@ -66,7 +66,7 @@ public final class SchemaInitializer {
 		""");
 	}
 
-	private void createPeriodEvents(Connection conn) throws SQLException {
+	private void createTimeblockEvents(Connection conn) throws SQLException {
 		Statement stat = conn.createStatement();
 		stat.execute("""
 			CREATE TABLE IF NOT EXISTS timeblockevents (
@@ -103,9 +103,7 @@ public final class SchemaInitializer {
 				user_id INT FOREIGN KEY,
 				tasksevents_id_arr integer[],	
 				timeblockevents_id_arr integer[],
-				textevents_id_arr integer[],
-				created_at timestamp NOT NULL DEFAULT now(),
-				updated_at timestamp NOT NULL DEFAULT now()
+				textevents_id_arr integer[]
 			);
 		""");
 	}
@@ -117,9 +115,7 @@ public final class SchemaInitializer {
 				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				name VARCHAR(36) NOT NULL,
 				email TEXT NOT NULL,
-				password VARCHAR(36) NOT NULL,
-				created_at timestamp NOT NULL DEFAULT now(),
-				updated_at timestamp NOT NULL DEFAULT now()
+				password VARCHAR(36) NOT NULL
 			);
 		""");
 	}

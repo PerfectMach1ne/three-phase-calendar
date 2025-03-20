@@ -4,7 +4,7 @@ import lvsa.tpcalendar.schemas.json.ViewType;
 
 public class BaseEvent {
     protected int hashcode;
-    protected String datetime;
+    protected transient String datetime;
     protected String name;
     protected String desc;
     protected ViewType viewtype;

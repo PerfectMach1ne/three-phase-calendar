@@ -34,11 +34,17 @@ function goToAbout() {
   </main>
   <footer>
     <p><em>One Calendar App to rule them all, One Calendar App to find them; One Calendar App to bring them all and in the darkness bind them.</em></p>
-    <p>04.2023 - 02.2025</p>
+    <p>04.2023 - 03.2025</p>
   </footer>
 </template>
 
 <style>
+* {
+  /* Core of the "light & dark theme" */
+  background-color: #fff;
+  color: #000;
+}
+
 header, footer {
   display: inline-flex;
   justify-content: flex-start;

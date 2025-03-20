@@ -161,7 +161,14 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
 				System.out.println(json.stripLeading());
 				System.out.println(gson.toJson(taskCheck));
 				/** 
-				 * FIXME: https://discord.com/channels/927484270543503361/1218919564310745128/1339697003722047599
+				 * FIXME: taskCheck returned from db and json have inconsistent formatting of the JSON.
+                 * Additionally, some data such as date and color is inconsistent by design, e.g.:
+                 * * sout(taskCheck) returns:
+                 * ... "datetime": "2024-11-30T13:40:09", ...
+                 * ... "hex": "573849") ...
+                 * * sout(json) returns:
+                 * ... "datetime": "2024-11-30 14:40:09", ...
+                 * ... "hex": "#573849") ...
 				 */
                 if (gson.toJson(taskCheck) == json.stripLeading()) {
                     return HTTPStatusCode.HTTP_304_NOT_MODIFIED;

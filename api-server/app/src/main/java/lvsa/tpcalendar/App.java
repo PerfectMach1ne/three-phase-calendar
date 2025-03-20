@@ -16,6 +16,7 @@ import lvsa.tpcalendar.http.QueryParamsFilter;
 import lvsa.tpcalendar.dbutils.SchemaInitializer;
 import lvsa.tpcalendar.routes.ImATeapotDoubleColon3Router;
 import lvsa.tpcalendar.routes.TaskRouter;
+import lvsa.tpcalendar.routes.TimeblockRouter;
 import lvsa.tpcalendar.utils.IPUtils;
 import lvsa.tpcalendar.utils.PropsService;
 
@@ -63,7 +64,7 @@ public final class App {
                     "/api/cal/task", new AbstractMap.SimpleEntry<String, APIRouter>(
                         "?id={int}", new TaskRouter()),
                     "/api/cal/timeblock", new AbstractMap.SimpleEntry<String, APIRouter>(
-                        "?id={int}", new TaskRouter()),
+                        "?id={int}", new TimeblockRouter()),
                     "/api/cal/text", new AbstractMap.SimpleEntry<String, APIRouter>(
                         "?id={base64}", new TaskRouter()),
                     "/teapot", new AbstractMap.SimpleEntry<String, APIRouter>(

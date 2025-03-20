@@ -3,7 +3,9 @@ package lvsa.tpcalendar.schemas.json;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
-public class TaskIn {
+import lvsa.tpcalendar.schemas.json.event.TaskEvent;
+
+public class TaskIn /*extends TaskEvent*/ {
     private transient int hashcode;
     private String datetime;
     private String name;
@@ -15,11 +17,13 @@ public class TaskIn {
     /* Somehow doesn't need to be public, as it never gets directly 
      * instantiated in the API.
      */
-    TaskIn(String datetime, String name, String desc, ViewType viewType, ColorObj color, boolean isdone) {
+    TaskIn(int hashcode, String datetime, String name, String desc, ViewType viewtype, ColorObj color, boolean isdone) {
+        // FIXME: coupling it with the TaskEvent hierarchy causes an uncaught exception somewhere. 
+        // super(hashcode, datetime, name, desc, viewtype, color, isdone);
         this.datetime = datetime;
         this.name = name;
         this.desc = desc;
-        this.viewtype = viewType;
+        this.viewtype = viewtype;
         this.color = color;
         this.isdone = isdone;
     }

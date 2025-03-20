@@ -11,6 +11,7 @@ public class ColorObj {
 
     @Override
     public int hashCode() {
+        // TODO: potential uncaught exception
         return (hasColor ? Integer.decode("0x" + this.hex.substring(1)) : 0);
     }
 
