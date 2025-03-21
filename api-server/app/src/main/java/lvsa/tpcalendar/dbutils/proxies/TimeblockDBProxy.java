@@ -14,6 +14,11 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
   	}
 
 	@Override
+    public HTTPStatusCode create(String json) throws SQLException {
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+    }
+
+	@Override
 	public String read(int hashcode) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
             INSERT INTO timeblockevents 
@@ -25,6 +30,21 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
 
         return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR.wrapAsJsonRes();
 	}
+
+	@Override
+    public HTTPStatusCode updateWhole(int hashcode, String json) throws SQLException {
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+    }
+
+	@Override
+    public HTTPStatusCode updatePartial(int hashcode, String json) throws SQLException {
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+    }
+
+	@Override
+    public HTTPStatusCode delete(int hashcode) throws SQLException {
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+    }
 
 	@Override
 	public void close() throws SQLException {
