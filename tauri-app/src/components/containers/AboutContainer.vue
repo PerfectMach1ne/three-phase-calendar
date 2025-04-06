@@ -44,3 +44,13 @@ export default {
     <p>loooong looong teeeext to test things</p><br>
   </div>
 </template>
+
+<style>
+.about__container {
+  margin: 5px;
+  border: 1px solid gray;
+  padding: 0;
+  max-height: 56vh;
+  width: 85%
+}
+</style>

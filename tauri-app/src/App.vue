@@ -3,16 +3,16 @@ import { RouterView, useRouter } from 'vue-router';
 
 const router = useRouter();
 
-function goToHome() {
+function goToCalendar() {
   router.push('/');
 }
 
-function goToTasks() {
-  router.push('/tasks');
+function goToPlanner() {
+  router.push('/planner');
 }
 
-function goToAbout() {
-  router.push('/about');
+function goToJournal() {
+  router.push('/journal');
 }
 </script>
 
@@ -24,9 +24,9 @@ function goToAbout() {
   <header>
     <img @click="goToHome" src="./assets/logo.png" alt="tpc placeholder logo" class="logo" width="80" height="80"/>
     <nav>
-      <button @click="goToHome" class="router">Home</button>
-      <button @click="goToTasks" class="router">Tasks</button>
-      <button @click="goToAbout" class="router">About</button>
+      <button @click="goToCalendar" class="router">Calendar</button>
+      <button @click="goToPlanner" class="router">Planner</button>
+      <button @click="goToJournal" class="router">Journal</button>
     </nav>
   </header>
   <main class="wrapper">

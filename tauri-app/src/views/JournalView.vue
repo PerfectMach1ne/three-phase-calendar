@@ -13,11 +13,13 @@ export default {
 </script>
 
 <template>
-  <NavbarContainer class="nav__isolator"/>
-  <div class="about">
-    <ToolsContainer/>
-    <AboutContainer/>
-  </div>
+  <main>
+    <NavbarContainer class="nav__isolator"/>
+    <div class="journal">
+      <ToolsContainer/>
+      <AboutContainer/>
+    </div>
+  </main>
 </template>
 
 <style scoped>
@@ -25,15 +27,7 @@ export default {
   display: flex;
 }
 
-.about {
+.journal {
   display: flex;
-}
-
-.about__container {
-  margin: 5px;
-  border: 1px solid gray;
-  padding: 0;
-  max-height: 56vh;
-  width: 85%
 }
 </style>

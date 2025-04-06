@@ -15,7 +15,7 @@ export default {
 <template>
   <main>
     <NavbarContainer class="nav__isolator"/>
-    <div class="home">
+    <div class="calendar">
       <ToolsContainer/>
       <CalendarContainer/>
     </div>
@@ -27,7 +27,7 @@ export default {
   display: flex;
 }
 
-.home {
+.calendar {
   display: flex;
 }
 </style>
