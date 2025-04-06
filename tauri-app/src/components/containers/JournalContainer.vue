@@ -17,7 +17,7 @@ export default {
 </script>
 
 <template>
-  <div class="about__container scrollbar">
+  <div class="journal__container scrollbar">
     <form class="row" @submit.prevent="testGreet">
       <input id="greet-input" v-model="name" placeholder="Enter a name..." />
       <button type="submit">Greet</button>
@@ -46,10 +46,10 @@ export default {
 </template>
 
 <style>
-.about__container {
+.journal__container {
   margin: 5px;
   border: 1px solid gray;
-  padding: 0;
+  padding: 5px;
   max-height: 56vh;
   width: 85%
 }

@@ -18,9 +18,9 @@ const router = createRouter({
       component: () => import('../views/JournalView.vue')
     },
     {
-      path: '/planner',
-      name: 'planner',
-      component: () => import('../views/PlannerView.vue')
+      path: '/plan',
+      name: 'plan',
+      component: () => import('../views/PlanView.vue')
     },
     {
       path: '/addreminderpage',

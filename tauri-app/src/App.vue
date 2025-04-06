@@ -8,7 +8,7 @@ function goToCalendar() {
 }
 
 function goToPlanner() {
-  router.push('/planner');
+  router.push('/plan');
 }
 
 function goToJournal() {
