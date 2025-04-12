@@ -10,8 +10,8 @@ export default {
       currentDate: new Date(),
       currentWeek: 18, // throwaway default value
       currentMonths: 'Aug - Sep', // throwaway default value
-      currentFirstWeekday: 0,
-      currentLastWeekday: 0,
+      currentFirstDayofweek: 0,
+      currentLastDayofweek: 0,
       currentYear: 2020, // throwaway default value
       left: "&#10094;",
       right: "&#10095;",
@@ -31,7 +31,6 @@ export default {
     getTodaysWeek() {
       var currentDate = this.currentDate;
 
-      // https://codepen.io/Venugopal46/pen/WrxdLY?editors=1111
       // Returns the ISO week of the date.
       Date.prototype.getWeek = function() {
         var date = new Date(this.getTime());
@@ -45,51 +44,45 @@ export default {
       }
       var weekNumeral = currentDate.getWeek();
 
-      // var startYearDate = new Date(currentDate.getFullYear(), 0, 1); // get 1st January of today's year
-      // var daysInYear = Math.round( (currentDate - startYearDate) / (24 * 60 * 60 * 1000) ); // count year days passed so far
-      // var weekNumeral = Math.ceil(daysInYear / 7); // evaluate the number of the week from all days in year
-
       return weekNumeral;
     },
     getTodaysMonths() {
       var currentDate = this.currentDate;
 
-      // called "firstMonthDay" and not "firstWeekDay" because it's a day numeral in relation to the month;
-      // probably done by me to avoid confusion with "weekdays" which should range from 1 to 7 
-      var firstMonthDay = currentDate.getDate() - (currentDate.getDay() || 7) + 1; // evaluate the first day of today's week
-      currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstMonthDay);
-      firstMonthDay = currentDate.getDate() - (currentDate.getDay() || 7) + 1;
-      // This above has to be done, because setting firstMonthDay to this.currentFirstWeekday just breaks things
+      var weekFirstMonthday = currentDate.getDate() - currentDate.getDay();
+      currentDate = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        weekFirstMonthday);
 
-      var firstWeekdayMonth = currentDate.getMonth(); // evaluate month at first day of the week
-      var lastWeekdayMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstMonthDay + 6).getMonth(); // evaluate month at last day of the week
+      var mondayMonth = currentDate.getMonth();
+      var sundayMonth = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        weekFirstMonthday + 7)
+          .getMonth();
       
-      if (firstWeekdayMonth == lastWeekdayMonth)
-        return this.monthNames[firstWeekdayMonth];
+      if (mondayMonth == sundayMonth)
+        return this.monthNames[mondayMonth];
       else
-        return this.monthNames[firstWeekdayMonth] + ' - ' + this.monthNames[lastWeekdayMonth];
+        return this.monthNames[mondayMonth] + ' - ' + this.monthNames[sundayMonth];
     },
-    getFirstWeekday() {
+    getMondayMonthday() {
       var currentDate = this.currentDate;
 
-      var firstMonthDay = currentDate.getDate() - (currentDate.getDay() || 7) + 1;
-      currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstMonthDay);
-      firstMonthDay = currentDate.getDate() - (currentDate.getDay() || 7) + 1; // for some reason this fixes a bug on first load that ends up returning -2
+      var monthday = currentDate.getDate() - currentDate.getDay() + 1;
+      currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), monthday);
         
-      return firstMonthDay;
+      return monthday;
     },
-    getLastWeekday() {
+    getSundayMonthday() {
       var currentDate = this.currentDate;
 
-      // Once again, this has to be repeated, as simply reaching out for this.currentFirstWeekday on first load
-      // causes weird behavior I am not nearly experienced and clever enough to comprehend.
-      var firstMonthDay = currentDate.getDate() - (currentDate.getDay() || 7) + 1;
-      currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstMonthDay);
-      firstMonthDay = currentDate.getDate() - (currentDate.getDay() || 7) + 1; // for some reason this fixes a bug on first load that ends up returning -2
-      
-      var lastMonthDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstMonthDay + 6).getDate(); // evaluate the last day of today's week
+      var monthday = currentDate.getDate() - currentDate.getDay() + 1;
+      currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), monthday + 6);
+      monthday = currentDate.getDate();
 
-      return lastMonthDay;
+      return monthday;
     },
     getTodaysYear() {
       var currentDate = this.currentDate;
@@ -97,70 +90,66 @@ export default {
       return currentDate.getFullYear();
     },
     getWeekSpecificDateFoolproof(dayOffset) {
-      var currentDate = this.currentDate; // get current date
+      var currentDate = this.currentDate;
 
-      var firstMonthDay = currentDate.getDate() - currentDate.getDay() + 1; // evaluate the first day of today's week
+      var firstMonthDay = currentDate.getDate() - currentDate.getDay() + 1;
       var returnDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstMonthDay + dayOffset).getDate();
 
       return returnDate;
     },
+
     // ChangeWeek.vue events
     goToPastWeek() {
       var currentDate = this.currentDate;
       var firstMonthDay = currentDate.getDate() - currentDate.getDay() + 1; // evaluate the first day of today's week
       currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstMonthDay - 7); // get destination date (1st day of past week)
       this.currentDate = currentDate;
-      // var currentDate = new Date(); // get current date
-      // var firstMonthDay = currentDate.getDate() - currentDate.getDay() + 1; // evaluate the first day of today's week
-      // var gotoDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstMonthDay - 7); // get destination date (1st day of week)
+
       this.currentMonths = this.getTodaysMonths();
-      this.currentFirstWeekday = this.getFirstWeekday();
-      this.currentLastWeekday = this.getLastWeekday();
+      this.currentFirstDayofweek = this.getMondayMonthday();
+      this.currentLastDayofweek = this.getSundayMonthday();
       this.currentYear = this.getTodaysYear();
       this.currentWeek = this.getTodaysWeek();
 
-      // silly print testing
-      console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstWeekday + ', ' + this.currentLastWeekday + ', ' + this.currentYear)
+      console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstDayofweek + ', ' + this.currentLastDayofweek + ', ' + this.currentYear);
     },
     goToFutureWeek() {
       var currentDate = this.currentDate;
       var firstMonthDay = currentDate.getDate() - currentDate.getDay() + 1; // evaluate the first day of today's week
       currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstMonthDay + 7); // get destination date (1st day of future week)
       this.currentDate = currentDate;
-      // var currentDate = new Date(); // get current date
-      // var firstMonthDay = currentDate.getDate() - currentDate.getDay() + 1; // evaluate the first day of today's week
-      // var gotoDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), firstMonthDay + 7); // get destination date (1st day of week)
+
       this.currentMonths = this.getTodaysMonths();
-      this.currentFirstWeekday = this.getFirstWeekday();
-      this.currentLastWeekday = this.getLastWeekday();
+      this.currentFirstDayofweek = this.getMondayMonthday();
+      this.currentLastDayofweek = this.getSundayMonthday();
       this.currentYear = this.getTodaysYear();
       this.currentWeek = this.getTodaysWeek();
 
-      // silly print testing
-      console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstWeekday + ', ' + this.currentLastWeekday + ', ' + this.currentYear)
+      console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstDayofweek + ', ' + this.currentLastDayofweek + ', ' + this.currentYear);
     },
     goToTodaysWeek() {
       this.currentDate = new Date();
       this.currentDate.setHours(0, 0, 0, 0);
 
-      this.currentFirstWeekday = this.getFirstWeekday();
-      this.currentLastWeekday = this.getLastWeekday();
       this.currentMonths = this.getTodaysMonths();
+      this.currentFirstDayofweek = this.getMondayMonthday();
+      this.currentLastDayofweek = this.getSundayMonthday();
       this.currentYear = this.getTodaysYear();
       this.currentWeek = this.getTodaysWeek();
+
+      console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstDayofweek + ', ' + this.currentLastDayofweek + ', ' + this.currentYear);
     }
   },
   mounted() {
     this.currentDate.setHours(0, 0, 0, 0);
     // Load the current data
-    this.currentFirstWeekday = this.getFirstWeekday();
-    this.currentLastWeekday = this.getLastWeekday();
     this.currentMonths = this.getTodaysMonths();
+    this.currentFirstDayofweek = this.getMondayMonthday();
+    this.currentLastDayofweek = this.getSundayMonthday();
     this.currentYear = this.getTodaysYear();
     this.currentWeek = this.getTodaysWeek();
 
-    // silly print testing
-    console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstWeekday + ', ' + this.currentLastWeekday + ', ' + this.currentYear);
+    console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstDayofweek + ', ' + this.currentLastDayofweek + ', ' + this.currentYear);
     
     // Easy fix for yearmonth__display class element being sized correctly - steal weekday__box's width after render. >:)
     this.weekdayBoxWidth = document.getElementById('weekdaybox-width-source').offsetWidth + 'px';
