@@ -1,5 +1,9 @@
 package lvsa.tpcalendar.routes;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -15,7 +19,8 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  * <h3><code>/api/cal/timeblock</code> endpoint</h3>
  */
 public class TimeblockRouter implements APIRouter {
-    private String response = "\"response\": \"nothing\"";
+    private String response = "{ \"response\": \"nothing\" }";
+    private final int PGERR_UNIQUE_VIOLATION = 23505;
 
     @Override
     public String getResponse() { return this.response; }
@@ -52,7 +57,30 @@ public class TimeblockRouter implements APIRouter {
      */
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
-        response = HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED.wrapAsJsonRes();
+		InputStream is = htex.getRequestBody();
+		InputStreamReader isReader = new InputStreamReader(is);
+    	BufferedReader reader = new BufferedReader(isReader);
+	    StringBuffer sb = new StringBuffer();
+
+		String reqdata;
+        HTTPStatusCode status; // Return value of insertTaskIntoDB()
+
+        Headers resh = htex.getResponseHeaders();
+        resh.set("Content-Type", "application/json");
+
+        try {
+            while ( (reqdata = reader.readLine()) != null ) {
+                sb.append(reqdata);
+            }
+        } catch(IOException ioe) {
+            // TODO: log: IOException at StringBuffer in POST /api/cal/timeblock
+            ioe.printStackTrace();
+            response = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR.wrapAsJsonRes();
+            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        }
+
+        status = insertTimeblockIntoDB(sb.toString());
+        response = status.wrapAsJsonRes();
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
@@ -108,14 +136,14 @@ public class TimeblockRouter implements APIRouter {
     }
 
     private Object[] findAndFetchFromDB(int hashcode){
-        String jsonTask = "";
+        String jsonTimeblock = "";
 
         try (
             DBConnProvider db = new DBConnProvider();
             TimeblockDBProxy proxy = new TimeblockDBProxy(db);
         ) {
-            jsonTask = proxy.read(hashcode);
-            if (jsonTask.isEmpty()) {
+            jsonTimeblock = proxy.read(hashcode);
+            if (jsonTimeblock.isEmpty()) {
                 return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
             }
         } catch (SQLException sqle) {
@@ -123,6 +151,22 @@ public class TimeblockRouter implements APIRouter {
             return new Object[]{HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR, null};
         }
 
-        return new Object[]{HTTPStatusCode.HTTP_200_OK, jsonTask};
+        return new Object[]{HTTPStatusCode.HTTP_200_OK, jsonTimeblock};
+    }
+
+    private HTTPStatusCode insertTimeblockIntoDB(String buffer) {
+        try(
+            DBConnProvider db = new DBConnProvider();
+            TimeblockDBProxy proxy = new TimeblockDBProxy(db);
+        ) {
+            HTTPStatusCode status = proxy.create(buffer);
+            return status;
+        } catch(SQLException sqle) {
+            if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
+                return HTTPStatusCode.HTTP_409_CONFLICT;
+            }
+            sqle.printStackTrace();
+            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        }
     }
 }

@@ -1,5 +1,8 @@
 package lvsa.tpcalendar.schemas.json;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+
 public class TimeblockIn /* extends TimeblockEvent */ {
     private transient int hashcode;
     private String start_datetime;
@@ -23,15 +26,43 @@ public class TimeblockIn /* extends TimeblockEvent */ {
     
     @Override
     public int hashCode() {
-        return 0;
+        LocalDateTime start_ldt, end_ldt = null;
+        try {
+            start_ldt = LocalDateTime.parse(this.start_datetime);
+            end_ldt = LocalDateTime.parse(this.end_datetime);
+        } catch(DateTimeParseException dtpe) {
+            // Assume this is because of that stupid T letter.
+            this.start_datetime = this.start_datetime.substring(0, 10) + "T" + this.start_datetime.substring(11);
+            this.end_datetime = this.end_datetime.substring(0, 10) + "T" + this.end_datetime.substring(11);
+            start_ldt = LocalDateTime.parse(this.start_datetime);
+            end_ldt = LocalDateTime.parse(this.end_datetime);
+            if (start_ldt == null || end_ldt == null) {
+                dtpe.printStackTrace();
+                this.hashcode = 0; // In case of nullptr access.
+                return this.hashcode;
+            }
+        }
+
+        this.hashcode = ((start_ldt.getYear() ^ -end_ldt.getYear())
+                        + start_ldt.getMonthValue() ^ -end_ldt.getMonthValue()
+                        + start_ldt.getDayOfMonth() ^ -end_ldt.getDayOfMonth()
+                        + start_ldt.getHour() ^ -end_ldt.getHour()
+                        + start_ldt.getMinute() ^ -end_ldt.getMinute()
+                        + start_ldt.getSecond() ^ -end_ldt.getSecond())
+                        + this.name.hashCode()
+                        + this.description.hashCode()
+                        + this.color.hashCode();
+
+        System.out.println("[DEBUG] TimeblockIn.hashcode == " + this.hashcode);
+        return this.hashcode;
     }
 
     /**
      * An atrocity that's a price to pay for my stupidity; ensure Java's default object hashcode is overriden by running the code in <code>hashCode()</code>.
-     * @param taskIn
+     * @param timeblock
      */
-    public static void initHashCode(TaskIn taskIn) {
-        taskIn.hashCode();
+    public static void initHashCode(TimeblockIn timeblock) {
+        timeblock.hashCode();
     }
 
     public int getHashcode() {

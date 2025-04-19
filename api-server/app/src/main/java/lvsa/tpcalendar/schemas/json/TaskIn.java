@@ -3,8 +3,6 @@ package lvsa.tpcalendar.schemas.json;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
-import lvsa.tpcalendar.schemas.json.event.TaskEvent;
-
 public class TaskIn /*extends TaskEvent*/ {
     private transient int hashcode;
     private String datetime;
@@ -61,10 +59,10 @@ public class TaskIn /*extends TaskEvent*/ {
 
     /**
      * An atrocity that's a price to pay for my stupidity; ensure Java's default object hashcode is overriden by running the code in <code>hashCode()</code>.
-     * @param taskIn
+     * @param task
      */
-    public static void initHashCode(TaskIn taskIn) {
-        taskIn.hashCode();
+    public static void initHashCode(TaskIn task) {
+        task.hashCode();
     }
 
     public int getHashcode() {
