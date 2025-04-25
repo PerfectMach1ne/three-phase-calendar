@@ -2,6 +2,11 @@ package lvsa.tpcalendar.dbutils.proxies;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeParseException;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
@@ -24,7 +29,7 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
 	@Override
     public HTTPStatusCode create(String json) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
-            INSERT INTO taskevents 
+            INSERT INTO timeblockevents
             (hashcode, start_datetime, end_datetime, name, description, viewtype, color)
             VALUES (?, ?, ?, ?, ?, ?, ?);           
         """);
@@ -33,13 +38,32 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
         TimeblockIn timeblock;
         try {
             timeblock = gson.fromJson(json, TimeblockIn.class);
-            System.out.println(timeblock);
+            try {
+                TimeblockIn.initHashCode(timeblock);
+            } catch(DateTimeParseException dtpe) {
+                dtpe.printStackTrace();
+                return HTTPStatusCode.HTTP_400_BAD_REQUEST;
+            }
         } catch(JsonParseException jse) {
             jse.printStackTrace();
             return HTTPStatusCode.HTTP_400_BAD_REQUEST;
         }
 
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        stat.setInt(1, timeblock.getHashcode());
+        LocalDateTime start_ldt = LocalDateTime.parse(timeblock.getStartDatetime()); 
+        LocalDateTime end_ldt = LocalDateTime.parse(timeblock.getEndDatetime()); 
+        // TODO: ZoneOffset.of(...) should be configurable to allow user to adjust their timezone.
+        // Previously this was UTC, but I changed it to make it Work On My Machine(TM).
+        stat.setTimestamp(2, new Timestamp(start_ldt.toInstant(ZoneOffset.of("+1")).toEpochMilli()));
+        stat.setTimestamp(3, new Timestamp(end_ldt.toInstant(ZoneOffset.of("+1")).toEpochMilli()));
+        stat.setString(4, timeblock.getName());
+        stat.setString(5, timeblock.getDesc());
+        stat.setObject(6, timeblock.getViewType(), Types.OTHER);
+        stat.setString(7, timeblock.getColor().getHex());
+        
+        stat.executeUpdate();
+
+        return HTTPStatusCode.HTTP_201_CREATED;
     }
 
     /**

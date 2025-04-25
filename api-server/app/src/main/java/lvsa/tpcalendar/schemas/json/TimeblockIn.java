@@ -8,18 +8,18 @@ public class TimeblockIn /* extends TimeblockEvent */ {
     private String start_datetime;
     private String end_datetime;
     private String name;
-    private String description;
+    private String desc;
     private ViewType viewtype;
     private ColorObj color;
 
     /* Somehow doesn't need to be public, as it never gets directly 
      * instantiated in the API.
      */
-    TimeblockIn(int hashcode, String start_datetime, String end_datetime, String name, String description, ViewType viewtype, ColorObj color) {
+    TimeblockIn(int hashcode, String start_datetime, String end_datetime, String name, String desc, ViewType viewtype, ColorObj color) {
         this.start_datetime = start_datetime; 
         this.end_datetime = end_datetime;
         this.name = name;
-        this.description = description; 
+        this.desc = desc; 
         this.viewtype = viewtype;
         this.color = color;
     }
@@ -43,15 +43,15 @@ public class TimeblockIn /* extends TimeblockEvent */ {
             }
         }
 
-        this.hashcode = ((start_ldt.getYear() ^ -end_ldt.getYear())
-                        + start_ldt.getMonthValue() ^ -end_ldt.getMonthValue()
-                        + start_ldt.getDayOfMonth() ^ -end_ldt.getDayOfMonth()
-                        + start_ldt.getHour() ^ -end_ldt.getHour()
-                        + start_ldt.getMinute() ^ -end_ldt.getMinute()
-                        + start_ldt.getSecond() ^ -end_ldt.getSecond())
-                        + this.name.hashCode()
-                        + this.description.hashCode()
-                        + this.color.hashCode();
+        this.hashcode = start_ldt.getYear() ^ -end_ldt.getYear()
+                      + start_ldt.getMonthValue() ^ -end_ldt.getMonthValue()
+                      + start_ldt.getDayOfMonth() ^ -end_ldt.getDayOfMonth()
+                      + start_ldt.getHour() ^ -end_ldt.getHour()
+                      + start_ldt.getMinute() ^ -end_ldt.getMinute()
+                      + start_ldt.getSecond() ^ -end_ldt.getSecond()
+                      + this.name.hashCode()
+                      + this.desc.hashCode()
+                      + this.color.hashCode();
 
         System.out.println("[DEBUG] TimeblockIn.hashcode == " + this.hashcode);
         return this.hashcode;
@@ -82,7 +82,7 @@ public class TimeblockIn /* extends TimeblockEvent */ {
     }
 
     public String getDesc() {
-        return description;
+        return desc;
     }
 
     public ViewType getViewType() {

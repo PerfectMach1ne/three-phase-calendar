@@ -11,7 +11,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ## Milestones/feature ToDo list
 
-#### CALENDARCOINS COLLECTED: 23📅🪙!!!
+#### CALENDARCOINS COLLECTED: 24📅🪙!!!
 
 ### Java + postgres backend server 
 
@@ -35,7 +35,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~Decouple database interfacing for routers from DBConnProvider (bridge or proxy of some kind)~~
 - [x] ~~Another stupid rework of Task and Timeblock schema.~~
 - [ ] **GET PeriodEvent.**
-- [ ] **POST PeriodEvent.**
+- [x] ~~POST PeriodEvent.~~
 - [ ] **PUT PeriodEvent.**
 - [ ] **DELETE PeriodEvent.**
 - [ ] **GET TextEvent.**

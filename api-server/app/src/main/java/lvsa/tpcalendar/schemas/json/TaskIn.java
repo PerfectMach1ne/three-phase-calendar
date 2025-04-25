@@ -42,12 +42,12 @@ public class TaskIn /*extends TaskEvent*/ {
             }
         }
         
-        this.hashcode = ((ldt.getYear()
+        this.hashcode = ( ldt.getYear()
                         + ldt.getMonthValue()
                         + ldt.getDayOfMonth()
                         + ldt.getHour()
                         + ldt.getMinute()
-                        + ldt.getSecond())
+                        + ldt.getSecond()
                         + this.name.hashCode()
                         + this.desc.hashCode()
                         + this.color.hashCode())
