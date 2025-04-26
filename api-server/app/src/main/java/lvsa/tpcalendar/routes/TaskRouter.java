@@ -54,7 +54,7 @@ public class TaskRouter implements APIRouter {
 
     /**
      * <b>POST</b> <code>/api/cal/task [-d application/json]</code>
-     * <p>Uses the following method:</p> <pre>HTTPStatusCode insertTask(String buffer)</pre>
+     * <p>Uses the following method:</p> <pre>HTTPStatusCode insertTaskIntoDB(String buffer)</pre>
      */
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {

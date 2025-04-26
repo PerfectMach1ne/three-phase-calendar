@@ -135,6 +135,7 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
         hashcodeQuery.setInt(1, hashcode);
         Gson gson = new Gson();
         TaskOut taskCheck;
+
         try {
             ResultSet rs = hashcodeQuery.executeQuery();
             if (!rs.next()) {
