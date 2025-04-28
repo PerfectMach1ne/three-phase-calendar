@@ -138,6 +138,7 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
 
         try {
             ResultSet rs = hashcodeQuery.executeQuery();
+            
             if (!rs.next()) {
                 return HTTPStatusCode.HTTP_404_NOT_FOUND;
             } else {

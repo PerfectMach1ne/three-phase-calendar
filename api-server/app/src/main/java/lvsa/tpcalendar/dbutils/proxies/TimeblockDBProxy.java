@@ -146,7 +146,7 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
                 return HTTPStatusCode.HTTP_404_NOT_FOUND;
             } else {
 				/*
-				 * This is supposed to check if the task from database is identical
+				 * This is supposed to check if the timeblock from database is identical
 				 * to the one we're trying to insert. In which case, return
 				 * HTTP_304_NOT_MODIFIED.
 				 */
@@ -162,6 +162,8 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
                         rs.getString("color"))
                 );
 
+				System.out.println(json.stripLeading());
+				System.out.println(gson.toJson(timeblockCheck));
                 if (gson.toJson(timeblockCheck) == json.stripLeading()) {
                     return HTTPStatusCode.HTTP_304_NOT_MODIFIED;
                 }
@@ -196,7 +198,7 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
         updateStat.setString(4, timeblock.getDesc());
         updateStat.setObject(5, timeblock.getViewType(), Types.OTHER);
         updateStat.setString(6, "#" + timeblock.getColor().getHex());
-        updateStat.setInt(7, timeblock.getHashcode());
+        updateStat.setInt(7, hashcode);
 
         final int PG_STATUS = updateStat.executeUpdate();
 
