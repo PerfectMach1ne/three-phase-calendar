@@ -186,17 +186,16 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
             return HTTPStatusCode.HTTP_400_BAD_REQUEST;
         }
 
-
         LocalDateTime start_ldt = LocalDateTime.parse(timeblock.getStartDatetime()); 
         LocalDateTime end_ldt = LocalDateTime.parse(timeblock.getEndDatetime()); 
         // TODO: ZoneOffset.of(...) should be configurable to allow user to adjust their timezone.
         // Previously this was UTC, but I changed it to make it Work On My Machine(TM).
-        updateStat.setTimestamp(1, new Timestamp(start_ldt.toInstant(ZoneOffset.of("+1")).toEpochMilli()));
-        updateStat.setTimestamp(2, new Timestamp(end_ldt.toInstant(ZoneOffset.of("+1")).toEpochMilli()));
+        updateStat.setTimestamp(1, new Timestamp(start_ldt.toInstant(ZoneOffset.UTC).toEpochMilli()));
+        updateStat.setTimestamp(2, new Timestamp(end_ldt.toInstant(ZoneOffset.UTC).toEpochMilli()));
         updateStat.setString(3, timeblock.getName());
         updateStat.setString(4, timeblock.getDesc());
         updateStat.setObject(5, timeblock.getViewType(), Types.OTHER);
-        updateStat.setString(6, timeblock.getColor().getHex());
+        updateStat.setString(6, "#" + timeblock.getColor().getHex());
         updateStat.setInt(7, timeblock.getHashcode());
 
         final int PG_STATUS = updateStat.executeUpdate();

@@ -13,6 +13,7 @@ RUN sed -i 's/^root:/starr4ever:/' /etc/passwd && \
 WORKDIR /src
 
 COPY ./gradle ./gradle
+COPY ./.gradle ./.gradle
 ADD ./gradlew ./settings.gradle.kts .
 COPY ./app/src ./app/src
 COPY ./tpc_docker_test.properties ./app/src/main/resources/tpc_testing.properties

@@ -89,23 +89,29 @@ public class TimeblockRouter implements APIRouter {
     /**
      * <b>PUT</b> <code>/api/cal/timeblock?id={hashcode} [-d application/json].</code>
      */
+    @SuppressWarnings("unchecked")
     @Override
     public HTTPStatusCode PUT(HttpExchange htex) {
+        System.out.println("bah");
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
         int hashcode = Integer.valueOf(queryParams.get("id"));
 
+        System.out.println("bah");
 		InputStream is = htex.getRequestBody();
 		InputStreamReader isReader = new InputStreamReader(is);
     	BufferedReader reader = new BufferedReader(isReader);
 	    StringBuffer sb = new StringBuffer();
 
+        System.out.println("bah");
 		String reqdata;
         // A (in)sane default.
         HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
 
+        System.out.println("bah");
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
 
+        System.out.println("bah");
         try {
             while ( (reqdata = reader.readLine()) != null ) {
                 sb.append(reqdata);
@@ -118,6 +124,7 @@ public class TimeblockRouter implements APIRouter {
             return status;
         }
 
+        System.out.println("bah");
         try (
             DBConnProvider db = new DBConnProvider();
             TimeblockDBProxy proxy = new TimeblockDBProxy(db)
@@ -126,6 +133,7 @@ public class TimeblockRouter implements APIRouter {
         } catch (SQLException sqle) {
             sqle.printStackTrace();
         }
+        System.out.println("bah");
 
         response = status.wrapAsJsonRes();
         return status;
