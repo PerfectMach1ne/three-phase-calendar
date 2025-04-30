@@ -7,7 +7,7 @@ export default {
   },
   methods: {
     enterView() {
-      this.$router.push('/addtaskpage')
+      this.$router.push('/addtask')
     }
   }
 }

@@ -7,12 +7,12 @@ export default {
   },
   methods: {
     enterView() {
-      this.$router.push('/deletereminderpage')
+      this.$router.push('/addtimeblock')
     }
   }
 }
 </script>
 
 <template>
-  <button class="tools__button" @click="enterView">Delete reminder</button>
+  <button class="tools__button" @click="enterView">Add timeblock</button>
 </template>

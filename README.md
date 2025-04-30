@@ -11,7 +11,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ## Milestones/feature ToDo list
 
-#### CALENDARCOINS COLLECTED: 27📅🪙!!!
+#### CALENDARCOINS COLLECTED: 29📅🪙!!!
 
 ### Java + postgres backend server 
 
@@ -42,6 +42,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] **POST TextEvent.**
 - [ ] PUT TextEvent.
 - [ ] **DELETE TextEvent.**
+- [ ] PATCH TextEvent**
 - [ ] Make the QueryParam "validator strings" actually do something.
 - [ ] Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).
 - [ ] ForeignKey relation + GET all user/calendar events.
@@ -57,8 +58,11 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~Independent web app build. (Makefile or git subsomething?)~~
 - [ ] **Refactor BigCalendar.**
 - [ ] (OPTIONAL) Move most of the complex date handling to Rust "middleend".
-- [ ] **Implement a dark/light mode toggle.**
-- [ ] **Implement the three modes (calendar, planner, journal; could replace Home, Tasks and About views with these).**
+- [x] ~~Implement a dark/light mode toggle.~~
+- [ ] Make the dark/light mode toggle alter styling.
+- [x] ~~Implement a basic "casing" for calendar mode.~~
+- [ ] **Implement a basic "casing" for planner mode.**
+- [ ] **Implement a basic "casing" for journal mode.**
 - [ ] **Make Rust "middleend" be able to talk to the appropriate backend server.**
 - [ ] **Basic event fetching.**
 - [ ] Refurbish calendar styling.

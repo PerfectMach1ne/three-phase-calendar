@@ -1,21 +1,21 @@
 <script>
-import AddReminder from '../buttons/AddReminder.vue';
 import AddTask from '../buttons/AddTask.vue';
-import DeleteReminder from '../buttons/DeleteReminder.vue';
+import AddTimeblock from '../buttons/AddTimeblock.vue';
 import DeleteTask from '../buttons/DeleteTask.vue';
+import DeleteTimeblock from '../buttons/DeleteTimeblock.vue';
 
 export default {
-  components: { AddReminder, AddTask, DeleteReminder, DeleteTask },
+  components: { AddTask, AddTimeblock, DeleteTask, DeleteTimeblock},
   data() { return {} }
 }
 </script>
 
 <template>
   <div class="tools__container scrollbar">
-    <AddReminder />
     <AddTask />
-    <DeleteReminder />
+    <AddTimeblock />
     <DeleteTask />
+    <DeleteTimeblock />
   </div>
 </template>
 
@@ -30,7 +30,7 @@ export default {
   border: 1px solid gray;
   padding: 5px;
   width: 15%;
-  max-height: calc(57vh - 1vh); /* same as above */
+  max-height: calc(57vh - 1vh);
 }
 
 /* Buttons for adding/deleting events in tools bar */

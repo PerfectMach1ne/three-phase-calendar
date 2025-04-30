@@ -2,12 +2,12 @@
 export default {
   data() {
     return {
-      
+
     }
   },
   methods: {
     enterView() {
-      this.$router.push('/deletetaskpage')
+      this.$router.push('/deletetask')
     }
   }
 }

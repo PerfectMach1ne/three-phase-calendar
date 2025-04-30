@@ -1,7 +1,13 @@
 <script setup>
+import { computed, ref } from 'vue';
 import { RouterView, useRouter } from 'vue-router';
+import LoginView from './views/LoginView.vue';
 
 const router = useRouter();
+const isLoggedIn = ref(false);
+const darkMode = ref(false);
+const darkModeClass = ref('dark');
+const lightModeClass = ref('light');
 
 function goToCalendar() {
   router.push('/');
@@ -14,6 +20,18 @@ function goToPlanner() {
 function goToJournal() {
   router.push('/journal');
 }
+
+function loginToggle() {
+  isLoggedIn.value = !isLoggedIn.value;
+}
+
+function darkModeToggle() {
+  darkMode.value = !darkMode.value;
+}
+
+const darkModeIcon = computed(() => {
+  return darkMode.value ? '🌚' : '🌞';
+});
 </script>
 
 <template>
@@ -24,17 +42,20 @@ function goToJournal() {
   <header>
     <img @click="goToHome" src="./assets/logo.png" alt="tpc placeholder logo" class="logo" width="80" height="80"/>
     <nav>
-      <button @click="goToCalendar" class="router">Calendar</button>
-      <button @click="goToPlanner" class="router">Planner</button>
-      <button @click="goToJournal" class="router">Journal</button>
+      <button @click="goToCalendar" class="router mode">Calendar</button>
+      <button @click="goToPlanner" class="router mode">Planner</button>
+      <button @click="goToJournal" class="router mode">Journal</button>
+      <button @click="loginToggle" class="router login">Login</button>
+      <button @click="darkModeToggle" class="router" :class="[darkMode ? darkModeClass : lightModeClass]">{{ darkModeIcon }}</button>
     </nav>
   </header>
   <main class="wrapper">
-    <RouterView />
+    <RouterView v-if="isLoggedIn" />
+    <LoginView v-else />
   </main>
   <footer>
     <p><em>One Calendar App to rule them all, One Calendar App to find them; One Calendar App to bring them all and in the darkness bind them.</em></p>
-    <p>04.2023 - 04.2025</p>
+    <p>04.2023 - 05.2025</p>
   </footer>
 </template>
 
@@ -61,20 +82,55 @@ footer {
   gap: 20px;
 }
 
-/* Button attached to Vue router */
+/* Buttons attached to Vue router and handling login and etc toggles*/
 .router {
   margin: 10px;
   border: 1px solid gray;
   padding: 10px 20px;
   border: none;
   border-radius: 12px;
-  background-color: indianred;
   font-size: 1.2rem;
+}
+
+.router.mode {
+  background-color: indianred;
   color: #fff;
 }
 
-.router:hover {
+.router.login {
+  background-color: cadetblue;
+  color: #fff;
+}
+
+.router.dark {
+  background-color: #2b2b2b;
+  color: whitesmoke;
+}
+
+.router.light {
+  background-color: lightgray;
+  color: #2b2b2b;
+}
+
+.router.mode:hover {
   background-color: tomato;
+}
+
+.router.login:hover {
+  background-color: teal;
+}
+
+.router.dark:hover {
+  background-color: lightgray;
+  color: #2b2b2b;
+}
+
+.router.light:hover {
+  background-color: #2b2b2b;
+  color: whitesmoke;
+}
+
+.router:hover {
   transition: all 0.3s ease;
   cursor: pointer;
 }

@@ -1,15 +1,7 @@
-<script>
+<script setup>
 import NavbarContainer from '../components/containers/NavbarContainer.vue';
 import ToolsContainer from '../components/containers/ToolsContainer.vue';
 import CalendarContainer from '../components/containers/CalendarContainer.vue';
-
-export default {
-  components: {
-    NavbarContainer,
-    ToolsContainer,
-    CalendarContainer
-  }
-}
 </script>
 
 <template>

@@ -16,6 +16,7 @@ public class QueryParamsFilter extends Filter {
 	public void doFilter(HttpExchange htex, Chain chain) throws IOException {
 		String query = htex.getRequestURI().getQuery();
 		HashMap<String, String> queryParams = new HashMap<String, String>();
+		query = query.strip();
 
 		if (query != null) {
 			String[] splitQuery = query.split("&");

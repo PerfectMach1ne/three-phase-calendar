@@ -1,11 +1,5 @@
-<script>
+<script setup>
 import BigCalendar from '../BigCalendar.vue';
-
-export default {
-  components: {
-    BigCalendar
-  }
-}
 </script>
 
 <template>

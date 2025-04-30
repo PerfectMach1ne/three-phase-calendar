@@ -17,8 +17,8 @@ public final class SchemaInitializer {
 			createTaskEvents(conn);
 			createTimeblockEvents(conn);
 			createTextEvents(conn);
-			// createCalendarspace(conn);
 			createUsers(conn);
+			createCalendarspace(conn);
 
 			addTimestampCols(conn);
 		} catch (SQLException sqle) {
@@ -95,19 +95,6 @@ public final class SchemaInitializer {
 		""");
 	}
 
-	private void createCalendarspace(Connection conn) throws SQLException {
-		Statement stat = conn.createStatement();
-		stat.execute("""
-			CREATE TABLE IF NOT EXISTS calendarspace (
-				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-				user_id INT FOREIGN KEY,
-				tasksevents_id_arr integer[],	
-				timeblockevents_id_arr integer[],
-				textevents_id_arr integer[]
-			);
-		""");
-	}
-
 	private void createUsers(Connection conn) throws SQLException {
 		Statement stat = conn.createStatement();
 		stat.execute("""
@@ -115,7 +102,20 @@ public final class SchemaInitializer {
 				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				name VARCHAR(36) NOT NULL,
 				email TEXT NOT NULL,
-				password VARCHAR(36) NOT NULL
+				password TEXT NOT NULL
+			);
+		""");
+	}
+
+	private void createCalendarspace(Connection conn) throws SQLException {
+		Statement stat = conn.createStatement();
+		stat.execute("""
+			CREATE TABLE IF NOT EXISTS calendarspace (
+				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+				user_id INT REFERENCES users(id),
+				tasksevents_id_arr integer[],	
+				timeblockevents_id_arr integer[],
+				textevents_id_arr integer[]
 			);
 		""");
 	}
