@@ -1,13 +1,8 @@
-<script>
+<script setup>
 import AddTask from '../buttons/AddTask.vue';
 import AddTimeblock from '../buttons/AddTimeblock.vue';
 import DeleteTask from '../buttons/DeleteTask.vue';
 import DeleteTimeblock from '../buttons/DeleteTimeblock.vue';
-
-export default {
-  components: { AddTask, AddTimeblock, DeleteTask, DeleteTimeblock},
-  data() { return {} }
-}
 </script>
 
 <template>

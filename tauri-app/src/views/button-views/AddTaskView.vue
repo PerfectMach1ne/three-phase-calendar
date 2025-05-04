@@ -1,17 +1,10 @@
-<script>
-export default {
-  props: [],
-  emits: [],
-  data() {
-    return {
+<script setup>
+import { useRouter } from 'vue-router';
 
-    }
-  },
-  methods: {
-    cancel() {
-      this.$router.push('/')
-    } 
-  }
+const router = useRouter();
+
+function cancel() {
+  router.push('/')
 }
 </script>
 

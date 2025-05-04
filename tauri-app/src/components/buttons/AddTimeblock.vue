@@ -1,15 +1,10 @@
-<script>
-export default {
-  data() {
-    return {
+<script setup>
+import { useRouter } from 'vue-router';
 
-    }
-  },
-  methods: {
-    enterView() {
-      this.$router.push('/addtimeblock')
-    }
-  }
+const router = useRouter();
+
+function enterView() {
+  router.push('/addtimeblock')
 }
 </script>
 

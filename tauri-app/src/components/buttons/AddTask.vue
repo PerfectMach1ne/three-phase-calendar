@@ -1,15 +1,10 @@
-<script>
-export default {
-  data() {
-    return {
+<script setup>
+import { useRouter } from 'vue-router';
 
-    }
-  },
-  methods: {
-    enterView() {
-      this.$router.push('/addtask')
-    }
-  }
+const router = useRouter();
+
+function enterView() {
+  router.push('/addtask')
 }
 </script>
 

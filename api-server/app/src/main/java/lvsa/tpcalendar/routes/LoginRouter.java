@@ -11,9 +11,9 @@ import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
- * /api/user
+ * /api/login
  */
-public class UserRouter implements APIRouter {
+public class LoginRouter implements APIRouter {
     private String response = "{ \"response\": \"nothing\" }";
 
     @Override
