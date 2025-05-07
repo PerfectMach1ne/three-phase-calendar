@@ -34,7 +34,7 @@ public final class SchemaInitializer {
 	public static void nukeAndPave(Connection conn) throws SQLException {
 		Statement nuclearCode = conn.createStatement();
 		nuclearCode.execute("""
-			DROP TABLE taskevents, textevents, timeblockevents, users;
+			DROP TABLE taskevents, textevents, timeblockevents, calendarspace, users;
 		""");
 	}
 

@@ -44,8 +44,8 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] **DELETE TextEvent.**
 - [ ] PATCH TextEvent**
 - [ ] Make the QueryParam "validator strings" actually do something.
-- [ ] Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).
-- [ ] ForeignKey relation + GET all user/calendar events.
+- [ ] **Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).**
+- [ ] **ForeignKey relation + GET all user/calendar events.**
 - [ ] User authentication with JWT, bcrypt password encryption and OAuth 2.0.
 - [ ] Server-side database schema initialization and validation (possibly future migration features?).
 - [ ] postgres role for division of database access permissions.

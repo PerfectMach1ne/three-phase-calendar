@@ -1,0 +1,232 @@
+\documentclass[12pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[polish, english]{babel}
+\usepackage{enumitem}
+
+\usepackage[
+    backend=biber,
+    style=numeric,
+    sorting=nty
+]{biblatex}
+\addbibresource{biblio.bib}
+
+\usepackage{tikz}
+\usepackage{pdflscape}
+\usepackage{array}
+\usepackage{booktabs}
+\usetikzlibrary{positioning,shapes.geometric}
+
+\title{Modalna aplikacja webowa oraz mobilna wspomagająca organizację czasu}
+\author{Luka M[]}
+\date{08.2024 - 05.2025}
+\begin{document}
+\maketitle
+
+\section*{Wprowadzenie}
+W dzisiejszym świecie, branża inżynierii oprogramowania zdołała już postawić wiele kroków w stronę rewolucyjnego postępu. Liczna liczba narzędzi w postaci oprogramowania umożliwiła osobom o wyjątkowo róznorodnym doświadczeniu wejść do branży IT oraz inżynierii oprogramowania, w szczególności w specjalizacji technologii webowych.
+
+Bardzo prawdopodobnym bezpośrednim skutkiem tego szybkiego rozwoju jest popularyzacja określonych metodologii tworzenia oprogramowania, frameworków, bibliotek oraz różnych innych rozwiązań. Zjawisko to spowodowało, że wiele rozwiązań programistycznych, zarówno amatorskich, open source-owych i firmowych, dotyczących powszechnie spotykanych problemów dzieli wiele podobieństwd w ich sposobie implementacji oraz wdrożenia.
+
+Głównym celem tego projektu jest zakwestionowanie powszechnych podejść do często spotykanych problemów, przy jednoczesnym utrzymaniu się przy  ugruntowanych standardach oraz sprawdzonych najlepszych praktykach w wytwarzaniu oprogramowania.
+\section{Zakres i cele projektu}
+\section{Technologie wykorzystane w procesie wytwarzania oprogramowania}
+Technologie wykorzystane zarówno na etapie projektowania, implementacji \& wdrożenia projektu składają się z połączenia najlepszych narzędzi sprawdzonych do danego zadania oraz wyboru preferencji dewelopera.
+\subsection{Środowisko programistyczne}
+[System operacyjny na jakim został zaprogramowany: EndeavourOS Linux \\
+Alpine Linux - obraz Dockera! \\
+Edytory tekstu oraz IDE - VS Code, Neovim, Vim, etc \\]
+\subsection{Java 21 (OpenJDK)}
+\subsection{PostgreSQL}
+\subsection{Vue.js}
+\subsection{Tauri 2.0}
+\subsection{Infrastruktura}
+Wdrożenie w chmurze - AWS! Docker!
+\subsection{Testing tooling}
+
+\section{Projekt oraz proces implementacji}
+
+\subsection{Serwer i mikroframework backendowy}
+
+U fundamentów projektu leży API dostarczane przez pakiet \\\texttt{com.sun.net.httpserver} dostępny w większości dystrybucji Javy, w tym wykorzystywanej przez projekt OpenJDK 21. Pakiet zawiera klasę abstrakcyjną \textbf{HttpServer} oraz jej podklasę \textbf{HttpsServer} \cite{httpsserver}, obydwie dostarczające bardzo proste API serwera HTTP/HTTPS. Obiektowi \texttt{HttpServer} przypisuje się adres IP oraz numer portu, po czym serwer od razu może oczekiwać na połączenia TCP przychodzące na podany adres.
+Poza klasą \texttt{HttpServer}, której egzemplarz stanowi pojedyńczą instancję serwera HTTP, głównymi komponentami ów API są następujące klasy \cite{javapkg-httpserver}:
+\begin{itemize}
+    \item Intefejs \textbf{HttpHandler}, którego egzemplarze przypisuje się obiektowi \texttt{HttpServer} przy tworzeniu obiektu serwera HTTP. Programista musi samodzielnie dostarczyć implementacji metody \\\texttt{void handle(HttpExchange)}, która obsługuje parę żądania i odpowiedzi HTTP;
+    \item Klasa \textbf{HttpExchange} dostarczająca abstrakcji i metod do obsługi pary żądania oraz odpowiedzi zgodnej z standardem HTTP;
+    \item Klasa \textbf{HttpContext} reprezentująca odwzorowanie adresu URI do poszczególnego egzemplarza \texttt{HttpHandler}; jej obiekty są automatycznie tworzone przy wywołaniu metody \texttt{HttpServer.create(InetSocketAddress addr, int backlog)};  
+    \item Klasa \textbf{Filter} umożliwiająca pre- i post-procesowanie żądań konieczne do obsługi parametrów zapytania HTTP, e.g.:  \\
+\texttt{http://www.example.com/context?param=value\&?abc=123}
+\end{itemize}
+
+Pierwszym problemem napotkanym przy projektowaniu aplikacji była rozbieżność między możliwościami narzędzi dostarczanych przez API \texttt{httpserver} oraz koniecznością uporządkowania kodu w strukturę umożliwiającą podtrzymywalność, debugowalność oraz rozszerzalność serwera.
+Wykorzystane rozwiązanie opiera się na pospolitych wzorcach projektowych spotykanych w frameworkach backendowych, w tym rozdzieleniu zadań serwera na podsystemy skupione na konkretnych funkcjonalnościach: utworzenie instancji serwera, obsługa żądań i odpowiedzi HTTP, walidacja i przetwarzanie danych, oraz obsługa zapytań bazy danych. Następnie programiście dostarczane jest drugorzędne API abstrahujące logikę serwera spajającą wszystkie podsystemy, umożliwiając programiście skupienie się na domenie i logice biznesowej wyższego poziomu.
+
+\subsubsection{Struktura aplikacji serwerowej}
+[App class \& app structure overview, also utils/],
+
+\subsubsection{Łączność i schemat bazy danych}
+[SchemaInitializer \& basic db connection],
+
+\begin{landscape}
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=1.25cm and 1.25cm,
+    table/.style={
+        draw,
+        rectangle,
+        minimum width=3cm,
+        inner sep=3pt,
+        fill=white
+    },
+    enum/.style={
+        draw,
+        trapezium,
+        trapezium stretches body,
+        fill=yellow!5,
+        minimum width=2.5cm
+    },
+    annotation/.style={
+        font=\scriptsize\itshape,
+        text width=5cm
+    }
+]
+
+%%% NODES AS TEXT TABLES %%%
+% Users
+\node[table] (users) {
+    \begin{tabular}{>{\ttfamily}l}
+    \multicolumn{1}{c}{\textbf{users}} \\
+    \midrule
+    PK: id \\
+    name: VARCHAR(36) \\
+    email: TEXT \\
+    password: VARCHAR(36) \\
+    \bottomrule
+    \end{tabular}
+};
+
+% Calendarspace
+\node[table, right=of users] (calendarspace) {
+    \begin{tabular}{>{\ttfamily}l}
+    \multicolumn{1}{c}{\textbf{calendarspace}} \\
+    \midrule
+    PK: id \\
+    FK: user\_id \\
+    taskevents\_arr: INT[] \\
+    timeblocks\_arr: INT[] \\
+    textevents\_arr: INT[] \\
+    \bottomrule
+    \end{tabular}
+};
+
+% Taskevents
+\node[table, above left=of calendarspace] (taskevents) {
+    \begin{tabular}{>{\ttfamily}l}
+    \multicolumn{1}{c}{\textbf{taskevents}} \\
+    \midrule
+    PK: id \\
+    hashcode: INT \\
+    datetime: TIMESTAMP \\
+    name: TEXT \\
+    description: TEXT \\
+    isdone: BOOLEAN \\
+    \bottomrule
+    \end{tabular}
+};
+
+% Timeblocks
+\node[table, above right=of calendarspace] (timeblocks) {
+    \begin{tabular}{>{\ttfamily}l}
+    \multicolumn{1}{c}{\textbf{timeblockevents}} \\
+    \midrule
+    PK: id \\
+    hashcode: INT \\
+    start\_datetime: TIMESTAMP \\
+    end\_datetime: TIMESTAMP \\
+    name: TEXT \\
+    description: TEXT \\
+    \bottomrule
+    \end{tabular}
+};
+
+% Textevents
+\node[table, below right=of timeblocks] (textevents) {
+    \begin{tabular}{>{\ttfamily}l}
+    \multicolumn{1}{c}{\textbf{textevents}} \\
+    \midrule
+    PK: id \\
+    hashcode: INT \\
+    content: TEXT \\
+    \bottomrule
+    \end{tabular}
+};
+
+% Viewtype enum
+\node[enum, above=of taskevents] (viewtype) {
+    \begin{tabular}{c}
+    \textbf{viewtype} \\
+    \midrule
+    static\_task \\
+    historic\_task \\
+    routine\_task \\
+    \bottomrule
+    \end{tabular}
+};
+
+%%% ANNOTATIONS %%%
+\node[annotation, below=of calendarspace] (ann-cal) {
+    \begin{minipage}{3cm}
+    \footnotesize\textit{Przykład:} \\
+    \texttt{\{"user\_id": 1,} \\
+    \texttt{"taskevents\_arr": [102,107]\}}
+    \end{minipage}
+};
+
+%%% CONNECTIONS %%%
+\draw[->, thick] (users) -- (calendarspace);
+\draw[->, thick] (calendarspace) |- node[pos=0.3, left] {1:N} (taskevents);
+\draw[->, thick] (calendarspace) -- ++(0.8,1.75) |- node[pos=0.7, below] {1:N} (timeblocks);
+\draw[->, thick] (calendarspace) -- ++(3,0) |- node[pos=0.7, below] {1:N} (textevents);
+\draw[->, dashed] (taskevents) -- (viewtype);
+\draw[->, dashed] (timeblocks) -- ++(0,2) |- (viewtype);
+\draw[->, dashed] (textevents) -- (textevents |- {0,9}) -- (viewtype);
+
+\end{tikzpicture}
+\caption{Diagram ER schematu bazy danych}
+\label{fig:hybrid-er}
+\end{figure}
+\end{landscape}
+
+\subsubsection{Abstrakcja obsługi URI i metod HTTP}
+[APIContexts, HTTPContext wrapper, QueryParamsFilter; HTTP additions],
+
+\subsubsection{Routery HTTP}
+[APIRouter \& subclasses; HttpExchange indepth],
+
+\subsubsection{Obsługa operacji CRUD bazy danych}
+[DBProxy classes],
+
+\subsubsection{Walidacja danych}
+[JSON schema validation],
+
+\subsubsection{Mechanizmy bezpieczeństwa}
+[security, RoleInjector],
+
+\subsection{Frontend}
+[UI ZONE
+MVC i MVVM z ksiązki o Vue 2]
+
+
+[JavaScript dates have been giving me growing pains due to ograniczone możliwości obiektu Date z ES6 w przeciwieństwie do Javy]
+
+\section{Integracja, konserwacja oraz szerszy obraz}
+\section*{Podsumowanie}
+
+\medskip
+
+\printbibliography[title={Bibliografia}]
+
+\subsection*{Index of pictures}
+
+\end{document}
