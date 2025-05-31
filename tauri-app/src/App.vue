@@ -53,6 +53,7 @@ const darkModeIcon = computed(() => {
     <RouterView v-if="isLoggedIn" />
     <LoginView v-else />
   </main>
+
   <footer>
     <p><em>One Calendar App to rule them all, One Calendar App to find them; One Calendar App to bring them all and in the darkness bind them.</em></p>
     <p>04.2023 - 05.2025</p>
