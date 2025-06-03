@@ -4,6 +4,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,54 +51,73 @@ public class APIContexts {
 					HTTPStatusCode status = HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
 					String res = status.wrapAsJsonRes() + REGISTERED_NURSE;
 
-					OutputStream os = exchange.getResponseBody();
+					// OutputStream os = exchange.getResponseBody();
 
-					switch (exchange.getRequestMethod().toUpperCase()) {
-						case "GET":
-							status = ROUTER.GET(exchange);
-							break;
-						case "POST":
-							status = ROUTER.POST(exchange);
-							break;
-						case "PATCH":
-							status = ROUTER.PATCH(exchange);
-							break;
-						case "PUT":
-							status = ROUTER.PUT(exchange);
-							break;
-						case "DELETE":
-							status = ROUTER.DELETE(exchange);
-							break;
-						case "HEAD":
-							status = ROUTER.HEAD(exchange);
-							break;
-						case "CONNECT":
-							status = ROUTER.CONNECT(exchange);
-							break;
-						case "OPTIONS":
-							status = ROUTER.OPTIONS(exchange);
-							break;
-						case "TRACE":
-							status = ROUTER.TRACE(exchange);
-							break;
-						default:
-							status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
-							res = status.wrapAsJsonRes() + REGISTERED_NURSE;
+					try {
+						switch (exchange.getRequestMethod().toUpperCase()) {
+							case "GET":
+								status = ROUTER.GET(exchange);
+								break;
+							case "POST":
+								status = ROUTER.POST(exchange);
+								break;
+							case "PATCH":
+								status = ROUTER.PATCH(exchange);
+								break;
+							case "PUT":
+								status = ROUTER.PUT(exchange);
+								break;
+							case "DELETE":
+								status = ROUTER.DELETE(exchange);
+								break;
+							case "HEAD":
+								status = ROUTER.HEAD(exchange);
+								break;
+							case "CONNECT":
+								status = ROUTER.CONNECT(exchange);
+								break;
+							case "OPTIONS":
+								status = ROUTER.OPTIONS(exchange);
+								break;
+							case "TRACE":
+								status = ROUTER.TRACE(exchange);
+								break;
+							default:
+								status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+								res = status.wrapAsJsonRes() + REGISTERED_NURSE;
+						}
+
+						// Wacky ternary to avoid \r\n duplication.
+						res = ROUTER.getResponse() 
+							+ (ROUTER.getResponse().endsWith(REGISTERED_NURSE) ? "" : REGISTERED_NURSE);
+
+						byte[] resBytes = res.getBytes(StandardCharsets.UTF_8);
+
+						exchange.getResponseHeaders().set("Content-Type", "application/json");
+						exchange.getResponseHeaders().set("Connection", "close");
+
+						exchange.sendResponseHeaders(status.getint(), resBytes.length);
+
+						try (OutputStream os = exchange.getResponseBody()) {
+							os.write(resBytes);
+							os.flush();
+							os.close();
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						byte[] errRes = (
+							HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR.wrapAsJsonRes() +
+							REGISTERED_NURSE).getBytes(StandardCharsets.UTF_8);
+						
+						exchange.sendResponseHeaders(500, errRes.length);
+						System.out.println("[ERROR] @ lvsa.tpcalendar.http.APIContexts : Unknown exception caught in the handle() method.");
+						try (OutputStream os = exchange.getResponseBody()) {
+							os.write(errRes);
+							os.flush();
+							os.close();
+						}
+						
 					}
-					
-					// Wacky ternary to avoid \r\n duplication.
-					res = ROUTER.getResponse() 
-						+ (ROUTER.getResponse().endsWith(REGISTERED_NURSE) ? "" : REGISTERED_NURSE);
-
-					// 0 to use Chunked Transfer Coding
-					// https://www.rfc-editor.org/rfc/rfc9112.html#name-chunked-transfer-coding
-					exchange.sendResponseHeaders(status.getint(), 0);
-
-					os = exchange.getResponseBody();
-					os.write(res.getBytes());
-
-					os.flush();
-					os.close();
 				}
 			};
 		}

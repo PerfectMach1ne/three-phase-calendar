@@ -28,11 +28,21 @@ async fn login(email: &str, password: &str) -> Result<String, String> {
         .await
         .map_err(|e| format!("Network error: {}", e))?;
 
-    if response.status().is_success() {
-        Ok(format!("Logged in as user ({}) successfully!", email))
+    let status = response.status();
+    let response_text = response.text()
+        .await
+        .map_err(|e| format!("Error reading response: {}", e))?;
+
+    if status.is_success() {
+        Ok(response_text) // Return the actual response
     } else {
-        Err(format!("Login failed: {}", response.text().await.unwrap_or_default()))
+        Err(format!("Server error: {}", response_text))
     }
+    // if response.status().is_success() {
+    //     Ok(format!("Logged in as user ({}) successfully!", email))
+    // } else {
+    //     Err(format!("Login failed: {}", response.text().await.unwrap_or_default()))
+    // }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

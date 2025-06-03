@@ -14,31 +14,25 @@ import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
-    private DBConnProvider db;
-    protected Connection conn;
-
     public LoginDBProxy(DBConnProvider dbConnProvider) {
         super(dbConnProvider);
     }
 
     public HTTPStatusCode create(String json) throws SQLException {
-        // PreparedStatement stat = this.conn.prepareStatement("""
-        //     INSERT INTO users (name, email, password)
-        //     VALUES (?, ?, ?);
-        // """);
+        PreparedStatement stat = this.conn.prepareStatement("""
+            INSERT INTO users (name, email, password)
+            VALUES (?, ?, ?);
+        """);
 
-        System.out.println("blauup");
         Gson gson = new Gson();
         JsonElement loginJsonEl;
         try {
-            System.out.println("bluh");
             loginJsonEl = gson.fromJson(json, JsonElement.class);
         } catch (JsonSyntaxException jse) {
             jse.printStackTrace();
             return HTTPStatusCode.HTTP_400_BAD_REQUEST;
         }
         
-        System.out.println("baapo");
         if (loginJsonEl.isJsonObject()) {
             JsonObject jobj = loginJsonEl.getAsJsonObject();
             Map<String, JsonElement> map = jobj.asMap();
@@ -47,6 +41,7 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
             System.out.println(map.get("password"));
         }
 
+        stat.cancel();
         // stat.executeUpdate();
 
         return HTTPStatusCode.HTTP_200_OK;

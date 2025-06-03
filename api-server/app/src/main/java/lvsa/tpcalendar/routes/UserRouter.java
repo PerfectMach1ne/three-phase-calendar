@@ -60,30 +60,17 @@ public class UserRouter implements APIRouter {
                 sb.append(reqdata);
             }
         } catch (IOException ioe) {
+            // TODO: log: IOException at StringBuffer in POST /api/cal/timeblock
             ioe.printStackTrace();
-            response = status.wrapAsJsonRes();
-            return status;
-        }
-
-        System.out.println("BAAP");
-        try (
-            DBConnProvider db = new DBConnProvider();
-            LoginDBProxy proxy = new LoginDBProxy(db);
-        ) {
-            System.out.println("waaAAAh");
-            status = proxy.create(sb.toString());
-            response = status.wrapAsJsonRes();
-            System.out.println(status);
-            return status;
-        } catch (SQLException sqle) {
-            System.out.println("buhh");
-            if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
-                return HTTPStatusCode.HTTP_409_CONFLICT;
-            }
-            sqle.printStackTrace();
             response = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR.wrapAsJsonRes();
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
+
+        status = attemptLogin(sb.toString());
+        System.out.println(status);
+        System.out.println(response);
+        response = status.wrapAsJsonRes();
+        return status;
     }
 
     @Override
@@ -119,5 +106,27 @@ public class UserRouter implements APIRouter {
     @Override
     public HTTPStatusCode TRACE(HttpExchange htex) {
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
+    }
+
+    /**
+     * []
+     * 
+     * @param   buffer  []
+     * @return  a <code>HTTPStatusCode</code>.
+     */
+    private HTTPStatusCode attemptLogin(String buffer) {
+        try(
+            DBConnProvider db = new DBConnProvider();
+            LoginDBProxy proxy = new LoginDBProxy(db);
+        ) {
+            HTTPStatusCode status = proxy.create(buffer);
+            return status;
+        } catch (SQLException sqle) {
+            if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
+                return HTTPStatusCode.HTTP_409_CONFLICT;
+            }
+            sqle.printStackTrace();
+            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        }
     }
 }
