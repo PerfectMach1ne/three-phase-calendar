@@ -129,7 +129,7 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
         PreparedStatement hashcodeQuery = this.conn.prepareStatement("""
             SELECT hashcode, datetime, name, description,
                 viewtype, color, isdone
-            FROM timeblockevents 
+            FROM taskevents
             WHERE hashcode = ?;         
         """);
         hashcodeQuery.setInt(1, hashcode);

@@ -233,7 +233,7 @@ public class TimeblockRouter implements APIRouter {
         ) {
             HTTPStatusCode status = proxy.create(buffer);
             return status;
-        } catch(SQLException sqle) {
+        } catch (SQLException sqle) {
             if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
                 return HTTPStatusCode.HTTP_409_CONFLICT;
             }

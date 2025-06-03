@@ -8,13 +8,15 @@ const loginResult = ref('');
 
 async function attemptLogin() {
   try {
-    loginResult.value = await invoke('login', {
+    const res = await invoke('login', {
       email: email.value,
       password: pwd.value
     });
+    loginResult.value = res;
     console.log(loginResult.value);
   } catch (error) {
     loginResult.value = `Error: ${error}`;
+    console.log(loginResult.value);
   }
 }
 </script>

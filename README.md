@@ -11,7 +11,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ## Milestones/feature ToDo list
 
-#### CALENDARCOINS COLLECTED: 29📅🪙!!!
+#### CALENDARCOINS COLLECTED: 30📅🪙!!!
 
 ### Java + postgres backend server
 
@@ -63,7 +63,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~Implement a basic "casing" for calendar mode.~~
 - [ ] **Implement a basic "casing" for planner mode.**
 - [ ] **Implement a basic "casing" for journal mode.**
-- [ ] **Make Rust "middleend" be able to talk to the appropriate backend server.**
+- [x] ~~Make Rust "middleend" be able to talk to the appropriate backend server.~~
 - [ ] **Basic event fetching.**
 - [ ] Refurbish calendar styling.
 - [ ] A settings popup/page.

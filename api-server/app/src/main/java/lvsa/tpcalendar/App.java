@@ -69,8 +69,8 @@ public final class App {
                         "?id={int}", new TimeblockRouter()),
                     "/api/cal/text", new AbstractMap.SimpleEntry<String, APIRouter>(
                         "?id={base64}", new TextRouter()),
-                    "/api/user", new AbstractMap.SimpleEntry<String, APIRouter>(
-                        "?id={base64}", new UserRouter()),
+                    "/api/login", new AbstractMap.SimpleEntry<String, APIRouter>(
+                        "_", new UserRouter()),
                     "/teapot", new AbstractMap.SimpleEntry<String, APIRouter>(
                         "?msg={char[57]}", new ImATeapotDoubleColon3Router()),
                     "/api/teapot", new AbstractMap.SimpleEntry<String, APIRouter>(

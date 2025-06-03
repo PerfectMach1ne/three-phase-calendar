@@ -58,6 +58,7 @@ public class TaskRouter implements APIRouter {
      */
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
+        System.out.println("whar");
 		InputStream is = htex.getRequestBody();
 		InputStreamReader isReader = new InputStreamReader(is);
     	BufferedReader reader = new BufferedReader(isReader);

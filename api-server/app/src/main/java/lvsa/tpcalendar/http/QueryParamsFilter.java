@@ -14,21 +14,26 @@ public class QueryParamsFilter extends Filter {
 
 	@Override
 	public void doFilter(HttpExchange htex, Chain chain) throws IOException {
-		String query = htex.getRequestURI().getQuery();
-		HashMap<String, String> queryParams = new HashMap<String, String>();
-		query = query.strip();
+		// A troublesome NullPointerException fix
+		if (htex.getRequestURI().getQuery() == null) {
+			chain.doFilter(htex);
+		} else {
+			String query = htex.getRequestURI().getQuery();
+			HashMap<String, String> queryParams = new HashMap<String, String>();
+			query = query.strip();
 
-		if (query != null) {
-			String[] splitQuery = query.split("&");
-			for (String queryPair : splitQuery) {
-				String[] splitPair = queryPair.split("=");
-				String key = splitPair[0];
-				String value = splitPair[1];
-				queryParams.put(key, value);
+			if (query != null) {
+				String[] splitQuery = query.split("&");
+				for (String queryPair : splitQuery) {
+					String[] splitPair = queryPair.split("=");
+					String key = splitPair[0];
+					String value = splitPair[1];
+					queryParams.put(key, value);
+				}
 			}
-		}
 
-		htex.setAttribute("queryParams", queryParams);
-		chain.doFilter(htex);	
+			htex.setAttribute("queryParams", queryParams);
+			chain.doFilter(htex);	
+		}
 	}
 }
