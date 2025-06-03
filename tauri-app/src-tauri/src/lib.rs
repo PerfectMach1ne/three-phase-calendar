@@ -8,6 +8,17 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
+async fn register(username: &str, email: &str, password: &str) -> Result<String, String> {
+    let username = if username.is_empty() { "Michalina Hatsuńska" } else { username };
+
+    if email.is_empty() || password.is_empty() {
+        return Err("Email and password field cannot be empty!".into());
+    }
+
+    Ok("baap".to_string())
+}
+
+#[tauri::command]
 async fn login(email: &str, password: &str) -> Result<String, String> {
     if email.is_empty() || password.is_empty() {
         return Err("Email and password field cannot be empty!".into());
@@ -19,7 +30,7 @@ async fn login(email: &str, password: &str) -> Result<String, String> {
 
     let client = reqwest::Client::new();
     let response = client
-        .post("http://172.18.0.2:8057/api/login")
+        .post("http://127.0.0.1:58057/api/login")
         .json(&json!({
             "email": email,
             "password": hashed_password,
@@ -29,20 +40,19 @@ async fn login(email: &str, password: &str) -> Result<String, String> {
         .map_err(|e| format!("Network error: {}", e))?;
 
     let status = response.status();
+    // 200 -> login
+    // 401 -> fuck off
+    // 404 -> account not found
+    // 201 -> account created + login
     let response_text = response.text()
         .await
         .map_err(|e| format!("Error reading response: {}", e))?;
 
     if status.is_success() {
-        Ok(response_text) // Return the actual response
+        Ok(response_text)
     } else {
         Err(format!("Server error: {}", response_text))
     }
-    // if response.status().is_success() {
-    //     Ok(format!("Logged in as user ({}) successfully!", email))
-    // } else {
-    //     Err(format!("Login failed: {}", response.text().await.unwrap_or_default()))
-    // }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
