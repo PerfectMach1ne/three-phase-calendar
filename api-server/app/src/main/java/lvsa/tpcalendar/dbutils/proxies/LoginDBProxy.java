@@ -39,28 +39,38 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
             JsonObject jobj = loginJsonEl.getAsJsonObject();
             Map<String, JsonElement> map = jobj.asMap();
 
+            query.setString(1, map.get("email").getAsString());
+            
+            ResultSet rs = query.executeQuery();
             if (map.get("name") != null) {
-                PreparedStatement stat = this.conn.prepareStatement("""
-                    INSERT INTO users (name, email, password)
-                    VALUES (?, ?, ?);
-                """);
+                if (!rs.next()) {
+                    PreparedStatement stat = this.conn.prepareStatement("""
+                        INSERT INTO users (name, email, password)
+                        VALUES (?, ?, ?);
+                    """);
 
-                stat.setString(1, map.get("name").getAsString());
-                stat.setString(2, map.get("email").getAsString());
-                stat.setString(3, map.get("password").getAsString());
+                    stat.setString(1, map.get("name").getAsString());
+                    stat.setString(2, map.get("email").getAsString());
+                    stat.setString(3, map.get("password").getAsString());
 
-                stat.executeUpdate();
+                    stat.executeUpdate();
 
-                return HTTPStatusCode.HTTP_201_CREATED; // Account created.
+                    return HTTPStatusCode.HTTP_201_CREATED; // Account created.
+                } else {
+                    return HTTPStatusCode.HTTP_409_CONFLICT;        
+                }
             } else {
-                query.setString(1, map.get("email").getAsString());
-                ResultSet rs = query.executeQuery();
+                
 
                 if (!rs.next()) {
                     return HTTPStatusCode.HTTP_404_NOT_FOUND; // Account does not exist.
                 } else {
-                    return rs.getString("email") == map.get("email").getAsString() &&
-                           rs.getString("password") == map.get("password").getAsString() ?
+                    System.out.println(map.get("email").getAsString() + " == " + rs.getString("email"));
+                    System.out.println(map.get("password").getAsString() + " == " + rs.getString("password"));
+                    System.out.println(rs.getString("email").equals(map.get("email").getAsString()));
+                    System.out.println(rs.getString("password").equals(map.get("password").getAsString()));
+                    return rs.getString("email").equals(map.get("email").getAsString()) &&
+                           rs.getString("password").equals(map.get("password").getAsString()) ?
                         HTTPStatusCode.HTTP_200_OK : // Log in successful.
                         HTTPStatusCode.HTTP_401_UNAUTHORIZED; // Incorrect credentials.
                 }

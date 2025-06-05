@@ -16,6 +16,7 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
  * /api/login
+ * /api/register
  */
 public class UserRouter implements APIRouter {
     private String response = "{ \"response\": \"nothing\" }";

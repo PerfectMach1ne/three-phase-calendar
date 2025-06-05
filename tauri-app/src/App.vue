@@ -45,13 +45,13 @@ const darkModeIcon = computed(() => {
       <button @click="goToCalendar" class="router mode">Calendar</button>
       <button @click="goToPlanner" class="router mode">Planner</button>
       <button @click="goToJournal" class="router mode">Journal</button>
-      <button @click="loginToggle" class="router login">Login</button>
+      <button @click="loginToggle" class="router login">{{ !isLoggedIn ? "Login" : "Logout" }}</button>
       <button @click="darkModeToggle" class="router" :class="[darkMode ? darkModeClass : lightModeClass]">{{ darkModeIcon }}</button>
     </nav>
   </header>
   <main class="wrapper">
     <RouterView v-if="isLoggedIn" />
-    <LoginView v-else />
+    <LoginView v-else @login="loginToggle" />
   </main>
 
   <footer>

@@ -15,7 +15,33 @@ async fn register(username: &str, email: &str, password: &str) -> Result<String,
         return Err("Email and password field cannot be empty!".into());
     }
 
-    Ok("baap".to_string())
+    let mut pwd_hasher = Sha256::new();
+    pwd_hasher.update(password.as_bytes());
+    let hashed_password = format!("{:x}", pwd_hasher.finalize());
+
+    let client = reqwest::Client::new();
+
+    let response = client
+        .post("http://127.0.0.1:58057/api/register")
+        .json(&json!({
+            "name": username,
+            "email": email,
+            "password": hashed_password,
+        }))
+        .send()
+        .await
+        .map_err(|e| format!("Network error: {}", e))?;
+
+    let status = response.status();
+    let response_text = response.text()
+        .await
+        .map_err(|e| format!("Error reading response: {}", e))?;
+
+    if status.is_success() {
+        Ok(response_text)
+    } else {
+        Err(format!("Server error: {}", response_text))
+    }
 }
 
 #[tauri::command]
@@ -40,10 +66,6 @@ async fn login(email: &str, password: &str) -> Result<String, String> {
         .map_err(|e| format!("Network error: {}", e))?;
 
     let status = response.status();
-    // 200 -> login
-    // 401 -> fuck off
-    // 404 -> account not found
-    // 201 -> account created + login
     let response_text = response.text()
         .await
         .map_err(|e| format!("Error reading response: {}", e))?;
@@ -59,7 +81,7 @@ async fn login(email: &str, password: &str) -> Result<String, String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, login])
+        .invoke_handler(tauri::generate_handler![greet, login, register])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

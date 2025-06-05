@@ -2,15 +2,17 @@
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 
+const emit = defineEmits(['login']);
+
 const username = ref('Michalina Hatsuńska');
 const email = ref('email@example.com');
 const pwd = ref('');
 const loginResult = ref('');
 const noaccount = ref(false);
 const registrationMode = ref(false);
+const isLoggedIn = ref(false);
 
 async function attemptLogin() {
-  console.log(registrationMode.value + " " + noaccount.value);
   try {
     if (registrationMode.value && !noaccount.value) {
       const res = await invoke('register', {
@@ -26,11 +28,8 @@ async function attemptLogin() {
       });
       loginResult.value = res;
     }
-    
-    
   } catch (error) {
     loginResult.value = `Error: ${error}`;
-    console.log(loginResult.value);
   }
 
   if (loginResult.value.includes('404') && !registrationMode.value) {
@@ -38,10 +37,23 @@ async function attemptLogin() {
     if (!registrationMode.value) loginResult.value = "Account with this email doesn't exist! Would you like to create one?";
   } else if (loginResult.value.includes('401') && !registrationMode.value) {
     loginResult.value = "Incorrect email or password!";
+  } else if (loginResult.value.includes('409') && registrationMode.value) {
+    loginResult.value = "Account with this email already exists!";
   } else if (loginResult.value.includes('201') && registrationMode.value) {
     loginResult.value = "Account has been created successfully!";
+    registrationMode.value = false;
+    isLoggedIn.value = true;
+
+    setInterval(() => {
+      emit('login');  
+    }, 1000);
   } else if (loginResult.value.includes('200')) {
     loginResult.value = "Successfully logged in!";
+    isLoggedIn.value = true;
+
+    setInterval(() => {
+      emit('login');  
+    }, 1000);
   }
 }
 

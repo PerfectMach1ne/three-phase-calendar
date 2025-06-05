@@ -71,6 +71,8 @@ public final class App {
                         "?id={base64}", new TextRouter()),
                     "/api/login", new AbstractMap.SimpleEntry<String, APIRouter>(
                         "_", new UserRouter()),
+                    "/api/register", new AbstractMap.SimpleEntry<String, APIRouter>(
+                        "_", new UserRouter()),
                     "/teapot", new AbstractMap.SimpleEntry<String, APIRouter>(
                         "?msg={char[57]}", new ImATeapotDoubleColon3Router()),
                     "/api/teapot", new AbstractMap.SimpleEntry<String, APIRouter>(
