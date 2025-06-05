@@ -1,7 +1,7 @@
 package lvsa.tpcalendar.dbutils.proxies;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -19,13 +19,15 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
     }
 
     public HTTPStatusCode create(String json) throws SQLException {
-        PreparedStatement stat = this.conn.prepareStatement("""
-            INSERT INTO users (name, email, password)
-            VALUES (?, ?, ?);
+        PreparedStatement query = this.conn.prepareStatement("""
+            SELECT name, email, password
+            FROM users
+            WHERE email = ?;
         """);
 
         Gson gson = new Gson();
         JsonElement loginJsonEl;
+
         try {
             loginJsonEl = gson.fromJson(json, JsonElement.class);
         } catch (JsonSyntaxException jse) {
@@ -37,13 +39,35 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
             JsonObject jobj = loginJsonEl.getAsJsonObject();
             Map<String, JsonElement> map = jobj.asMap();
 
-            System.out.println(map.get("email"));
-            System.out.println(map.get("password"));
+            if (map.get("name") != null) {
+                PreparedStatement stat = this.conn.prepareStatement("""
+                    INSERT INTO users (name, email, password)
+                    VALUES (?, ?, ?);
+                """);
+
+                stat.setString(1, map.get("name").getAsString());
+                stat.setString(2, map.get("email").getAsString());
+                stat.setString(3, map.get("password").getAsString());
+
+                stat.executeUpdate();
+
+                return HTTPStatusCode.HTTP_201_CREATED; // Account created.
+            } else {
+                query.setString(1, map.get("email").getAsString());
+                ResultSet rs = query.executeQuery();
+
+                if (!rs.next()) {
+                    return HTTPStatusCode.HTTP_404_NOT_FOUND; // Account does not exist.
+                } else {
+                    return rs.getString("email") == map.get("email").getAsString() &&
+                           rs.getString("password") == map.get("password").getAsString() ?
+                        HTTPStatusCode.HTTP_200_OK : // Log in successful.
+                        HTTPStatusCode.HTTP_401_UNAUTHORIZED; // Incorrect credentials.
+                }
+            }
         }
 
-        stat.cancel();
-        // stat.executeUpdate();
-
+        // Could this potentially be 500 instead...? I mean... what has to happen for us to get there?
         return HTTPStatusCode.HTTP_200_OK;
     }
 

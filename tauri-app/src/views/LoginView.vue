@@ -6,53 +6,49 @@ const username = ref('Michalina Hatsuńska');
 const email = ref('email@example.com');
 const pwd = ref('');
 const loginResult = ref('');
-const noaccount = ref(null);
+const noaccount = ref(false);
 const registrationMode = ref(false);
 
 async function attemptLogin() {
+  console.log(registrationMode.value + " " + noaccount.value);
   try {
-    if (registrationMode.value && noaccount.value) {
-      const res = await invoke('login', {
+    if (registrationMode.value && !noaccount.value) {
+      const res = await invoke('register', {
         username: username.value,
         email: email.value,
         password: pwd.value
       });
+      loginResult.value = res;
     } else {
       const res = await invoke('login', {
         email: email.value,
         password: pwd.value
       });
+      loginResult.value = res;
     }
     
-    loginResult.value = res;
-    if (registrationMode.value) registrationMode.value = false;
+    
   } catch (error) {
     loginResult.value = `Error: ${error}`;
     console.log(loginResult.value);
   }
 
-  
-
-  if (loginResult.value.includes('404')) {
+  if (loginResult.value.includes('404') && !registrationMode.value) {
+    noaccount.value = true;
     if (!registrationMode.value) loginResult.value = "Account with this email doesn't exist! Would you like to create one?";
-    if (!noaccount.value || noaccount.value == null) initRegistration();
-  } else if (loginResult.value.includes('401')) {
-    // wrong password
-  } else if (loginResult.value.includes('201')) {
-    // account created
+  } else if (loginResult.value.includes('401') && !registrationMode.value) {
+    loginResult.value = "Incorrect email or password!";
+  } else if (loginResult.value.includes('201') && registrationMode.value) {
+    loginResult.value = "Account has been created successfully!";
   } else if (loginResult.value.includes('200')) {
-    // ordinary log-in
+    loginResult.value = "Successfully logged in!";
   }
 }
 
 function initRegistration() {
-  if (noaccount.value == null) {
-    noaccount.value = true;
-  } else {
-    noaccount.value = !noaccount.value;
-    registrationMode.value = true;
-    loginResult.value = "";
-  } 
+  loginResult.value = "";
+  noaccount.value = false;
+  registrationMode.value = true;
 }
 </script>
 
