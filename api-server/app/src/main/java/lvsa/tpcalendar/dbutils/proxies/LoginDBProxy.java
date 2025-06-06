@@ -30,6 +30,9 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
 
         try {
             loginJsonEl = gson.fromJson(json, JsonElement.class);
+            if (loginJsonEl.isJsonNull()) {
+                return HTTPStatusCode.HTTP_400_BAD_REQUEST;
+            }
         } catch (JsonSyntaxException jse) {
             jse.printStackTrace();
             return HTTPStatusCode.HTTP_400_BAD_REQUEST;

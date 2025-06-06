@@ -1,22 +1,18 @@
-<script>
-export default {
-  props: ['character'],
-  emits: ['todays-week'],
-  data() {
-    return {
-      displayChar: ""
-    }
-  },
-  computed: {
+<script setup>
+import { created, ref } from 'vue';
 
-  },
-  methods: {
-    
-  },
-  created() {
-    this.displayChar = this.character;
-  }
-}
+defineProps({
+  character: String
+});
+defineEmits([
+  'todays-week'
+]);
+
+const displayChar = ref("");
+
+created(() => {
+  displayChar.value = character.value;
+});
 </script>
 
 <template>
