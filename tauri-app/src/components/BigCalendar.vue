@@ -4,15 +4,16 @@ import ChangeWeek from './buttons/ChangeWeek.vue';
 import TodaysWeek from './buttons/TodaysWeek.vue';
 
 const weekdayBoxWidth = ref('');
-let currentDate = new Date();
-const currentWeek = ref(18);
-const currentMonths = ref('Aug - Sep');
-const currentFirstDayofweek = ref(0);
-const currentLastDayofweek = ref(0);
-const currentYear = ref(2020);
 const left = ref("&#10094;");
 const right = ref("&#10095;");
 const today = ref("&#10022;");
+
+let currentDate = new Date();
+const currentWeek = ref(18);
+const currentFirstDayofweek = ref(0);
+const currentLastDayofweek = ref(0);
+const currentMonths = ref('Aug - Sep');
+const currentYear = ref(2020);
 
 const weekdayArray = computed(() => 
   ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"]
@@ -132,145 +133,6 @@ onMounted(() => {
 });
 
 </script>
-
-// <script>
-// import ChangeWeek from './buttons/ChangeWeek.vue';
-// import TodaysWeek from './buttons/TodaysWeek.vue';
-
-// export default {
-//   components: { ChangeWeek, TodaysWeek },
-//   data() {
-//     return {
-//       weekdayBoxWidth: '',
-//       currentDate: new Date(),
-//       currentWeek: 18, // throwaway default value
-//       currentMonths: 'Aug - Sep', // throwaway default value
-//       currentFirstDayofweek: 0,
-//       currentLastDayofweek: 0,
-//       currentYear: 2020, // throwaway default value
-//       left: "&#10094;",
-//       right: "&#10095;",
-//       today: "&#10022;"
-//     }
-//   },
-//   computed: {
-//     weekdayArray() {
-//       return ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
-//     },
-//     monthNames() {
-//       return ["January", "February", "March", "April", "May", "June", "July", "August", "September",
-//        "October", "November", "December"];
-//     }
-//   },
-//   methods: {
-//     getTodaysWeek() {
-//       /*
-//        * Returns the ISO week of the date.
-//        */
-//       Date.prototype.getWeek = function() {
-//         var date = new Date(this.getTime());
-//         date.setHours(0, 0, 0, 0);
-//         // Thursday in current week decides the year.
-//         date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7);
-//         // January 4 is always in week 1.
-//         var week1 = new Date(date.getFullYear(), 0, 4);
-//         // Adjust to Thursday in week 1 and count number of weeks from date to week1.
-//         return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
-//       }
-//       var date = this.currentDate;
-//       var weekNumeral = date.getWeek();
-
-//       return weekNumeral;
-//     },
-//     getTodaysMonths() {
-//       var date = this.currentDate;
-
-//       var weekFirstMonthday = date.getDate() - date.getDay();
-//       date = new Date(
-//         date.getFullYear(),
-//         date.getMonth(),
-//         weekFirstMonthday);
-//       var mondayMonth = date.getMonth();
-//       date = new Date(
-//         date.getFullYear(),
-//         date.getMonth(),
-//         weekFirstMonthday + 7);
-//       var sundayMonth = date.getMonth();
-      
-//       if (mondayMonth == sundayMonth)
-//         return this.monthNames[mondayMonth];
-//       else
-//         return this.monthNames[mondayMonth] + ' - ' + this.monthNames[sundayMonth];
-//     },
-//     getWeekMonthday(dayOffset) {
-//       var date = this.currentDate;
-
-//       var monthday = date.getDate() - date.getDay() + 1;
-//       date = new Date(date.getFullYear(), date.getMonth(), monthday + dayOffset);
-//       monthday = date.getDate();
-
-//       return monthday;
-//     },
-
-//     // ChangeWeek.vue events
-//     goToPastWeek() {
-//       var date = this.currentDate;
-//       var monthday = date.getDate() - date.getDay() + 1;
-//       date = new Date(date.getFullYear(), date.getMonth(), monthday - 7);
-//       this.currentDate = date;
-
-//       this.currentMonths = this.getTodaysMonths();
-//       this.currentFirstDayofweek = this.getWeekMonthday(0);
-//       this.currentLastDayofweek = this.getWeekMonthday(6);
-//       this.currentYear = this.currentDate.getFullYear();
-//       this.currentWeek = this.getTodaysWeek();
-
-//       console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstDayofweek + ', ' + this.currentLastDayofweek + ', ' + this.currentYear);
-//     },
-//     goToFutureWeek() {
-//       var date = this.currentDate;
-//       console.log(date.getDay());
-//       var firstMonthDay = date.getDate() - date.getDay() + 1;
-//       date = new Date(date.getFullYear(), date.getMonth(), firstMonthDay + 7);
-//       this.currentDate = date;
-
-//       this.currentMonths = this.getTodaysMonths();
-//       this.currentFirstDayofweek = this.getWeekMonthday(0);
-//       this.currentLastDayofweek = this.getWeekMonthday(6);
-//       this.currentYear = this.currentDate.getFullYear();
-//       this.currentWeek = this.getTodaysWeek();
-
-//       console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstDayofweek + ', ' + this.currentLastDayofweek + ', ' + this.currentYear);
-//     },
-//     goToTodaysWeek() {
-//       this.currentDate = new Date();
-//       this.currentDate.setHours(0, 0, 0, 0);
-
-//       this.currentMonths = this.getTodaysMonths();
-//       this.currentFirstDayofweek = this.getWeekMonthday(0);
-//       this.currentLastDayofweek = this.getWeekMonthday(6);
-//       this.currentYear = this.currentDate.getFullYear();
-//       this.currentWeek = this.getTodaysWeek();
-
-//       console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstDayofweek + ', ' + this.currentLastDayofweek + ', ' + this.currentYear);
-//     }
-//   },
-//   mounted() {
-//     this.currentDate.setHours(0, 0, 0, 0);
-//     // Load the current data
-//     this.currentMonths = this.getTodaysMonths();
-//     this.currentFirstDayofweek = this.getWeekMonthday(0);
-//     this.currentLastDayofweek = this.getWeekMonthday(6);
-//     this.currentYear = this.currentDate.getFullYear();
-//     this.currentWeek = this.getTodaysWeek();
-
-//     console.log(this.currentWeek + ', ' + this.currentMonths + ', ' + this.currentFirstDayofweek + ', ' + this.currentLastDayofweek + ', ' + this.currentYear);
-    
-//     // Easy fix for yearmonth__display class element being sized correctly - steal weekday__box's width after render. >:)
-//     this.weekdayBoxWidth = document.getElementById('weekdaybox-width-source').offsetWidth + 'px';
-//   }
-// }
-// </script>
 
 <template>
   <div class="wrapper__big__calendar">
