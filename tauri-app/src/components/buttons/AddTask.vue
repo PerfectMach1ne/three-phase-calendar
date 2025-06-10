@@ -1,13 +1,13 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { inject } from 'vue';
 
-const router = useRouter();
+const renderAddTask = inject('renderAddTask');
 
-function enterView() {
-  router.push('/addtask')
+function toggle() {
+  renderAddTask.value = !renderAddTask.value;
 }
 </script>
 
 <template>
-  <button class="tools__button" @click="enterView">Add task</button>
+  <button class="tools__button" @click="toggle">Add task</button>
 </template>

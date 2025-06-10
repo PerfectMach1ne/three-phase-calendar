@@ -40,7 +40,7 @@ const darkModeIcon = computed(() => {
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
   -->
   <header>
-    <img @click="goToHome" src="./assets/logo.png" alt="tpc placeholder logo" class="logo" width="80" height="80"/>
+    <img @click="goToCalendar" src="./assets/logo.png" alt="tpc placeholder logo" class="logo" width="80" height="80"/>
     <nav>
       <button @click="goToCalendar" class="router mode">Calendar</button>
       <button @click="goToPlanner" class="router mode">Planner</button>

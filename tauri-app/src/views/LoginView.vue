@@ -46,14 +46,14 @@ async function attemptLogin() {
 
     setInterval(() => {
       emit('login');  
-    }, 1000);
+    }, 600);
   } else if (loginResult.value.includes('200')) {
     loginResult.value = "Successfully logged in!";
     isLoggedIn.value = true;
 
     setInterval(() => {
       emit('login');  
-    }, 1000);
+    }, 600);
   }
 }
 

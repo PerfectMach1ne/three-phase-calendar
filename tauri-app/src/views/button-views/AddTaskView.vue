@@ -1,58 +1,54 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { inject } from 'vue';
 
-const router = useRouter();
+const renderAddTask = inject('renderAddTask');
 
 function cancel() {
-  router.push('/')
+  renderAddTask.value = !renderAddTask.value;
 }
 </script>
 
 <template>
-  <div class="event__page__container">
-    <div class="event__page__box">
-      <span>
-        <label for="reminder-title-input">Title: </label>
-        <input type="text" id="reminder-title-input" name="reminder-title-input">
-      </span>
-      <span>
-        <label for="reminder-datetime-input">Date & time: </label>
-        <input type="datetime-local" id="reminder-datetime-input" name="reminder-datetime-input">
-      </span>
-      <!-- <span>
-        <label for="hours-choice">Hours: </label>
-        <input list="hours-list" id="hours-choice" name="hours-choice">
-        <datalist id="hours-list">
-          <option value=""></option>
-          <option v-for="i in 24" v-bind:value="`${String(i - 1).padStart(2, '0') + ':00'}`"></option>
-        </datalist>
-      </span> -->
-      <div class="event__page__buttons">
-        <button>Create</button>
-        <button @click="cancel">Cancel</button>
-      </div>
-      
+  <div class="event__page__box">
+    <span>
+      <label for="reminder-title-input">Title: </label>
+      <input type="text" id="reminder-title-input" name="reminder-title-input">
+    </span>
+    <span>
+      <label for="reminder-datetime-input">Date &amp; time: </label>
+      <input type="datetime-local" id="reminder-datetime-input" name="reminder-datetime-input">
+    </span>
+    <!-- <span>
+      <label for="hours-choice">Hours: </label>
+      <input list="hours-list" id="hours-choice" name="hours-choice">
+      <datalist id="hours-list">
+        <option value=""></option>
+        <option v-for="i in 24" v-bind:value="`${String(i - 1).padStart(2, '0') + ':00'}`"></option>
+      </datalist>
+    </span> -->
+    <div class="event__page__buttons">
+      <button>Create</button>
+      <button @click="cancel">Cancel</button>
     </div>
   </div>
 </template>
 
 <style>
-.event__page__container {
-  display: flex;
-  justify-content: center;
-}
-
 .event__page__box {
+  z-index: 1;
   display: flex;
-  flex-direction: column; /* ensure all is aligned in a column */
-  align-content: center; /*  */
-  align-items: center; /* centers item; justify-content does everything wrong, "in the column-specific way" */
+  position: fixed;
+  top: 50%;
+  left: 30%;
+  right: 30%;
+  flex-direction: column;
+  align-content: center; 
+  align-items: center;
   gap: 15px;
   margin: 5px;
   border: 1px solid gray;
   padding: 15px;
-  min-height: 77.6vh;
-  width: 35%;
+  width: 40%;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.2rem;
 }

@@ -63,15 +63,9 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
                     return HTTPStatusCode.HTTP_409_CONFLICT;        
                 }
             } else {
-                
-
                 if (!rs.next()) {
                     return HTTPStatusCode.HTTP_404_NOT_FOUND; // Account does not exist.
                 } else {
-                    System.out.println(map.get("email").getAsString() + " == " + rs.getString("email"));
-                    System.out.println(map.get("password").getAsString() + " == " + rs.getString("password"));
-                    System.out.println(rs.getString("email").equals(map.get("email").getAsString()));
-                    System.out.println(rs.getString("password").equals(map.get("password").getAsString()));
                     return rs.getString("email").equals(map.get("email").getAsString()) &&
                            rs.getString("password").equals(map.get("password").getAsString()) ?
                         HTTPStatusCode.HTTP_200_OK : // Log in successful.
@@ -80,28 +74,11 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
             }
         }
 
-        // Could this potentially be 500 instead...? I mean... what has to happen for us to get there?
-        return HTTPStatusCode.HTTP_200_OK;
-    }
-
-    public String read(int hashcode) throws SQLException {
-        return "";
-    }
-
-    public HTTPStatusCode delete(int hashcode) throws SQLException {
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
     }
 
     @Override
     public void close() throws SQLException {
         conn.close();
     }
-
-    // public HTTPStatusCode updateWhole(int hashcode, String json) throws SQLException {
-    //     return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
-    // }
-
-    // public HTTPStatusCode updatePartial(int hashcode, String json) throws SQLException {
-    //     return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
-    // }
 }
