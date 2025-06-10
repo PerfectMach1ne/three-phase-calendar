@@ -1,10 +1,10 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { inject, ref } from 'vue';
 
-const router = useRouter();
+const renderDelTask = inject('renderDelTask');
 
 function cancel() {
-  router.push('/')
+  renderDelTask.value = !renderDelTask.value;
 }
 </script>
 

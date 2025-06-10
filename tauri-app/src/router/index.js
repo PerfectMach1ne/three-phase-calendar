@@ -21,27 +21,7 @@ const router = createRouter({
       path: '/plan',
       name: 'plan',
       component: () => import('../views/PlanView.vue')
-    },
-    {
-      path: '/addtask',
-      name: 'addreminder',
-      component: () => import('../views/button-views/AddTaskView.vue')
-    },
-    {
-      path: '/deletetask',
-      name: 'deletereminder',
-      component: () => import('../views/button-views/DeleteTaskView.vue')
-    },
-    {
-      path: '/addtimeblock',
-      name: 'addtask',
-      component: () => import('../views/button-views/AddTimeblockView.vue')
-    },
-    {
-      path: '/deletetimeblock',
-      name: 'deletetask',
-      component: () => import('../views/button-views/DeleteTimeblockView.vue')
-    },
+    }
   ]
 })
 

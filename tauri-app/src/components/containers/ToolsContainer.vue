@@ -1,8 +1,8 @@
 <script setup>
-import AddTask from '../buttons/AddTask.vue';
-import AddTimeblock from '../buttons/AddTimeblock.vue';
-import DeleteTask from '../buttons/DeleteTask.vue';
-import DeleteTimeblock from '../buttons/DeleteTimeblock.vue';
+import AddTask from '../buttons/AddTaskBtn.vue';
+import AddTimeblock from '../buttons/AddTimeblockBtn.vue';
+import DeleteTask from '../buttons/DeleteTaskBtn.vue';
+import DeleteTimeblock from '../buttons/DeleteTimeblockBtn.vue';
 </script>
 
 <template>

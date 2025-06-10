@@ -1,10 +1,18 @@
 <script setup>
-import { inject } from 'vue';
+import { inject, ref } from 'vue';
 
 const renderAddTask = inject('renderAddTask');
+const title = ref('(Untitled)');
+const datetime = ref('2020-08-28');
+const hours = ref('12:00');
 
 function cancel() {
   renderAddTask.value = !renderAddTask.value;
+}
+
+function submit() {
+  console.log(title.value + " " + datetime.value + " " + hours.value);
+  console.log("submit!");
 }
 </script>
 
@@ -12,24 +20,24 @@ function cancel() {
   <div class="event__page__box">
     <span>
       <label for="reminder-title-input">Title: </label>
-      <input type="text" id="reminder-title-input" name="reminder-title-input">
+      <input type="text" v-model="title" name="reminder-title-input">
     </span>
     <span>
       <label for="reminder-datetime-input">Date &amp; time: </label>
-      <input type="datetime-local" id="reminder-datetime-input" name="reminder-datetime-input">
+      <input type="date" v-model="datetime" name="reminder-datetime-input">
     </span>
-    <!-- <span>
+    <span>
       <label for="hours-choice">Hours: </label>
-      <input list="hours-list" id="hours-choice" name="hours-choice">
-      <datalist id="hours-list">
-        <option value=""></option>
-        <option v-for="i in 24" v-bind:value="`${String(i - 1).padStart(2, '0') + ':00'}`"></option>
+      <input list="hours-list" v-model="hours" name="hours-choice">
+      <datalist id="hours-list" >
+        <option v-for="i in 24" :value="`${String(i - 1).padStart(2, '0') + ':00'}`"></option>
       </datalist>
-    </span> -->
+    </span>
     <div class="event__page__buttons">
-      <button>Create</button>
+      <button @click="submit">Create</button>
       <button @click="cancel">Cancel</button>
     </div>
+    <p>a</p>
   </div>
 </template>
 
@@ -38,45 +46,44 @@ function cancel() {
   z-index: 1;
   display: flex;
   position: fixed;
-  top: 50%;
+  top: 30%;
+  bottom: 0;
   left: 30%;
   right: 30%;
-  flex-direction: column;
-  align-content: center; 
-  align-items: center;
+  max-width: 35%;
+  min-height: 200px; 
+  height: 200px;
   gap: 15px;
   margin: 5px;
   border: 1px solid gray;
-  padding: 15px;
-  width: 40%;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.2rem;
 }
 
 .event__page__buttons {
-  display: inline-flex;
+  /* display: inline-flex;
   flex-direction: row;
-  gap: 15px;
+  gap: 15px; */
 }
 
 div.event__page__buttons > button {
-  margin: 0;
+  /* margin: 0;
   border: 1px solid gray;
   padding: 10px 20px;
   border: none;
   border-radius: 12px;
   background-color: aquamarine;
   font-size: 1rem;
-  color: #000;
+  color: #000; */
 }
 
 div.event__page__buttons > button:hover {
-  background-color: turquoise;
+  /* background-color: turquoise;
   transition: all 0.3s ease;
-  cursor: pointer;
+  cursor: pointer; */
 }
 
 div.event__page__buttons > button:not(:hover) {
-  transition: all 0.3s ease;
+  /* transition: all 0.3s ease; */
 }
 </style>

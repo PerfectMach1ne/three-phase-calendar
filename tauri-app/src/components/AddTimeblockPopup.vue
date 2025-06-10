@@ -1,10 +1,10 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { inject, ref } from 'vue';
 
-const router = useRouter();
+const renderAddTimeblock = inject('renderAddTimeblock');
 
 function cancel() {
-  router.push('/')
+  renderAddTimeblock.value = !renderAddTimeblock.value;
 }
 </script>
 
@@ -12,7 +12,7 @@ function cancel() {
   <div class="event__page__container">
     <div class="event__page__box">
       <div class="event__page__buttons">
-        <button>Remove</button>
+        <button>Create</button>
         <button @click="cancel">Cancel</button>
       </div>
     </div>
