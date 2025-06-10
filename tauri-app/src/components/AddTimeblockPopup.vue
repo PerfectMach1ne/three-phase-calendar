@@ -2,68 +2,77 @@
 import { inject, ref } from 'vue';
 
 const renderAddTimeblock = inject('renderAddTimeblock');
+const title = ref('(Untitled)');
+const start_datetime = ref('2020-08-28');
+const start_hours = ref('12:00');
+const end_datetime = ref('2020-08-28');
+const end_hours = ref('13:00');
 
 function cancel() {
   renderAddTimeblock.value = !renderAddTimeblock.value;
 }
+
+function submit() {
+  console.log(title.value + " "
+   + start_datetime.value + "-" + end_datetime.value + " "
+   + start_hours.value + "-" + end_hours.value);
+  console.log("submit!");
+}
 </script>
 
 <template>
-  <div class="event__page__container">
-    <div class="event__page__box">
-      <div class="event__page__buttons">
-        <button>Create</button>
-        <button @click="cancel">Cancel</button>
-      </div>
+  <div class="event__page__box">
+    <span>
+      <label for="timeblock-title-input">Title: </label>
+      <input type="text" v-model="title" name="timeblock-title-input">
+    </span>
+    <span>
+      <label for="tblock-start-datetime-input">Date &amp; time: </label>
+      <input type="date" v-model="start_datetime" name="tblock-start-datetime-input">
+    </span>
+    <span>
+      <label for="tblock-start-hours-choice">Hours: </label>
+      <input list="hours-list" v-model="start_hours" name="tblock-start-hours-choice">
+      <datalist id="hours-list">
+        <option v-for="i in 24" :value="`${String(i - 1).padStart(2, '0') + ':00'}`"></option>
+      </datalist>
+    </span>
+    <span>
+      <label for="tblock-end-datetime-input">Date &amp; time: </label>
+      <input type="date" v-model="end_datetime" name="tblock-end-datetime-input">
+    </span>
+    <span>
+      <label for="tblock-end-hours-choice">Hours: </label>
+      <input list="hours-list" v-model="end_hours" name="tblock-end-hours-choice">
+      <datalist id="hours-list">
+        <option v-for="i in 24" :value="`${String(i - 1).padStart(2, '0') + ':00'}`"></option>
+      </datalist>
+    </span>
+    <div class="event__page__buttons">
+      <button @click="submit">Create</button>
+      <button @click="cancel">Cancel</button>
     </div>
   </div>
 </template>
 
-<style>
-.event__page__container {
-  display: flex;
-  justify-content: center;
-}
-
+<style scoped>
 .event__page__box {
+  z-index: 1;
   display: flex;
-  flex-direction: column; /* ensure all is aligned in a column */
-  align-content: center; /*  */
-  align-items: center; /* centers item; justify-content does everything wrong, "in the column-specific way" */
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  top: 30%;
+  left: 30%;
+  right: 30%;
+  max-width: 35%;
+  min-height: 270px; 
+  height: 270px;
   gap: 15px;
   margin: 5px;
-  border: 1px solid gray;
   padding: 15px;
-  min-height: 77.6vh;
-  width: 35%;
+  border: 1px solid gray;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.2rem;
-}
-
-.event__page__buttons {
-  display: inline-flex;
-  flex-direction: row;
-  gap: 15px;
-}
-
-div.event__page__buttons > button {
-  margin: 0;
-  border: 1px solid gray;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 12px;
-  background-color: aquamarine;
-  font-size: 1rem;
-  color: #000;
-}
-
-div.event__page__buttons > button:hover {
-  background-color: turquoise;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-div.event__page__buttons > button:not(:hover) {
-  transition: all 0.3s ease;
 }
 </style>

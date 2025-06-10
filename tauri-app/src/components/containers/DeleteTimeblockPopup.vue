@@ -9,61 +9,32 @@ function cancel() {
 </script>
 
 <template>
-  <div class="event__page__container">
-    <div class="event__page__box">
-      <div class="event__page__buttons">
-        <button>Remove</button>
-        <button @click="cancel">Cancel</button>
-      </div>
+  <div class="event__page__box">
+    <div class="event__page__buttons">
+      <button>Remove</button>
+      <button @click="cancel">Cancel</button>
     </div>
   </div>
 </template>
 
-<style>
-.event__page__container {
-  display: flex;
-  justify-content: center;
-}
-
+<style scoped>
 .event__page__box {
+  z-index: 1;
   display: flex;
-  flex-direction: column; /* ensure all is aligned in a column */
-  align-content: center; /*  */
-  align-items: center; /* centers item; justify-content does everything wrong, "in the column-specific way" */
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  top: 30%;
+  left: 30%;
+  right: 30%;
+  max-width: 35%;
+  min-height: 150px; 
+  height: 150px;
   gap: 15px;
   margin: 5px;
-  border: 1px solid gray;
   padding: 15px;
-  min-height: 77.6vh;
-  width: 35%;
+  border: 1px solid gray;
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.2rem;
-}
-
-.event__page__buttons {
-  display: inline-flex;
-  flex-direction: row;
-  gap: 15px;
-}
-
-div.event__page__buttons > button {
-  margin: 0;
-  border: 1px solid gray;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 12px;
-  background-color: aquamarine;
-  font-size: 1rem;
-  color: #000;
-}
-
-div.event__page__buttons > button:hover {
-  background-color: turquoise;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-div.event__page__buttons > button:not(:hover) {
-  transition: all 0.3s ease;
 }
 </style>

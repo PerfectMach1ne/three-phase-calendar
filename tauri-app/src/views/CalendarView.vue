@@ -33,7 +33,7 @@ provide('renderDelTimeblock', renderDelTimeblock);
   </main>
 </template>
 
-<style scoped>
+<style>
 main {
   position: relative;
 }
@@ -44,5 +44,32 @@ main {
 
 .calendar {
   display: flex;
+}
+
+div.event__page__buttons {
+  display: inline-flex;
+  flex-direction: row;
+  gap: 15px;
+}
+
+div.event__page__buttons > button {
+  margin: 0;
+  border: 1px solid gray;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  background-color: aquamarine;
+  font-size: 1rem;
+  color: #000;
+}
+
+div.event__page__buttons > button:hover {
+  background-color: turquoise;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+div.event__page__buttons > button:not(:hover) {
+  transition: all 0.3s ease;
 }
 </style>
