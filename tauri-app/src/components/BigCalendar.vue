@@ -46,6 +46,7 @@ function getTodaysMonths() {
   var date = currentDate;
 
   var weekFirstMonthday = date.getDate() - date.getDay();
+  if (weekFirstMonthday == 0) weekFirstMonthday = 1;
   date = new Date(
     date.getFullYear(),
     date.getMonth(),

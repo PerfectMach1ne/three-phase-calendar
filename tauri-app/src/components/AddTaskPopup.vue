@@ -3,15 +3,16 @@ import { inject, ref } from 'vue';
 
 const renderAddTask = inject('renderAddTask');
 const title = ref('(Untitled)');
-const datetime = ref('2020-08-28');
-const hours = ref('12:00');
+const date = ref('2020-08-28');
+const time = ref('12:00');
 
 function cancel() {
   renderAddTask.value = !renderAddTask.value;
 }
 
 function submit() {
-  console.log(title.value + " " + datetime.value + " " + hours.value);
+  const datetime = new Date(date.value + "T" + time.value);
+  console.log(datetime);
   console.log("submit!");
 }
 </script>
@@ -23,13 +24,13 @@ function submit() {
       <input type="text" v-model="title" name="task-title-input">
     </span>
     <span>
-      <label for="task-datetime-input">Date &amp; time: </label>
-      <input type="date" v-model="datetime" name="task-datetime-input">
+      <label for="task-date-input">Date &amp; time: </label>
+      <input type="date" v-model="date" name="task-date-input">
     </span>
     <span>
-      <label for="task-hours-choice">Hours: </label>
-      <input list="hours-list" v-model="hours" name="task-hours-choice">
-      <datalist id="hours-list">
+      <label for="task-time-choice">Hours: </label>
+      <input list="time-list" v-model="time" name="task-time-choice">
+      <datalist id="time-list">
         <option v-for="i in 24" :value="`${String(i - 1).padStart(2, '0') + ':00'}`"></option>
       </datalist>
     </span>

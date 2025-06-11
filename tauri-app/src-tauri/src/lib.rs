@@ -8,6 +8,11 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
+async fn fetch_cspace() {
+    // todooo
+}
+
+#[tauri::command]
 async fn register(username: &str, email: &str, password: &str) -> Result<String, String> {
     let username = if username.is_empty() { "Michalina Hatsuńska" } else { username };
 
@@ -81,7 +86,7 @@ async fn login(email: &str, password: &str) -> Result<String, String> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, login, register])
+        .invoke_handler(tauri::generate_handler![greet, login, register, fetch_cspace])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
