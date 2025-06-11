@@ -49,16 +49,35 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
                 if (!rs.next()) {
                     PreparedStatement stat = this.conn.prepareStatement("""
                         INSERT INTO users (name, email, password)
-                        VALUES (?, ?, ?);
+                        VALUES (?, ?, ?)
+                        RETURNING id;
                     """);
 
                     stat.setString(1, map.get("name").getAsString());
                     stat.setString(2, map.get("email").getAsString());
                     stat.setString(3, map.get("password").getAsString());
 
-                    stat.executeUpdate();
-
-                    return HTTPStatusCode.HTTP_201_CREATED; // Account created.
+                    ResultSet stat_rs = stat.executeQuery();
+                    if (stat_rs.next()) {
+                        try(
+                            DBConnProvider db = new DBConnProvider();
+                            CalendarSpaceDBProxy cspace = new CalendarSpaceDBProxy(db);
+                        ) {
+                            Integer id = stat_rs.getInt("id");
+                            HTTPStatusCode status = cspace.create(id.toString());
+                            return status; // 201 == Account created.
+                        } catch (SQLException sqle) {
+                            sqle.printStackTrace();
+                            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+                        }
+                        // TODO: for each user account creation, a corresponding calendarspace also ough to be created.
+                        // CSpaceDBProxy cspace.create(user_id)
+                    } else {
+                        System.out.println("weird ass error");
+                        return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+                    }
+                    
+                    
                 } else {
                     return HTTPStatusCode.HTTP_409_CONFLICT;        
                 }
