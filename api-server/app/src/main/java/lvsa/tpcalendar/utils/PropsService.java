@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Properties;
 
+import com.fasterxml.jackson.databind.annotation.JsonAppend.Prop;
+
 public final class PropsService {
     private Properties props;
 
@@ -40,6 +42,9 @@ public final class PropsService {
     public Properties getDBProps() {
         Properties truncatedProps = getProps();
 
+        truncatedProps.remove("key_id");
+        truncatedProps.remove("priv_key");
+
         truncatedProps.remove("ip");
         truncatedProps.remove("port");
 
@@ -52,6 +57,22 @@ public final class PropsService {
      */
     public Properties getIPProps() {
         Properties truncatedProps = getProps();
+
+        truncatedProps.remove("key_id");
+        truncatedProps.remove("priv_key");
+
+        truncatedProps.remove("url");
+        truncatedProps.remove("username");
+        truncatedProps.remove("password");
+
+        return truncatedProps;
+    }
+
+    public Properties getRsaKeys() {
+        Properties truncatedProps = getProps();
+
+        truncatedProps.remove("ip");
+        truncatedProps.remove("port");
 
         truncatedProps.remove("url");
         truncatedProps.remove("username");

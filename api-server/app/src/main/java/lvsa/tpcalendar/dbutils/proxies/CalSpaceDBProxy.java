@@ -12,8 +12,8 @@ import com.google.gson.JsonSyntaxException;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
-public class CalendarSpaceDBProxy extends BaseDBProxy implements AutoCloseable {
-    protected CalendarSpaceDBProxy(DBConnProvider dbConnProvider) {
+public class CalSpaceDBProxy extends BaseDBProxy implements AutoCloseable {
+    protected CalSpaceDBProxy(DBConnProvider dbConnProvider) {
         super(dbConnProvider);
     }
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
+import java.util.Map;
 import java.io.BufferedReader;
 
 import lvsa.tpcalendar.dbutils.DBConnProvider;
@@ -53,14 +54,34 @@ public class LoginRouter implements APIRouter {
 
         status = attemptLogin(sb.toString());
         response = status.wrapAsJsonRes();
-        System.out.println(status);
-        System.out.println(response);
+        System.out.println("[DEBUG] status == " + status + 
+                           "\n\tresponse == " + response);
         return status;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public HTTPStatusCode GET(HttpExchange htex) {
-        return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
+        Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
+        int uid = Integer.valueOf(queryParams.get("id"));
+        
+        Object[] dbResult = loadEvents(uid);
+        HTTPStatusCode status = (HTTPStatusCode)dbResult[0];
+        Object fetchedJsonOrNull = dbResult[1];
+
+        Headers resh = htex.getResponseHeaders();
+        resh.set("Content-Type", "application/json");
+
+        // Potentially offload the status code choice to CSpaceDBProxy?
+        if (status == HTTPStatusCode.HTTP_404_NOT_FOUND && fetchedJsonOrNull == null) {
+            response = HTTPStatusCode.HTTP_404_NOT_FOUND.wrapAsJsonRes();
+            return status;
+        } else if (dbResult[0] != HTTPStatusCode.HTTP_200_OK) {
+            response = status.wrapAsJsonRes();
+            return status;
+        }
+
+        return status;
     }
 
     @Override
@@ -118,5 +139,11 @@ public class LoginRouter implements APIRouter {
             sqle.printStackTrace();
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
+    }
+
+    private Object[] loadEvents(int id) {
+        String eventList = "";
+
+        return new Object[]{HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED, null};
     }
 }

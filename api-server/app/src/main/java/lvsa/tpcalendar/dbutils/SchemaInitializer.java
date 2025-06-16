@@ -113,9 +113,9 @@ public final class SchemaInitializer {
 			CREATE TABLE IF NOT EXISTS calendarspace (
 				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				user_id INT REFERENCES users(id),
-				tasksevents_id_arr integer[],	
-				timeblockevents_id_arr integer[],
-				textevents_id_arr integer[]
+				tasksevents_id_arr integer ARRAY,	
+				timeblockevents_id_arr integer ARRAY,
+				textevents_id_arr integer ARRAY
 			);
 		""");
 	}

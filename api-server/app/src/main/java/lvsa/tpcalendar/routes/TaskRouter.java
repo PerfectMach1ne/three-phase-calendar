@@ -33,6 +33,7 @@ public class TaskRouter implements APIRouter {
     public HTTPStatusCode GET(HttpExchange htex) {
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
         int hashcode = Integer.valueOf(queryParams.get("id"));
+
         Object[] dbResult = findAndFetchFromDB(hashcode);
         HTTPStatusCode status = (HTTPStatusCode)dbResult[0];
         Object fetchedJsonOrNull = dbResult[1];
@@ -58,7 +59,6 @@ public class TaskRouter implements APIRouter {
      */
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
-        System.out.println("whar");
 		InputStream is = htex.getRequestBody();
 		InputStreamReader isReader = new InputStreamReader(is);
     	BufferedReader reader = new BufferedReader(isReader);

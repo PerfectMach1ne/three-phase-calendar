@@ -61,7 +61,7 @@ public class RegisterDBProxy extends BaseDBProxy implements AutoCloseable {
                 if (reg_rs.next()) {
                     try(
                         DBConnProvider db = new DBConnProvider();
-                        CalendarSpaceDBProxy cspace = new CalendarSpaceDBProxy(db);
+                        CalSpaceDBProxy cspace = new CalSpaceDBProxy(db);
                     ) {
                         Integer id = reg_rs.getInt("id");
                         HTTPStatusCode status = cspace.create(id.toString());
