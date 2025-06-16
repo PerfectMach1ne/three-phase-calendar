@@ -3,8 +3,7 @@ package lvsa.tpcalendar.utils;
 import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Properties;
-
-import com.fasterxml.jackson.databind.annotation.JsonAppend.Prop;
+import java.util.Set;
 
 public final class PropsService {
     private Properties props;
@@ -35,20 +34,21 @@ public final class PropsService {
         return props;
     }
 
+    private Properties truncate(Properties props, Set<String> keys) {
+        for (String propKey : props.stringPropertyNames()) {
+            if (!keys.contains(propKey)) {
+                props.remove(propKey);
+            }
+        }
+        return props;
+    }
+
     /**
      * Get props related to database connection only.
      * @return truncated Properties object.
      */
     public Properties getDBProps() {
-        Properties truncatedProps = getProps();
-
-        truncatedProps.remove("key_id");
-        truncatedProps.remove("priv_key");
-
-        truncatedProps.remove("ip");
-        truncatedProps.remove("port");
-
-        return truncatedProps;
+        return truncate(getProps(), Set.of("url", "username", "password"));
     }
 
     /**
@@ -56,28 +56,14 @@ public final class PropsService {
      * @return truncated Properties object.
      */
     public Properties getIPProps() {
-        Properties truncatedProps = getProps();
-
-        truncatedProps.remove("key_id");
-        truncatedProps.remove("priv_key");
-
-        truncatedProps.remove("url");
-        truncatedProps.remove("username");
-        truncatedProps.remove("password");
-
-        return truncatedProps;
+        return truncate(getProps(), Set.of("ip", "port"));
     }
 
+    /**
+     * Get props related to JWT encryption only.
+     * @return truncated Properties object.
+     */
     public Properties getRsaKeys() {
-        Properties truncatedProps = getProps();
-
-        truncatedProps.remove("ip");
-        truncatedProps.remove("port");
-
-        truncatedProps.remove("url");
-        truncatedProps.remove("username");
-        truncatedProps.remove("password");
-
-        return truncatedProps;
+        return truncate(getProps(), Set.of("key_id", "priv_key"));
     }
 }
