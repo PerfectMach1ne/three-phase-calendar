@@ -16,7 +16,7 @@ import TaskBar from '../TaskBar.vue';
 <style>
 .navbar__container {
   margin: 5px;
-  border: 1px solid gray;
+  border: 2px solid gray;
   padding: 5px;
   width: revert;
   height: 20vh; 

@@ -1,27 +1,40 @@
 package lvsa.tpcalendar.routes;
 
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
-import java.io.BufferedReader;
+import java.util.Map;
+
+import com.sun.net.httpserver.Headers;
+import com.sun.net.httpserver.HttpExchange;
 
 import lvsa.tpcalendar.dbutils.DBConnProvider;
-import lvsa.tpcalendar.dbutils.proxies.LoginDBProxy;
+import lvsa.tpcalendar.dbutils.proxies.RegisterDBProxy;
 import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
- * /api/login
+ * /api/register
  */
-public class LoginRouter implements APIRouter {
+public class RegisterRouter implements APIRouter {
     private String response = "{ \"response\": \"nothing\" }";
     private final int PGERR_UNIQUE_VIOLATION = 23505;
 
     @Override
     public String getResponse() { return this.response; }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public HTTPStatusCode GET(HttpExchange htex) {
+        HTTPStatusCode status;
+        Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
+
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        // get user id, name, email
+        // System.out.println(queryParams.get("user"));
+    }
 
     /** 
      * Create a user with email and password.
@@ -45,13 +58,13 @@ public class LoginRouter implements APIRouter {
                 sb.append(reqdata);
             }
         } catch (IOException ioe) {
-            // TODO: log: IOException at StringBuffer in POST /api/login
+            // TODO: log: IOException at StringBuffer in POST /api/register
             ioe.printStackTrace();
             response = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR.wrapAsJsonRes();
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
-
-        status = attemptLogin(sb.toString());
+        
+        status = attemptRegister(sb.toString());
         response = status.wrapAsJsonRes();
         System.out.println(status);
         System.out.println(response);
@@ -59,12 +72,7 @@ public class LoginRouter implements APIRouter {
     }
 
     @Override
-    public HTTPStatusCode GET(HttpExchange htex) {
-        return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
-    }
-
-    @Override
-    public HTTPStatusCode DELETE(HttpExchange htex) {
+    public HTTPStatusCode PUT(HttpExchange htex) {
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 
@@ -74,7 +82,7 @@ public class LoginRouter implements APIRouter {
     }
 
     @Override
-    public HTTPStatusCode PUT(HttpExchange htex) {
+    public HTTPStatusCode DELETE(HttpExchange htex) {
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 
@@ -97,17 +105,17 @@ public class LoginRouter implements APIRouter {
     public HTTPStatusCode TRACE(HttpExchange htex) {
         return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
-
+    
     /**
      * []
      * 
      * @param   buffer  []
      * @return  a <code>HTTPStatusCode</code>.
      */
-    private HTTPStatusCode attemptLogin(String buffer) {
+    private HTTPStatusCode attemptRegister(String buffer) {
         try(
             DBConnProvider db = new DBConnProvider();
-            LoginDBProxy proxy = new LoginDBProxy(db);
+            RegisterDBProxy proxy = new RegisterDBProxy(db);
         ) {
             HTTPStatusCode status = proxy.create(buffer);
             return status;

@@ -87,10 +87,8 @@ public class APIContexts {
 								res = status.wrapAsJsonRes() + REGISTERED_NURSE;
 						}
 
-						// Wacky ternary to avoid \r\n duplication.
-						res = ROUTER.getResponse() 
-							+ (ROUTER.getResponse().endsWith(REGISTERED_NURSE) ? "" : REGISTERED_NURSE);
-
+						// '/r/n' -> wacky ternary to avoid \r\n duplication.
+						res = status.wrapAsJsonRes() + REGISTERED_NURSE;
 						byte[] resBytes = res.getBytes(StandardCharsets.UTF_8);
 
 						exchange.getResponseHeaders().set("Content-Type", "application/json");

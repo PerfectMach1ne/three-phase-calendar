@@ -22,7 +22,7 @@ import DeleteTimeblock from '../buttons/DeleteTimeblockBtn.vue';
   /* align-content: flex-start; */
   align-items: flex-start;
   margin: 5px;
-  border: 1px solid gray;
+  border: 2px solid gray;
   padding: 5px;
   width: 15%;
   max-height: calc(57vh - 1vh);

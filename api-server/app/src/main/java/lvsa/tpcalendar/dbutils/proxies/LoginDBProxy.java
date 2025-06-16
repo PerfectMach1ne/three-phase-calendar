@@ -27,15 +27,16 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
 
         Gson gson = new Gson();
         JsonElement loginJsonEl;
+        ResultSet rs;
 
         try {
             loginJsonEl = gson.fromJson(json, JsonElement.class);
             if (loginJsonEl.isJsonNull()) {
-                return HTTPStatusCode.HTTP_400_BAD_REQUEST;
+                return HTTPStatusCode.HTTP_400_BAD_REQUEST; // Empty JSON request.
             }
         } catch (JsonSyntaxException jse) {
             jse.printStackTrace();
-            return HTTPStatusCode.HTTP_400_BAD_REQUEST;
+            return HTTPStatusCode.HTTP_400_BAD_REQUEST; // Malformed JSON request.
         }
         
         if (loginJsonEl.isJsonObject()) {
@@ -44,56 +45,19 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
 
             query.setString(1, map.get("email").getAsString());
             
-            ResultSet rs = query.executeQuery();
-            if (map.get("name") != null) {
-                if (!rs.next()) {
-                    PreparedStatement stat = this.conn.prepareStatement("""
-                        INSERT INTO users (name, email, password)
-                        VALUES (?, ?, ?)
-                        RETURNING id;
-                    """);
+            rs = query.executeQuery();
 
-                    stat.setString(1, map.get("name").getAsString());
-                    stat.setString(2, map.get("email").getAsString());
-                    stat.setString(3, map.get("password").getAsString());
-
-                    ResultSet stat_rs = stat.executeQuery();
-                    if (stat_rs.next()) {
-                        try(
-                            DBConnProvider db = new DBConnProvider();
-                            CalendarSpaceDBProxy cspace = new CalendarSpaceDBProxy(db);
-                        ) {
-                            Integer id = stat_rs.getInt("id");
-                            HTTPStatusCode status = cspace.create(id.toString());
-                            return status; // 201 == Account created.
-                        } catch (SQLException sqle) {
-                            sqle.printStackTrace();
-                            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
-                        }
-                        // TODO: for each user account creation, a corresponding calendarspace also ough to be created.
-                        // CSpaceDBProxy cspace.create(user_id)
-                    } else {
-                        System.out.println("weird ass error");
-                        return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
-                    }
-                    
-                    
-                } else {
-                    return HTTPStatusCode.HTTP_409_CONFLICT;        
-                }
+            if (rs.next()) {
+                return rs.getString("email").equals(map.get("email").getAsString()) &&
+                        rs.getString("password").equals(map.get("password").getAsString()) ?
+                    HTTPStatusCode.HTTP_200_OK : // Log in successful.
+                    HTTPStatusCode.HTTP_401_UNAUTHORIZED; // Incorrect credentials.
             } else {
-                if (!rs.next()) {
-                    return HTTPStatusCode.HTTP_404_NOT_FOUND; // Account does not exist.
-                } else {
-                    return rs.getString("email").equals(map.get("email").getAsString()) &&
-                           rs.getString("password").equals(map.get("password").getAsString()) ?
-                        HTTPStatusCode.HTTP_200_OK : // Log in successful.
-                        HTTPStatusCode.HTTP_401_UNAUTHORIZED; // Incorrect credentials.
-                }
+                return HTTPStatusCode.HTTP_404_NOT_FOUND; // Account does not exist.
             }
         }
 
-        return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR; // Fallback error.
     }
 
     @Override

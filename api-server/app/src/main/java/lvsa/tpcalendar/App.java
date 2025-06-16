@@ -19,6 +19,7 @@ import lvsa.tpcalendar.routes.TaskRouter;
 import lvsa.tpcalendar.routes.TimeblockRouter;
 import lvsa.tpcalendar.routes.TextRouter;
 import lvsa.tpcalendar.routes.LoginRouter;
+import lvsa.tpcalendar.routes.RegisterRouter;
 import lvsa.tpcalendar.utils.IPUtils;
 import lvsa.tpcalendar.utils.PropsService;
 
@@ -72,7 +73,7 @@ public final class App {
                     "/api/login", new AbstractMap.SimpleEntry<String, APIRouter>(
                         "_", new LoginRouter()),
                     "/api/register", new AbstractMap.SimpleEntry<String, APIRouter>(
-                        "_", new LoginRouter()),
+                        "_", new RegisterRouter()),
                     "/teapot", new AbstractMap.SimpleEntry<String, APIRouter>(
                         "?msg={char[57]}", new ImATeapotDoubleColon3Router()),
                     "/api/teapot", new AbstractMap.SimpleEntry<String, APIRouter>(

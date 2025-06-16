@@ -56,7 +56,7 @@ const darkModeIcon = computed(() => {
 
   <footer>
     <p><em>One Calendar App to rule them all, One Calendar App to find them; One Calendar App to bring them all and in the darkness bind them.</em></p>
-    <p>04.2023 - 05.2025</p>
+    <p>04.2023 - 06.2025</p>
   </footer>
 </template>
 

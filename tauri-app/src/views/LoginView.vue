@@ -34,7 +34,9 @@ async function attemptLogin() {
 
   if (loginResult.value.includes('404') && !registrationMode.value) {
     noaccount.value = true;
-    if (!registrationMode.value) loginResult.value = "Account with this email doesn't exist! Would you like to create one?";
+    if (!registrationMode.value) {
+      loginResult.value = "Account with this email doesn't exist! Would you like to create one?";
+    }
   } else if (loginResult.value.includes('401') && !registrationMode.value) {
     loginResult.value = "Incorrect email or password!";
   } else if (loginResult.value.includes('409') && registrationMode.value) {
