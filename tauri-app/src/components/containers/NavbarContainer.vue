@@ -8,8 +8,8 @@ import TaskBar from '../TaskBar.vue';
 <template>
   <div class="navbar__container">
     <p>NavbarContainer</p>
-    <MiniCalendar/>
-    <TaskBar/>
+    <MiniCalendar />
+    <TaskBar />
   </div>
 </template>
 

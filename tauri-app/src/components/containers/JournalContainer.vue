@@ -48,7 +48,7 @@ export default {
 <style>
 .journal__container {
   margin: 5px;
-  border: 1px solid gray;
+  border: 2px solid gray;
   padding: 5px;
   max-height: 56vh;
   width: 85%

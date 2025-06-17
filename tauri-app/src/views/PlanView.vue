@@ -1,13 +1,6 @@
-<script>
+<script setup>
 import NavbarContainer from '../components/containers/NavbarContainer.vue';
 import PlanContainer from '../components/containers/PlanContainer.vue';
-
-export default {
-  components: {
-    NavbarContainer,
-    PlanContainer
-  }
-}
 </script>
 
 <template>

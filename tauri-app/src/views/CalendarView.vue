@@ -1,13 +1,12 @@
 <script setup>
+import { ref, provide } from 'vue';
 import NavbarContainer from "../components/containers/NavbarContainer.vue";
 import ToolsContainer from "../components/containers/ToolsContainer.vue";
 import CalendarContainer from "../components/containers/CalendarContainer.vue";
 import AddTaskPopup from "../components/AddTaskPopup.vue";
 import DeleteTaskPopup from "../components/DeleteTaskPopup.vue";
 import AddTimeblockPopup from "../components/AddTimeblockPopup.vue";
-import DeleteTimeblockPopup from "../components/containers/DeleteTimeblockPopup.vue";
-
-import { ref, provide } from 'vue';
+import DeleteTimeblockPopup from "../components/DeleteTimeblockPopup.vue";
 
 const renderAddTask = ref(false);
 const renderAddTimeblock = ref(false);

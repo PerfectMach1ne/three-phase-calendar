@@ -5,7 +5,7 @@ import { ViewType, Colors } from '../utils/enums.js';
 
 const renderAddTimeblock = inject('renderAddTimeblock');
 const title = ref('(Untitled)');
-const description = ref("");
+const description = ref("")
 const start_datetime = ref('2020-08-28');
 const start_hours = ref('12:00');
 const end_datetime = ref('2020-08-28');
@@ -96,20 +96,30 @@ async function createTimeblock() {
 <style scoped>
 .event__page__box {
   z-index: 1;
+
+  overflow: hidden;
+  resize: both;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   position: fixed;
+
   top: 30%;
   left: 30%;
   right: 30%;
+
+  min-width: 200px;
   max-width: 35%;
   min-height: 370px; 
+  max-height: 650px;
   height: 370px;
+
   gap: 15px;
   margin: 5px;
   padding: 15px;
   border: 1px solid gray;
+  
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.2rem;
 }
