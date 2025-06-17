@@ -25,7 +25,7 @@ public class TaskRouter implements APIRouter {
     public String getResponse() { return this.response; }
 
     /**
-     * <b>GET</b> <code>/api/cal/task?id={hashcode}.</code>
+     * <b>GET</b> <code>/api/cal/task?id={hashcode}</code>.
      * <p>Uses the following method:</p> <pre>Object[] findAndFetchFromDB(int hashcode)</pre>
      */
     @SuppressWarnings("unchecked")
@@ -221,7 +221,7 @@ public class TaskRouter implements APIRouter {
     }
 
     /**
-     * Attempt to insert a new task into the database, and return the HTTP status code representing the result of the operation.
+     * Attempt to insert a new task into the database, and return the resulting HTTP status code.
      * 
      * @param   buffer  a string buffer containing the request JSON data to be inserted into the database.
      * @return  a <code>HTTPStatusCode</code>.

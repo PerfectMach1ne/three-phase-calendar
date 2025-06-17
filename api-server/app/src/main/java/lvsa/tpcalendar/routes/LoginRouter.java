@@ -15,7 +15,7 @@ import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 /**
- * /api/login
+ * <h3><code>/api/login</code> endpoint</h3>
  */
 public class LoginRouter implements APIRouter {
     private String response = "{ \"response\": \"nothing\" }";
@@ -25,7 +25,9 @@ public class LoginRouter implements APIRouter {
     public String getResponse() { return this.response; }
 
     /** 
-     * Create a user with email and password.
+     * <b>POST</b> <code>/api/login</code>.
+     * <p>Create a user with email and password.</p>
+     * <p>Uses the following method:</p> <pre>HTTPStatusCode attemptLogin(String buffer)</pre>
      */
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
@@ -59,6 +61,11 @@ public class LoginRouter implements APIRouter {
         return status;
     }
 
+    /** 
+     * <b>GET</b> <code>/api/login?id={user_id}</code>.
+     * <p>Fetch the calendarspace and every event belonging to a particular user (by id).</p>
+     * <p>Uses the following method:</p> <pre>Object[] loadEvents(int id)</pre>
+     */
     @SuppressWarnings("unchecked")
     @Override
     public HTTPStatusCode GET(HttpExchange htex) {
@@ -120,9 +127,9 @@ public class LoginRouter implements APIRouter {
     }
 
     /**
-     * []
+     * Attempt to log the user in with their email and password and return the resulting HTTP status code.
      * 
-     * @param   buffer  []
+     * @param   buffer  a string buffer containing the request JSON data to be inserted into the database.
      * @return  a <code>HTTPStatusCode</code>.
      */
     private HTTPStatusCode attemptLogin(String buffer) {
@@ -141,6 +148,12 @@ public class LoginRouter implements APIRouter {
         }
     }
 
+    /**
+     * Fetch a JSON string containing the calendarspace and all corresponding events of a user with a particular <code>id</code>.
+     * 
+     * @param   id  User id in the database as <code>int</code>.
+     * @return      a 2-element <code>Object[]</code> array containing HTTPStatusCode and either a Gson-compatible JSON object from db or a <code>null</code> value.
+     */
     private Object[] loadEvents(int id) {
         String eventList = "";
 
