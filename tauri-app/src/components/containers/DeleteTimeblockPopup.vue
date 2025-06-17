@@ -2,6 +2,8 @@
 import { inject, ref } from 'vue';
 
 const renderDelTimeblock = inject('renderDelTimeblock');
+const task = ref("");
+const tasks = ref([]);
 
 function cancel() {
   renderDelTimeblock.value = !renderDelTimeblock.value;
@@ -10,6 +12,14 @@ function cancel() {
 
 <template>
   <div class="event__page__box">
+    <select v-model="task" name="task-choice">
+      <option
+        v-for="task in tasks"
+        :value="task.hash"
+        :key="task.hash">
+        {{ task.name }}
+        </option>
+    </select>
     <div class="event__page__buttons">
       <button>Remove</button>
       <button @click="cancel">Cancel</button>
@@ -28,8 +38,8 @@ function cancel() {
   left: 30%;
   right: 30%;
   max-width: 35%;
-  min-height: 150px; 
-  height: 150px;
+  min-height: 100px; 
+  height: 100px;
   gap: 15px;
   margin: 5px;
   padding: 15px;

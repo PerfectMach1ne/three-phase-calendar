@@ -4,8 +4,6 @@ import { invoke } from '@tauri-apps/api/core';
 import ChangeWeek from './buttons/ChangeWeek.vue';
 import TodaysWeek from './buttons/TodaysWeek.vue';
 
-
-
 const weekdayBoxWidth = ref('');
 const left = ref("&#10094;");
 const right = ref("&#10095;");
