@@ -10,7 +10,7 @@ const darkModeClass = ref('dark');
 const lightModeClass = ref('light');
 
 function goToCalendar() {
-  router.push('/');
+  router.push('/calendar');
 }
 
 function goToPlanner() {
@@ -32,6 +32,8 @@ function darkModeToggle() {
 const darkModeIcon = computed(() => {
   return darkMode.value ? '🌚' : '🌞';
 });
+
+router.push('/calendar');
 </script>
 
 <template>

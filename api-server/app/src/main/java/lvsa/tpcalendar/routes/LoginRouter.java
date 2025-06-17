@@ -157,6 +157,19 @@ public class LoginRouter implements APIRouter {
     private Object[] loadEvents(int id) {
         String eventList = "";
 
+        try (
+            DBConnProvider db = new DBConnProvider();
+            LoginDBProxy proxy = new LoginDBProxy(db);
+        ) {
+            eventList = proxy.read(id);
+            if (eventList.isEmpty()) {
+                return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
+            }
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+            return new Object[]{HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR, null};
+        }
+
         return new Object[]{HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED, null};
     }
 }

@@ -8,8 +8,23 @@ fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-async fn fetch_cspace() {
-    // todooo
+async fn fetch_cspace(user_id: i32) -> Result<String, String> {
+    let url = format!("http://127.0.0.1:58057/api/login?id={user_id}");
+
+    let response = reqwest::get(&url)
+        .await
+        .map_err(|e| format!("Network error: {}", e))?;
+    
+    let status = response.status();
+    let response_text = response.text()
+        .await
+        .map_err(|e| format!("Error reading response: {}", e))?;
+
+    if status.is_success() {
+        Ok(response_text)
+    } else {
+        Err(format!("Server error HTTP {}: {}", status, response_text))
+    }
 }
 
 #[tauri::command]

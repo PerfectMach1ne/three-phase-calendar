@@ -1,5 +1,6 @@
 package lvsa.tpcalendar.dbutils.proxies;
 
+import java.lang.reflect.Array;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,6 +59,57 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
         }
 
         return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR; // Fallback error.
+    }
+
+    @Override
+    public String read(int id) throws SQLException {
+        PreparedStatement query = this.conn.prepareStatement("""
+            SELECT u.id, cs.user_id, cs.id AS calspace_id,
+                cs.tasksevents_id_arr, cs.timeblockevents_id_arr, cs.textevents_id_arr
+            FROM users u RIGHT JOIN calendarspace cs
+            ON u.id = cs.user_id
+            WHERE u.id = ?;
+        """);
+        
+        query.setInt(1, id);
+
+        ResultSet rs = query.executeQuery();
+        Gson gson = new Gson();
+
+        if (!rs.next()) {
+            return ""; // Calendarspace or user not found.
+        } else {
+            int calspace_id = gson.fromJson(
+                String.valueOf(rs.getInt("calspace_id")),
+                int.class);
+
+            int[] taskevents_id_arr;
+            int[] timeblockevents_id_arr;
+            int[] textevents_id_arr;
+            
+            try {
+                taskevents_id_arr = gson.fromJson(
+                    rs.getArray("tasksevents_id_arr")/*.getArray()*/.toString(),
+                    int[].class);
+
+                timeblockevents_id_arr = gson.fromJson(
+                    rs.getArray("timeblockevents_id_arr")/*.getArray()*/.toString(),
+                    int[].class);
+
+                textevents_id_arr = gson.fromJson(
+                    rs.getArray("textevents_id_arr")/*.getArray()*/.toString(),
+                    int[].class);
+            } catch (NullPointerException npe) {
+                taskevents_id_arr = gson.fromJson(
+                    "[]",
+                    int[].class);
+            }
+            
+            System.out.println(calspace_id);
+            System.out.println(taskevents_id_arr.length);
+        }
+
+        return super.read(id);//delet thsi
     }
 
     @Override

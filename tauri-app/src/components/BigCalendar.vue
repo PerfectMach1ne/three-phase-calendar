@@ -1,7 +1,10 @@
 <script setup>
 import { computed, onMounted , ref } from 'vue';
+import { invoke } from '@tauri-apps/api/core';
 import ChangeWeek from './buttons/ChangeWeek.vue';
 import TodaysWeek from './buttons/TodaysWeek.vue';
+
+
 
 const weekdayBoxWidth = ref('');
 const left = ref("&#10094;");
@@ -43,6 +46,7 @@ function getTodaysWeek() {
 }
 
 function getTodaysMonths() {
+  fetchCalSpace();
   var date = currentDate;
 
   var weekFirstMonthday = date.getDate() - date.getDay();
@@ -133,6 +137,16 @@ onMounted(() => {
   weekdayBoxWidth.value = document.getElementById('weekdaybox-width-source').offsetWidth + 'px';
 });
 
+async function fetchCalSpace() {
+  try {
+    const res = await invoke('fetch_cspace', {
+      userId: 14
+    });
+    console.log(res);
+  } catch (error) {
+    console.log(`Error: ${error}`);
+  }
+}
 </script>
 
 <template>
