@@ -4,12 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
 import java.util.Map;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
+import lvsa.tpcalendar.auth.TokenProvider;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.dbutils.proxies.RegisterDBProxy;
 import lvsa.tpcalendar.http.APIRouter;
@@ -21,19 +24,14 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
 public class RegisterRouter implements APIRouter {
     private String response = "{ \"response\": \"nothing\" }";
     private final int PGERR_UNIQUE_VIOLATION = 23505;
+    private String token;
 
-    @Override
     public String getResponse() { return this.response; }
+    public String getToken() { return this.token; }
 
-    @SuppressWarnings("unchecked")
     @Override
     public HTTPStatusCode GET(HttpExchange htex) {
-        HTTPStatusCode status;
-        Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
-
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
-        // get user id, name, email
-        // System.out.println(queryParams.get("user"));
+        return HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
     }
 
     /** 
@@ -118,7 +116,17 @@ public class RegisterRouter implements APIRouter {
             RegisterDBProxy proxy = new RegisterDBProxy(db);
         ) {
             HTTPStatusCode status = proxy.create(buffer);
-            return status;
+            if (proxy.getAuthResult().isSuccess()) {
+                try {
+                    TokenProvider tp = new TokenProvider();
+                    token = tp.createJWTToken(proxy.getAuthResult().getUser_id());
+                } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                    e.printStackTrace();
+                }
+                return status; // Guaranteed 201 if successful.
+            } else {
+                return status; // Complement of above set of results.
+            }
         } catch (SQLException sqle) {
             if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
                 return HTTPStatusCode.HTTP_409_CONFLICT;

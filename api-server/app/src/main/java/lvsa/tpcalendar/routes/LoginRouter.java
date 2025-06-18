@@ -1,14 +1,19 @@
 package lvsa.tpcalendar.routes;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.io.BufferedReader;
 
+import lvsa.tpcalendar.auth.TokenProvider;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.dbutils.proxies.LoginDBProxy;
 import lvsa.tpcalendar.http.APIRouter;
@@ -19,10 +24,11 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  */
 public class LoginRouter implements APIRouter {
     private String response = "{ \"response\": \"nothing\" }";
+    private String token;
     private final int PGERR_UNIQUE_VIOLATION = 23505;
 
-    @Override
     public String getResponse() { return this.response; }
+    public String getToken() { return this.token; }
 
     /** 
      * <b>POST</b> <code>/api/login</code>.
@@ -71,6 +77,7 @@ public class LoginRouter implements APIRouter {
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
         int uid = Integer.valueOf(queryParams.get("id"));
         
+        token = htex.getRequestHeaders().getFirst("Authorization");
         Object[] dbResult = loadEvents(uid);
         HTTPStatusCode status = (HTTPStatusCode)dbResult[0];
         Object fetchedJsonOrNull = dbResult[1];
@@ -137,7 +144,17 @@ public class LoginRouter implements APIRouter {
             LoginDBProxy proxy = new LoginDBProxy(db);
         ) {
             HTTPStatusCode status = proxy.create(buffer);
-            return status;
+            if (proxy.getAuthResult().isSuccess()) {
+                try {
+                    TokenProvider tp = new TokenProvider();
+                    token = tp.createJWTToken(proxy.getAuthResult().getUser_id());
+                } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                    e.printStackTrace();
+                }
+                return status; // Guaranteed 200 if successful.
+            } else {
+                return status; // Complement of above set of results.
+            }
         } catch (SQLException sqle) {
             if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
                 return HTTPStatusCode.HTTP_409_CONFLICT;
@@ -164,11 +181,26 @@ public class LoginRouter implements APIRouter {
             if (eventList.isEmpty()) {
                 return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
             }
+
+            if (proxy.getAuthResult().isSuccess()) {
+                try {
+                    TokenProvider tp = new TokenProvider();
+                    // Verify token
+                    token = token.trim().replaceAll("(?i)bearer", "").trim();
+                    DecodedJWT jwt = tp.verifyToken(token);
+                    String subject = jwt.getSubject();
+                    System.out.println("Subject: " + subject);
+                    System.out.println(jwt.getToken());
+                } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                    e.printStackTrace();
+                }
+                return new Object[]{HTTPStatusCode.HTTP_200_OK, null};
+            } else {
+                return new Object[]{HTTPStatusCode.HTTP_401_UNAUTHORIZED, null};
+            }
         } catch (SQLException sqle) {
             sqle.printStackTrace();
             return new Object[]{HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR, null};
         }
-
-        return new Object[]{HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED, null};
     }
 }

@@ -10,33 +10,44 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
+import lvsa.tpcalendar.auth.AuthResult;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 public class RegisterDBProxy extends BaseDBProxy implements AutoCloseable {
+    private AuthResult authResult;
 
     public RegisterDBProxy(DBConnProvider dbConnProvider) {
         super(dbConnProvider);
     }
 
+    public AuthResult getAuthResult() {
+        return authResult;
+    }
+
     public HTTPStatusCode create(String json) throws SQLException {
         PreparedStatement query = this.conn.prepareStatement("""
-            SELECT email
+            SELECT id, email
             FROM users
             WHERE email = ?;
         """);
 
         Gson gson = new Gson();
         JsonElement loginJsonEl;
+        HTTPStatusCode status;
 
         try {
             loginJsonEl = gson.fromJson(json, JsonElement.class);
             if (loginJsonEl.isJsonNull()) {
-                return HTTPStatusCode.HTTP_400_BAD_REQUEST; // Empty JSON request.
+                status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+                authResult = new AuthResult("Empty JSON request.", status);
+                return status; // Empty JSON request.
             }
         } catch (JsonSyntaxException jse) {
             jse.printStackTrace();
-            return HTTPStatusCode.HTTP_400_BAD_REQUEST; // Malformed JSON request.
+            status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+            authResult = new AuthResult("Malformed JSON request", status);
+            return status; // Malformed JSON request.
         }
 
         if (loginJsonEl.isJsonObject()) {
@@ -64,26 +75,34 @@ public class RegisterDBProxy extends BaseDBProxy implements AutoCloseable {
                         CalSpaceDBProxy cspace = new CalSpaceDBProxy(db);
                     ) {
                         Integer id = reg_rs.getInt("id");
-                        HTTPStatusCode status = cspace.create(id.toString());
+                        status = cspace.create(id.toString());
+                        authResult = new AuthResult(id, status);
                         return status; // 201 == Account created.
                     } catch (SQLException sqle) {
                         sqle.printStackTrace();
-                        return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR; // Error while creating calendarspace.
+                        status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+                        authResult = new AuthResult("Could not create users calendarspace.", status);
+                        return status; // Error while creating calendarspace.
                     }
                 } else {
-                    return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR; // INSERT query failed for some reason.
+                    status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+                    authResult = new AuthResult("Insert query failure.", status);
+                    return status; // INSERT query failed for some reason.
                 }
             } else {
-                return HTTPStatusCode.HTTP_409_CONFLICT; // Account already exists.
+                status = HTTPStatusCode.HTTP_409_CONFLICT;
+                authResult = new AuthResult("Account already exists.", status);
+                return status; // Account already exists.
             }
         }
 
-        return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR; // Fallback error.
+        status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        authResult = new AuthResult("Unidentified fallback server error triggered.", status);
+        return status; // Fallback error.
     }
 
     @Override
     public void close() throws SQLException {
         conn.close();
     }
-    
 }

@@ -1,8 +1,5 @@
 package lvsa.tpcalendar.dbutils.proxies;
 
-import java.lang.reflect.Array;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,22 +10,19 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
-import lvsa.tpcalendar.auth.TokenProvider;
+import lvsa.tpcalendar.auth.AuthResult;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
+    private AuthResult authResult;
+
     public LoginDBProxy(DBConnProvider dbConnProvider) {
         super(dbConnProvider);
-        try {
-            this.tokenProvider = new TokenProvider();
-        } catch (InvalidKeySpecException ikse) {
-        System.out.println("[FATAL] WARNING !!! Failed to create an SHA256withRSA algorithm instance in lvsa.tpcalendar.auth.TokenProvider !!!");
-            ikse.printStackTrace();
-        } catch (NoSuchAlgorithmException nsae) {
-            System.out.println("[BIOS ERROR] I don't know how we got here, but the user operating this server somehow managed to fuck up this badly to get to that point.");
-            nsae.printStackTrace();
-        }
+    }
+
+    public AuthResult getAuthResult() {
+        return authResult;
     }
 
     public HTTPStatusCode create(String json) throws SQLException {
@@ -40,16 +34,21 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
 
         Gson gson = new Gson();
         JsonElement loginJsonEl;
+        HTTPStatusCode status;
         ResultSet rs;
 
         try {
             loginJsonEl = gson.fromJson(json, JsonElement.class);
             if (loginJsonEl.isJsonNull()) {
-                return HTTPStatusCode.HTTP_400_BAD_REQUEST; // Empty JSON request.
+                status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+                authResult = new AuthResult("Empty JSON request.", status);
+                return status; // Empty JSON request.
             }
         } catch (JsonSyntaxException jse) {
             jse.printStackTrace();
-            return HTTPStatusCode.HTTP_400_BAD_REQUEST; // Malformed JSON request.
+            status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+            authResult = new AuthResult("Malformed JSON request", status);
+            return status; // Malformed JSON request.
         }
         
         if (loginJsonEl.isJsonObject()) {
@@ -61,16 +60,22 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
             rs = query.executeQuery();
 
             if (rs.next()) {
-                return rs.getString("email").equals(map.get("email").getAsString()) &&
+                status = rs.getString("email").equals(map.get("email").getAsString()) &&
                         rs.getString("password").equals(map.get("password").getAsString()) ?
                     HTTPStatusCode.HTTP_200_OK : // Log in successful.
                     HTTPStatusCode.HTTP_401_UNAUTHORIZED; // Incorrect credentials.
+                authResult = new AuthResult(rs.getInt("id"), status);
+                return status;
             } else {
-                return HTTPStatusCode.HTTP_404_NOT_FOUND; // Account does not exist.
+                status = HTTPStatusCode.HTTP_404_NOT_FOUND;
+                authResult = new AuthResult("Account does not exist.", status);
+                return status; // Account does not exist.
             }
         }
 
-        return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR; // Fallback error.
+        status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        authResult = new AuthResult("Unidentified fallback error.", status);
+        return status; // Fallback error.
     }
 
     @Override
@@ -83,12 +88,14 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
             WHERE u.id = ?;
         """);
         
+        System.out.println(id);
         query.setInt(1, id);
 
         ResultSet rs = query.executeQuery();
         Gson gson = new Gson();
 
         if (!rs.next()) {
+            authResult = new AuthResult("", HTTPStatusCode.HTTP_404_NOT_FOUND);
             return ""; // Calendarspace or user not found.
         } else {
             int calspace_id = gson.fromJson(
@@ -111,17 +118,27 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
                 textevents_id_arr = gson.fromJson(
                     rs.getArray("textevents_id_arr")/*.getArray()*/.toString(),
                     int[].class);
-            } catch (NullPointerException npe) {
+            } catch (NullPointerException | JsonSyntaxException | IllegalStateException e) {
                 taskevents_id_arr = gson.fromJson(
                     "[]",
                     int[].class);
+                timeblockevents_id_arr = gson.fromJson(
+                    "[]",
+                    int[].class);
+                textevents_id_arr = gson.fromJson(
+                    "[]",
+                    int[].class);
             }
+
+            System.out.println(rs.toString());
+            authResult = new AuthResult(rs.getInt("user_id"), HTTPStatusCode.HTTP_200_OK);
+            return String.valueOf(rs.getInt("user_id"));
             
-            System.out.println(calspace_id);
-            System.out.println(taskevents_id_arr.length);
+            // System.out.println(calspace_id);
+            // System.out.println(taskevents_id_arr.length);
         }
 
-        return super.read(id);//delet thsi
+        // return super.read(id);//delet thsi
     }
 
     @Override

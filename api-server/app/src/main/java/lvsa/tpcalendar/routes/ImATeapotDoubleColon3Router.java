@@ -18,10 +18,10 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
  */
 public class ImATeapotDoubleColon3Router implements APIRouter {
     private String response = "{ \"response\": \"nothing\" }";
+    private String token;
 
-    public String getResponse() {
-        return this.response;
-    }
+    public String getResponse() { return this.response; }
+    public String getToken() { return this.token; }
 
     private HTTPStatusCode teapot(HttpExchange htex) {
 

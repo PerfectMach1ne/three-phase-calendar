@@ -1,8 +1,11 @@
 <script setup>
-import { computed, onMounted , ref } from 'vue';
+import { computed, inject, onMounted , ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import ChangeWeek from './buttons/ChangeWeek.vue';
 import TodaysWeek from './buttons/TodaysWeek.vue';
+import { useAuth } from '../composables/session.js';
+
+const { jwtToken, loadToken } = useAuth();
 
 const weekdayBoxWidth = ref('');
 const left = ref("&#10094;");
@@ -23,10 +26,10 @@ const monthNames =
   ["January", "February", "March", "April", "May", "June",
    "July", "August", "September", "October", "November", "December"];
 
-async function fetchCalSpace() {
+async function fetchCalSpace(userId) {
   try {
     const res = await invoke('fetch_cspace', {
-      userId: 14
+      userId: userId,
     });
     console.log(res);
   } catch (error) {
@@ -132,6 +135,8 @@ function goToTodaysWeek() {
 }
 
 onMounted(() => {
+  fetchCalSpace(14);
+
   currentDate.setHours(0, 0, 0, 0);
 
   currentMonths.value = getTodaysMonths();
@@ -145,8 +150,6 @@ onMounted(() => {
   // Easy fix for yearmonth__display class element being sized correctly - steal weekday__box's width after render. >:)
   weekdayBoxWidth.value = document.getElementById('weekdaybox-width-source').offsetWidth + 'px';
 });
-
-fetchCalSpace();
 </script>
 
 <template>

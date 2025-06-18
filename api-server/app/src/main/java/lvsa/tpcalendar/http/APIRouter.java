@@ -7,6 +7,8 @@ import com.sun.net.httpserver.HttpExchange;
  */
 public interface APIRouter {
     public String getResponse();
+    
+    public String getToken();
 
     public HTTPStatusCode GET(HttpExchange htex);
 

@@ -1,4 +1,0 @@
-/* 
- * src/utils/session.js
-*/
-

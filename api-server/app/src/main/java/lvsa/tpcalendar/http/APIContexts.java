@@ -13,6 +13,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class APIContexts {
 	private final HashMap<String, Map.Entry<String, APIRouter>> contextsParamsMap;
@@ -56,8 +57,6 @@ public class APIContexts {
 					HTTPStatusCode status = HTTPStatusCode.HTTP_405_METHOD_NOT_ALLOWED;
 					String res = status.wrapAsJsonRes() + REGISTERED_NURSE;
 
-					// OutputStream os = exchange.getResponseBody();
-
 					try {
 						switch (exchange.getRequestMethod().toUpperCase()) {
 							case "GET":
@@ -98,6 +97,14 @@ public class APIContexts {
 
 						exchange.getResponseHeaders().set("Content-Type", "application/json");
 						exchange.getResponseHeaders().set("Connection", "close");
+						if (Pattern.compile("^/api/(login|register)$").matcher(uri).matches()) {
+							String token = ROUTER.getToken();
+                            System.out.println(token);
+							exchange.getResponseHeaders().set("Authorization", token);
+							// get that userId
+							// create that token
+							// put it in da header
+						}
 
 						exchange.sendResponseHeaders(status.getint(), resBytes.length);
 

@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
+import { useAuth } from '../composables/session.js';
 
+const { setToken } = useAuth();
 const emit = defineEmits(['login']);
 
 const username = ref('Michalina Hatsuńska');
@@ -20,13 +22,18 @@ async function attemptLogin() {
         email: email.value,
         password: pwd.value
       });
-      loginResult.value = res;
+      setToken(res.token);
+      loginResult.value = res.data;
+      console.log(res.data + " " + res.token);
+      
     } else {
       const res = await invoke('login', {
         email: email.value,
         password: pwd.value
       });
-      loginResult.value = res;
+      setToken(res.token);
+      loginResult.value = res.data;
+      console.log(res.data + " " + res.token);
     }
   } catch (error) {
     loginResult.value = `Error: ${error}`;
