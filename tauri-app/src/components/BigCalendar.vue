@@ -56,7 +56,6 @@ function getTodaysWeek() {
 }
 
 function getTodaysMonths() {
-  fetchCalSpace();
   var date = currentDate;
 
   var weekFirstMonthday = date.getDate() - date.getDay();
@@ -147,7 +146,7 @@ onMounted(() => {
   weekdayBoxWidth.value = document.getElementById('weekdaybox-width-source').offsetWidth + 'px';
 });
 
-
+fetchCalSpace();
 </script>
 
 <template>
@@ -211,11 +210,16 @@ onMounted(() => {
 .yearmonth__display {
   display: inline-flex;
   align-items: center; /* prevents text from being aligned "annoyingly upwards" */
+
+  position: sticky;
+  top: 0;
+
   gap: 15px;
   border: 1px solid lightgray;
   margin: 0;
   padding: 20px 0;
   content: 0;
+
   font-family: Arial, Helvetica, sans-serif;
   font-variant-caps: small-caps;
   font-size: 1.5rem;
@@ -246,7 +250,9 @@ onMounted(() => {
   margin: 0;
   padding: 25px 34px;
   content: 0;
+
   min-width: 150px;
+
   text-align: center;
   vertical-align: middle;
   font-family: Arial, Helvetica, sans-serif;
@@ -261,11 +267,12 @@ onMounted(() => {
 
 .calendar__hour__row {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   padding: 0;
   margin: 0;
   content: 0;
-  align-items: center;
-  justify-content: center;
 }
 
 .hour__box {
@@ -273,7 +280,9 @@ onMounted(() => {
   margin: 0;
   padding: 24.8px 0;
   content: 0;
+
   width: 60px;
+
   text-align: center;
   font-family: Arial, Helvetica, sans-serif;
   color: #767676;
@@ -284,6 +293,7 @@ onMounted(() => {
   margin: 0;
   padding: 34px;
   content: 0;
+
   min-width: 150px;
   text-align: center;
   vertical-align: middle;
@@ -295,6 +305,7 @@ button.change__week {
   padding: 10px 20px;
   border: none;
   border-radius: 12px;
+
   background-color: aquamarine;
   font-size: 1.2rem;
   color: #000;

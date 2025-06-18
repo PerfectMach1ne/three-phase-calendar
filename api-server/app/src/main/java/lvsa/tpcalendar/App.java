@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +15,7 @@ import java.util.Properties;
 import lvsa.tpcalendar.http.APIContexts;
 import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.QueryParamsFilter;
+import lvsa.tpcalendar.auth.TokenProvider;
 import lvsa.tpcalendar.dbutils.SchemaInitializer;
 import lvsa.tpcalendar.routes.ImATeapotDoubleColon3Router;
 import lvsa.tpcalendar.routes.TaskRouter;
@@ -98,8 +101,17 @@ public final class App {
         }
         System.out.println("[DEBUG] Serving at " + ADDRESS);
 
-        /*SchemaInitializer schema = */new SchemaInitializer();
-
+        SchemaInitializer schema = new SchemaInitializer();
+        TokenProvider tokenProvider;
+        try {
+            tokenProvider = new TokenProvider();
+        } catch (InvalidKeySpecException ikse) {
+        System.out.println("[FATAL] WARNING !!! Failed to create an SHA256withRSA algorithm instance in lvsa.tpcalendar.auth.TokenProvider !!!");
+            ikse.printStackTrace();
+        } catch (NoSuchAlgorithmException nsae) {
+            System.out.println("[BIOS ERROR] I don't know how we got here, but the user operating this server somehow managed to fuck up this badly to get to that point.");
+            nsae.printStackTrace();
+        }
         /**
          * Connect a default query param filter to each HTTP context.
          */

@@ -11,7 +11,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ## Milestones/feature ToDo list
 
-#### CALENDARCOINS COLLECTED: 37📅🪙!!!
+#### CALENDARCOINS COLLECTED: 38📅🪙!!!
 
 ### Java + postgres backend server
 
@@ -48,7 +48,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~ForeignKey relation~~
 - [ ] ~~GET all user/calendar events.**
 - [x] ~~Basic user login with no auth.~~
-- [ ] **User authentication with JWT, bcrypt password encryption and OAuth 2.0.**
+- [x] ~~User authentication with JWT, bcrypt password encryption and OAuth 2.0.~~
 - [ ] **openssl keygen bash script**
 - [x] ~~Server-side database schema initialization and validation (possibly future migration features?).~~
 - [ ] postgres role for division of database access permissions.

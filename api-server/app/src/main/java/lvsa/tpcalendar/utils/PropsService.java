@@ -64,6 +64,6 @@ public final class PropsService {
      * @return truncated Properties object.
      */
     public Properties getRsaKeys() {
-        return truncate(getProps(), Set.of("key_id", "priv_key"));
+        return truncate(getProps(), Set.of("jwt.key.id", "jwt.pub.key", "jwt.priv.key"));
     }
 }

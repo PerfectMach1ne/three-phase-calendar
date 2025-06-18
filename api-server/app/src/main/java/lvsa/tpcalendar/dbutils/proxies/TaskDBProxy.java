@@ -69,7 +69,18 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
 
         stat.executeUpdate();
 
-        return HTTPStatusCode.HTTP_201_CREATED;
+        try(
+            DBConnProvider db = new DBConnProvider();
+            CalSpaceDBProxy cspace = new CalSpaceDBProxy(db);
+        ) {
+            // cspace should receive either user id or some kind of session token. How do we go about this?
+            HTTPStatusCode status = cspace.updatePartial(task.getHashcode(), "");
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR; // Error while updating calendarspace.
+        } finally {
+            return HTTPStatusCode.HTTP_201_CREATED;
+        }
     }
 
     /**

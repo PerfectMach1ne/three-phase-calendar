@@ -39,6 +39,10 @@ public class CalSpaceDBProxy extends BaseDBProxy implements AutoCloseable {
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }
 
+    public HTTPStatusCode updatePartial(int hashcode, String json) throws SQLException {
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+    }
+
     public HTTPStatusCode delete(int hashcode) throws SQLException {
         return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
     }

@@ -1,6 +1,8 @@
 package lvsa.tpcalendar.dbutils.proxies;
 
 import java.lang.reflect.Array;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,17 +13,27 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
+import lvsa.tpcalendar.auth.TokenProvider;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
     public LoginDBProxy(DBConnProvider dbConnProvider) {
         super(dbConnProvider);
+        try {
+            this.tokenProvider = new TokenProvider();
+        } catch (InvalidKeySpecException ikse) {
+        System.out.println("[FATAL] WARNING !!! Failed to create an SHA256withRSA algorithm instance in lvsa.tpcalendar.auth.TokenProvider !!!");
+            ikse.printStackTrace();
+        } catch (NoSuchAlgorithmException nsae) {
+            System.out.println("[BIOS ERROR] I don't know how we got here, but the user operating this server somehow managed to fuck up this badly to get to that point.");
+            nsae.printStackTrace();
+        }
     }
 
     public HTTPStatusCode create(String json) throws SQLException {
         PreparedStatement query = this.conn.prepareStatement("""
-            SELECT name, email, password
+            SELECT id, name, email, password
             FROM users
             WHERE email = ?;
         """);

@@ -27,4 +27,28 @@ public final class IOUtils {
 
         return propsList;
     }
+
+    /**
+     * Helper method for reading other files into a buffer.
+     * @param is an <code>InputStream</code>
+     * @return String of file contents
+     */
+    public static String readAnyResource(String resource) {
+        StringBuilder sb = new StringBuilder();
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(resource);
+        
+        if (is == null) throw new IllegalArgumentException("Resource not found: " + resource);
+
+        try(BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            String line;
+            while ( (line = br.readLine()) != null ) {
+                sb.append(line).append("\n");
+            }
+        } catch (IOException ioe) {
+            System.out.println("Failed to read resource: " + resource);
+            ioe.printStackTrace();
+        }
+
+        return sb.toString();
+    }
 }

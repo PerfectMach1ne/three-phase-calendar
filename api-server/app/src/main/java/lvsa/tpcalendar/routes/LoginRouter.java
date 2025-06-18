@@ -56,8 +56,7 @@ public class LoginRouter implements APIRouter {
 
         status = attemptLogin(sb.toString());
         response = status.wrapAsJsonRes();
-        System.out.println("[DEBUG] status == " + status + 
-                           "\n\tresponse == " + response);
+
         return status;
     }
 

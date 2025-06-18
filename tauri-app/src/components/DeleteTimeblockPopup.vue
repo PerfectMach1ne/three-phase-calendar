@@ -2,8 +2,8 @@
 import { inject, ref } from 'vue';
 
 const renderDelTimeblock = inject('renderDelTimeblock');
-const task = ref("");
-const tasks = ref([]);
+const timeblock = ref("");
+const timeblocks = ref([]);
 
 function cancel() {
   renderDelTimeblock.value = !renderDelTimeblock.value;
@@ -12,12 +12,12 @@ function cancel() {
 
 <template>
   <div class="event__page__box">
-    <select v-model="task" name="task-choice">
+    <select v-model="timeblock " name="timeblock-choice">
       <option
-        v-for="task in tasks"
-        :value="task.hash"
-        :key="task.hash">
-        {{ task.name }}
+        v-for="timeblock in timeblocks"
+        :value="timeblock.hash"
+        :key="timeblock.hash">
+        {{ timeblock.name }}
         </option>
     </select>
     <div class="event__page__buttons">

@@ -2,3 +2,5 @@
 *.properties
 prometheus-*
 prometheus-*/
+key_id
+*.pem
