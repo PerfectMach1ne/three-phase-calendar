@@ -46,10 +46,11 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] Make the QueryParam "validator strings" actually do something.
 - [x] ~~Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).~~
 - [x] ~~ForeignKey relation~~
-- [ ] ~~GET all user/calendar events.**
+- [ ] **GET /api/login?id={user_id} returning user's entire calendarspace.**
+- [ ] **For the love of all that lives, breathes and hates, please do your JWT token verification properly now that it works.**
 - [x] ~~Basic user login with no auth.~~
 - [x] ~~User authentication with JWT, bcrypt password encryption and OAuth 2.0.~~
-- [ ] **openssl keygen bash script**
+- [ ] openssl keygen bash script
 - [x] ~~Server-side database schema initialization and validation (possibly future migration features?).~~
 - [ ] postgres role for division of database access permissions.
 - [-] ~~Substitute `HttpServer` with `HttpsServer` (#5).~~
@@ -68,10 +69,14 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [ ] **Implement a basic "casing" for journal mode.**
 - [x] ~~Make Rust "middleend" be able to talk to the appropriate backend server.~~
 - [x] ~~Make Rust backend and Vue learn how to talk to each other about JWT tokens and user id handling in requests.~~
-- [ ] **Basic event fetching.**
+- [ ] **Make events renderable as they should be.**
+- [ ] **Make rendered events be fully functional and additionally clickable.**
+- [ ] **Event popup with the editing and PUT/PATCH part.**
+- [ ] **Wire up all event creation, fetching and deletion methods**
+- [ ] **Planner mode and Journal mode can into calendarspace.**
+- [ ] **Events don't collide with each other and extend on the right Vue div box when they last more than 1 day.**
 - [ ] Refurbish calendar styling.
 - [ ] A settings popup/page.
-- [ ] **Event object positioning & styling.**
 - [x] ~~Event creation forms.~~
 - [ ] **Journal prototype implenentation.**
 - [ ] **Planner prototype implementation.**
