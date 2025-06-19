@@ -59,8 +59,11 @@ public class TokenProvider implements AutoCloseable {
     }
 
     /**
-     * Create a JWT token with RSA256 algorithm from the public & private key.
-     */
+    * Create a JWT token with RSA256 algorithm from the public & private key.
+    *
+    * @param userId
+    * @return   JWT token as String.
+    */
     public String createJWTToken(int userId) {
         return JWT.create()
             .withIssuer(issuer)
@@ -71,6 +74,12 @@ public class TokenProvider implements AutoCloseable {
             .sign(algorithm);
     }
 
+    /**
+     * Verify a token sent from the frontend server.
+     * 
+     * @param token
+     * @return  decoded JWT token as DecodedJWT instance.
+     */
     public DecodedJWT verifyToken(String token) {
         JWTVerifier verifier = JWT.require(algorithm)
             .withIssuer(issuer)

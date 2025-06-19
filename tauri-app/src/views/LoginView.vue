@@ -123,4 +123,25 @@ main > div {
   justify-content: center;
   align-items: center;
 }
+
+button {
+  margin: 10px;
+  border: 1px solid gray;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  background-color: aquamarine;
+  font-size: 1rem;
+  color: #000;
+}
+
+button:hover {
+  background-color: turquoise;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+button:not(:hover) {
+  transition: all 0.3s ease;
+}
 </style>
