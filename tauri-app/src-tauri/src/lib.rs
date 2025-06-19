@@ -5,6 +5,8 @@ use std::sync::Mutex;
 use urlencoding::encode;
 use tauri_plugin_store::StoreBuilder;
 use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
+use jsonwebtoken_rustcrypto::dangerous_insecure_decode;
+use serde::Deserialize;
 
 #[derive(serde::Serialize)]
 struct AuthResponse {
@@ -29,6 +31,11 @@ struct AppState {
     jwt_token: Mutex<Option<String>>,
 }
 
+#[derive(Deserialize)]
+struct Claims {
+    sub: String,
+}
+
 // Listen. Don't ask. This is as "todo fix later" as it gets.
 const PUBLIC_KEY: &str = r#"-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3SAbn4FoLgdFiuBdE83K
@@ -41,10 +48,35 @@ oh/ntmDS9id6Gy27yLC4JTjaoqVE466RD797y0Aj7iHIgAS9CFD9CtsPUwpcXBDI
 -----END PUBLIC KEY-----"#;
 
 #[tauri::command]
+async fn validate_token(token: String) -> Result<String, String> {
+    let key = DecodingKey::from_rsa_pem(PUBLIC_KEY.as_bytes())
+        .map_err(|e| format!("Bad key: {}", e))?;
+
+    // Minimal validation for now - just checks signature and expiry.
+    let validation = Validation::new(Algorithm::RS256);
+    
+    match decode::<serde_json::Value>(&token, &key, &validation) {
+        Ok(_) => Ok(r#"{"valid":true}"#.to_string()),
+        Err(e) => Err(format!(
+            r#"{{"error":"ValidationError","message":"{}"}}"#, e
+        ))
+    }
+}
+
+#[tauri::command]
+async fn extract_user_id(token: String) -> Option<i32> {
+    dangerous_insecure_decode::<Claims>(&token)
+        .ok()
+        .and_then(|data| data.claims.sub.parse().ok())
+}
+
+#[tauri::command]
 async fn store_token_securely(
         token: String,
         app_handle: tauri::AppHandle,
+        state: tauri::State<'_, AppState>
         ) -> Result<(), String> {
+    *state.jwt_token.lock().unwrap() = Some(token.clone());
     let store = StoreBuilder::new(&app_handle, ".auth.dat")
         .build()
         .map_err(|e| format!("Failed to create store: {}", e))?;
@@ -93,11 +125,23 @@ async fn fetch_cspace(
     );
 
     let client = reqwest::Client::new();
-    let token = state.jwt_token.lock()
-        .map_err(|_| "Token mutex poisoned".to_string())?
-        .as_ref()
-        .ok_or("Unauthorized".to_string())?
-        .clone();
+    println!("Token state: {:?}", state.jwt_token.lock().unwrap());
+    let token = tokio::time::timeout(
+        std::time::Duration::from_secs(3),
+        async {
+            loop {
+                if let Some(token) = state.jwt_token.lock().unwrap().as_ref() {
+                    return token.clone();
+                }
+                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+            }
+        }
+    ).await.map_err(|_| "Timeout waiting for token".to_string())?;
+    // let token = {
+    //     let guard = state.jwt_token.lock()
+    //         .map_err(|_| "Token mutex poisoned".to_string())?;
+    //     guard.as_ref().ok_or("Unauthorized: No token stored".to_string())?.clone()
+    // };
     let response = client
         .get(&url)
         .header("Authorization", format!("Bearer {}",token))
@@ -218,21 +262,7 @@ async fn login(email: &str, password: &str, state: State<'_, AppState>)
     Ok(AuthResponse{ token, data: response_text })
 }
 
-#[tauri::command]
-async fn validate_token(token: String) -> Result<String, String> {
-    let key = DecodingKey::from_rsa_pem(PUBLIC_KEY.as_bytes())
-        .map_err(|e| format!("Bad key: {}", e))?;
 
-    // Minimal validation for now - just checks signature and expiry.
-    let validation = Validation::new(Algorithm::RS256);
-    
-    match decode::<serde_json::Value>(&token, &key, &validation) {
-        Ok(_) => Ok(r#"{"valid":true}"#.to_string()),
-        Err(e) => Err(format!(
-            r#"{{"error":"ValidationError","message":"{}"}}"#, e
-        ))
-    }
-}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -242,9 +272,8 @@ pub fn run() {
             jwt_token: Mutex::new(None),
         })
         .invoke_handler(tauri::generate_handler!
-            [login, register, fetch_cspace,
-             store_token_securely, load_token_securely, clear_token_securely,
-             validate_token
+            [login, register, fetch_cspace, validate_token, extract_user_id,
+             store_token_securely, load_token_securely, clear_token_securely
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

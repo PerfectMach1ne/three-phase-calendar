@@ -85,13 +85,10 @@ onMounted(async () => {
   if (token) {
     try {
       const res = await invoke('validate_token', { token });
-      console.log(res);
       const data = JSON.parse(res);
-      console.log(data);
 
       if (data.valid) {
         setToken(token);
-        setUserId(data.userId);
         emit('login');
       }
     } catch (err) {

@@ -25,6 +25,7 @@ serde_json = "1"
 urlencoding = "2.1"
 tauri-plugin-store = "2.2.1"
 jsonwebtoken = "9.0"
+jsonwebtoken-rustcrypto = "1.2.0"
 sha2 = "0.10"
 reqwest = { version = "0.12", features = ["json"] }
 tokio = { version = "1.0", features = ["full"] }

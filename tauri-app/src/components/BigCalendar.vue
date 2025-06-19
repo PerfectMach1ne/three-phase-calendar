@@ -135,6 +135,8 @@ function goToTodaysWeek() {
 }
 
 onMounted(() => {
+  console.log(userId.value);
+  
   fetchCalSpace(userId.value);
 
   currentDate.setHours(0, 0, 0, 0);

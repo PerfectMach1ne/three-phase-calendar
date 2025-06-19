@@ -9,7 +9,10 @@ const userId = ref(0);
 
 export function useAuth() {
   const setToken = async (token) => {
+    console.log(userId.value);
     jwtToken.value = token;
+    userId.value = await invoke('extract_user_id', { token });
+    console.log(userId.value);
     await invoke('store_token_securely', { token });
     // localStorage.setItem('jwt', token);
   };
@@ -21,7 +24,10 @@ export function useAuth() {
   const loadToken = async () => { 
     try {
       const token = await invoke('load_token_securely');
-      if (token) jwtToken.value = token;
+      if (token) {
+        jwtToken.value = token;
+        userId.value = await invoke('extract_user_id', { token });
+      } 
       return token;
     } catch (e) {
       console.error("Token load failed:", e);
