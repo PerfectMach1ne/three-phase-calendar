@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
 
 const greetMsg = ref("");
 const name = ref("");
@@ -18,6 +20,7 @@ export default {
 
 <template>
   <div class="journal__container scrollbar">
+    <QuillEditor></QuillEditor>
     <form class="row" @submit.prevent="testGreet">
       <input id="greet-input" v-model="name" placeholder="Enter a name..." />
       <button type="submit">Greet</button>
