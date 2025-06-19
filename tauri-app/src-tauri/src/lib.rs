@@ -86,7 +86,7 @@ async fn register(username: &str, email: &str, password: &str, state: State<'_, 
         .and_then(|hv| hv.to_str().ok())
         .map(|s| s.trim_start_matches("bearer ").to_string())
         .ok_or("Missing authorization header!")?;
-    *state.jwt_token.lock().unwrap() = Some(token.clone());
+    *state.jwt_token.lock().unwrap() = Some(token.clone().trim_start_matches("Bearer ").to_string());
     let status = response.status();
     let response_text = response.text()
         .await
@@ -129,7 +129,7 @@ async fn login(email: &str, password: &str, state: State<'_, AppState>)
         .and_then(|hv| hv.to_str().ok())
         .map(|s| s.trim_start_matches("bearer ").to_string())
         .ok_or("Missing authorization header!")?;
-    *state.jwt_token.lock().unwrap() = Some(token.clone());
+    *state.jwt_token.lock().unwrap() = Some(token.clone().trim_start_matches("Bearer ").to_string());
     let status = response.status();
     let response_text = response.text()
         .await

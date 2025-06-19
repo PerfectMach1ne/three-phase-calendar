@@ -11,12 +11,11 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ## Milestones/feature ToDo list
 
-#### CALENDARCOINS COLLECTED: 39📅🪙!!!
+#### CALENDARCOINS COLLECTED: 41📅🪙!!!
 
 ### Java + postgres backend server
 
 - [x] ~~Dockerize your app properly~~
-- [x] ~~Also integrate Minikube (optional?)~~
 - [x] ~~Basic HTTP server functionality.~~
 - [x] ~~Basic internal TaskEvent data handling.~~
 - [x] ~~Basic postgres database & connectivity setup.~~
@@ -38,16 +37,16 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~POST PeriodEvent.~~
 - [x] ~~PUT PeriodEvent.~~
 - [x] ~~DELETE PeriodEvent.~~
-- [ ] **GET TextEvent.**
-- [ ] **POST TextEvent.**
 - [ ] PUT TextEvent.
-- [ ] **DELETE TextEvent.**
-- [ ] PATCH TextEvent**
 - [ ] Make the QueryParam "validator strings" actually do something.
 - [x] ~~Basic user & "calendarspace" implementation (to separate events from each separate user & their calendar/journal/planner).~~
 - [x] ~~ForeignKey relation~~
-- [ ] **GET /api/login?id={user_id} returning user's entire calendarspace.**
-- [ ] **For the love of all that lives, breathes and hates, please do your JWT token verification properly now that it works.**
+- [x] ~~GET /api/login?id={user_id} returning user's entire calendarspace.~~
+- [x] ~~For the love of all that lives, breathes and hates, please do your JWT token verification properly now that it works.~~
+- [ ] **GET TextEvent.**
+- [ ] **POST TextEvent.**
+- [ ] **DELETE TextEvent.**
+- [ ] **PATCH TextEvent**
 - [x] ~~Basic user login with no auth.~~
 - [x] ~~User authentication with JWT, bcrypt password encryption and OAuth 2.0.~~
 - [ ] openssl keygen bash script
@@ -63,23 +62,25 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~Refactor BigCalendar.~~
 - [ ] (OPTIONAL) Move most of the complex date handling to Rust "middleend".
 - [x] ~~Implement a dark/light mode toggle.~~
-- [ ] Make the dark/light mode toggle alter styling.
 - [x] ~~Implement a basic "casing" for calendar mode.~~
-- [ ] **Implement a basic "casing" for planner mode.**
-- [ ] **Implement a basic "casing" for journal mode.**
+
 - [x] ~~Make Rust "middleend" be able to talk to the appropriate backend server.~~
 - [x] ~~Make Rust backend and Vue learn how to talk to each other about JWT tokens and user id handling in requests.~~
+- [ ] **Wire up all event creation, fetching and deletion methods**
 - [ ] **Make events renderable as they should be.**
 - [ ] **Make rendered events be fully functional and additionally clickable.**
 - [ ] **Event popup with the editing and PUT/PATCH part.**
-- [ ] **Wire up all event creation, fetching and deletion methods**
-- [ ] **Planner mode and Journal mode can into calendarspace.**
 - [ ] **Events don't collide with each other and extend on the right Vue div box when they last more than 1 day.**
-- [ ] Refurbish calendar styling.
-- [ ] A settings popup/page.
-- [x] ~~Event creation forms.~~
+- [ ] **Implement a basic "casing" for planner mode.**
+- [ ] **Implement a basic "casing" for journal mode.**
+- [ ] **Planner mode and Journal mode can into calendarspace.**
 - [ ] **Journal prototype implenentation.**
 - [ ] **Planner prototype implementation.**
+- [ ] **Much to your horror, run `npm tauri run android dev` and figure out how to thus make it at least not immediately present itself as a nightmare that it will come out as with nothing currently done with phones in mind.**
+- [ ] Refurbish calendar styling.
+- [ ] A settings popup/page.
+- [ ] Make the dark/light mode toggle alter styling.
+- [x] ~~Event creation forms.~~
 - [x] ~~User authentication GUI.~~
 
 ### C + ncurses CLI frontend

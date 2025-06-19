@@ -20,7 +20,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import lvsa.tpcalendar.utils.IOUtils;
 import lvsa.tpcalendar.utils.PropsService;
 
-public class TokenProvider {
+public class TokenProvider implements AutoCloseable {
     private final String issuer;
     private final Algorithm algorithm;
     private final long tokenExpiryMs;
@@ -78,4 +78,8 @@ public class TokenProvider {
         
         return verifier.verify(token);
     }
+
+    @Override
+    public void close() throws Exception { return; }
+        
 }

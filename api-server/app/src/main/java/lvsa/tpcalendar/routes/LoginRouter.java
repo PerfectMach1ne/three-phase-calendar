@@ -9,7 +9,6 @@ import java.io.InputStreamReader;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Map;
 import java.io.BufferedReader;
 
@@ -77,9 +76,25 @@ public class LoginRouter implements APIRouter {
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
         int uid = Integer.valueOf(queryParams.get("id"));
         
+        HTTPStatusCode status;
         token = htex.getRequestHeaders().getFirst("Authorization");
+        token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
+        try( TokenProvider tp = new TokenProvider()) {
+            DecodedJWT jwt = tp.verifyToken(token);
+            String subject = jwt.getSubject();
+            int tokenuid = Integer.valueOf(subject).intValue();
+            if (tokenuid != uid) {
+                status = HTTPStatusCode.HTTP_403_FORBIDDEN;
+                return status;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            return status;
+        }
+        
         Object[] dbResult = loadEvents(uid);
-        HTTPStatusCode status = (HTTPStatusCode)dbResult[0];
+        status = (HTTPStatusCode)dbResult[0];
         Object fetchedJsonOrNull = dbResult[1];
 
         Headers resh = htex.getResponseHeaders();
@@ -92,9 +107,10 @@ public class LoginRouter implements APIRouter {
         } else if (dbResult[0] != HTTPStatusCode.HTTP_200_OK) {
             response = status.wrapAsJsonRes();
             return status;
+        } else {
+            response = fetchedJsonOrNull.toString();
+            return status;
         }
-
-        return status;
     }
 
     @Override
@@ -148,7 +164,8 @@ public class LoginRouter implements APIRouter {
                 try {
                     TokenProvider tp = new TokenProvider();
                     token = tp.createJWTToken(proxy.getAuthResult().getUser_id());
-                } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                    tp.close();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return status; // Guaranteed 200 if successful.
@@ -180,23 +197,10 @@ public class LoginRouter implements APIRouter {
             eventList = proxy.read(id);
             if (eventList.isEmpty()) {
                 return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
-            }
-
-            if (proxy.getAuthResult().isSuccess()) {
-                try {
-                    TokenProvider tp = new TokenProvider();
-                    // Verify token
-                    token = token.trim().replaceAll("(?i)bearer", "").trim();
-                    DecodedJWT jwt = tp.verifyToken(token);
-                    String subject = jwt.getSubject();
-                    System.out.println("Subject: " + subject);
-                    System.out.println(jwt.getToken());
-                } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-                    e.printStackTrace();
-                }
-                return new Object[]{HTTPStatusCode.HTTP_200_OK, null};
+            } else if (proxy.getAuthResult().isSuccess()) {
+                return new Object[]{HTTPStatusCode.HTTP_200_OK, eventList};
             } else {
-                return new Object[]{HTTPStatusCode.HTTP_401_UNAUTHORIZED, null};
+                return new Object[]{HTTPStatusCode.HTTP_403_FORBIDDEN, null};
             }
         } catch (SQLException sqle) {
             sqle.printStackTrace();

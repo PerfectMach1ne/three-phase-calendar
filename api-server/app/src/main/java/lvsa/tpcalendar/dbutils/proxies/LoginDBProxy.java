@@ -74,71 +74,63 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
         }
 
         status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
-        authResult = new AuthResult("Unidentified fallback error.", status);
+        authResult = new AuthResult("Unidentified fallback server error triggered.", status);
         return status; // Fallback error.
     }
 
     @Override
     public String read(int id) throws SQLException {
+        // PreparedStatement query = this.conn.prepareStatement("""
+        //     SELECT u.id, cs.user_id, cs.id AS calspace_id,
+        //         cs.tasksevents_id_arr, cs.timeblockevents_id_arr, cs.textevents_id_arr
+        //     FROM users u RIGHT JOIN calendarspace cs
+        //     ON u.id = cs.user_id
+        //     WHERE u.id = ?;
+        // """);
         PreparedStatement query = this.conn.prepareStatement("""
-            SELECT u.id, cs.user_id, cs.id AS calspace_id,
-                cs.tasksevents_id_arr, cs.timeblockevents_id_arr, cs.textevents_id_arr
+            WITH cspace AS (
+            SELECT u.id,
+                cs.user_id AS user_id,
+                cs.id AS calspace_id,
+                cs.tasksevents_id_arr AS taskid_arr,
+                cs.timeblockevents_id_arr AS timeblockid_arr,
+                cs.textevents_id_arr AS textid_arr
             FROM users u RIGHT JOIN calendarspace cs
-            ON u.id = cs.user_id
-            WHERE u.id = ?;
+            ON u.id = cs.user_id WHERE u.id = ?
+            )
+            SELECT json_build_object(
+            'userdata', (SELECT json_agg(u) FROM (
+                SELECT user_id, calspace_id FROM cspace
+            ) u),
+            'tasks', (SELECT json_agg(t) FROM (
+                SELECT id, hashcode, datetime, name, description, viewtype, color, isdone
+                FROM taskevents 
+                WHERE hashcode IN (
+                SELECT UNNEST(taskid_arr) FROM cspace
+                )
+            ) t),
+            'timeblocks', (SELECT json_agg(tb) FROM (
+                SELECT id, hashcode, start_datetime, end_datetime, name, description, viewtype, color 
+                FROM timeblockevents 
+                WHERE hashcode IN (
+                SELECT UNNEST(timeblockid_arr) FROM cspace
+                )
+            ) tb)
+            ) AS calendar_data;
         """);
         
-        System.out.println(id);
         query.setInt(1, id);
 
         ResultSet rs = query.executeQuery();
-        Gson gson = new Gson();
 
         if (!rs.next()) {
             authResult = new AuthResult("", HTTPStatusCode.HTTP_404_NOT_FOUND);
             return ""; // Calendarspace or user not found.
         } else {
-            int calspace_id = gson.fromJson(
-                String.valueOf(rs.getInt("calspace_id")),
-                int.class);
-
-            int[] taskevents_id_arr;
-            int[] timeblockevents_id_arr;
-            int[] textevents_id_arr;
-            
-            try {
-                taskevents_id_arr = gson.fromJson(
-                    rs.getArray("tasksevents_id_arr")/*.getArray()*/.toString(),
-                    int[].class);
-
-                timeblockevents_id_arr = gson.fromJson(
-                    rs.getArray("timeblockevents_id_arr")/*.getArray()*/.toString(),
-                    int[].class);
-
-                textevents_id_arr = gson.fromJson(
-                    rs.getArray("textevents_id_arr")/*.getArray()*/.toString(),
-                    int[].class);
-            } catch (NullPointerException | JsonSyntaxException | IllegalStateException e) {
-                taskevents_id_arr = gson.fromJson(
-                    "[]",
-                    int[].class);
-                timeblockevents_id_arr = gson.fromJson(
-                    "[]",
-                    int[].class);
-                textevents_id_arr = gson.fromJson(
-                    "[]",
-                    int[].class);
-            }
-
-            System.out.println(rs.toString());
-            authResult = new AuthResult(rs.getInt("user_id"), HTTPStatusCode.HTTP_200_OK);
-            return String.valueOf(rs.getInt("user_id"));
-            
-            // System.out.println(calspace_id);
-            // System.out.println(taskevents_id_arr.length);
+            // authResult = new AuthResult(rs.getInt("user_id"), HTTPStatusCode.HTTP_200_OK);
+            authResult = new AuthResult(id, HTTPStatusCode.HTTP_200_OK);
+            return rs.getString("calendar_data");
         }
-
-        // return super.read(id);//delet thsi
     }
 
     @Override

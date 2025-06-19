@@ -61,6 +61,7 @@ public class APIContexts {
 						switch (exchange.getRequestMethod().toUpperCase()) {
 							case "GET":
 								status = ROUTER.GET(exchange);
+								res = ROUTER.getResponse();
 								break;
 							case "POST":
 								status = ROUTER.POST(exchange);
@@ -91,19 +92,18 @@ public class APIContexts {
 								res = status.wrapAsJsonRes() + REGISTERED_NURSE;
 						}
 
-						// '/r/n' -> wacky ternary to avoid \r\n duplication.
-						res = status.wrapAsJsonRes() + REGISTERED_NURSE;
+						if (status.getint() >= 200 && status.getint() < 300) {
+							res = ROUTER.getResponse() + REGISTERED_NURSE;
+						} else {
+							res = status.wrapAsJsonRes() + REGISTERED_NURSE;
+						}
 						byte[] resBytes = res.getBytes(StandardCharsets.UTF_8);
 
 						exchange.getResponseHeaders().set("Content-Type", "application/json");
 						exchange.getResponseHeaders().set("Connection", "close");
 						if (Pattern.compile("^/api/(login|register)$").matcher(uri).matches()) {
 							String token = ROUTER.getToken();
-                            System.out.println(token);
 							exchange.getResponseHeaders().set("Authorization", token);
-							// get that userId
-							// create that token
-							// put it in da header
 						}
 
 						exchange.sendResponseHeaders(status.getint(), resBytes.length);

@@ -105,9 +105,9 @@ public class RegisterRouter implements APIRouter {
     }
     
     /**
-     * []
+     * Attempt to register the user with given data.
      * 
-     * @param   buffer  []
+     * @param   buffer  JSON string containing username, email and hashed password.
      * @return  a <code>HTTPStatusCode</code>.
      */
     private HTTPStatusCode attemptRegister(String buffer) {
@@ -120,7 +120,8 @@ public class RegisterRouter implements APIRouter {
                 try {
                     TokenProvider tp = new TokenProvider();
                     token = tp.createJWTToken(proxy.getAuthResult().getUser_id());
-                } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+                    tp.close();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return status; // Guaranteed 201 if successful.
