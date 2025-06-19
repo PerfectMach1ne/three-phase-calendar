@@ -5,7 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
+import java.util.Arrays;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
@@ -15,13 +19,26 @@ import lvsa.tpcalendar.dbutils.proxies.RegisterDBProxy;
 import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
+@SuppressWarnings("unused")
+class RegisterResponse{
+    private int loginUserId;
+    private String result;
+
+    RegisterResponse() {}
+
+    RegisterResponse(int uid, String res) {
+        this.loginUserId = uid;
+        this.result = res;
+    }
+}
 /**
  * /api/register
  */
 public class RegisterRouter implements APIRouter {
     private String response = "{ \"response\": \"nothing\" }";
-    private final int PGERR_UNIQUE_VIOLATION = 23505;
     private String token;
+    private final int PGERR_UNIQUE_VIOLATION = 23505;
+    private int loginUserId;
 
     public String getResponse() { return this.response; }
     public String getToken() { return this.token; }
@@ -44,6 +61,7 @@ public class RegisterRouter implements APIRouter {
 	    StringBuffer sb = new StringBuffer();
 
 		String reqdata;
+        Gson gson = new GsonBuilder().disableInnerClassSerialization().create();
         // A (in)sane default.
         HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
 
@@ -62,9 +80,18 @@ public class RegisterRouter implements APIRouter {
         }
         
         status = attemptRegister(sb.toString());
-        response = status.wrapAsJsonRes();
-        System.out.println(status);
-        System.out.println(response);
+
+        String resStatus = status.wrapAsJsonRes();
+        JsonObject resJobj = gson.fromJson(resStatus, JsonObject.class);
+        String resExtract = resJobj.get("result").getAsString();
+        System.out.println(resExtract);
+        System.out.println(this.loginUserId);
+        
+        RegisterResponse res = new RegisterResponse(this.loginUserId, resExtract);
+        System.out.println(gson.toJsonTree(res).toString());
+        response = gson.toJson(res);
+        System.out.println(gson.toJson(res));
+
         return status;
     }
 

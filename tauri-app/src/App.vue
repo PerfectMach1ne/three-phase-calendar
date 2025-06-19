@@ -2,6 +2,9 @@
 import { computed, ref } from 'vue';
 import { RouterView, useRouter } from 'vue-router';
 import LoginView from './views/LoginView.vue';
+import { useAuth } from './composables/session.js';
+
+const { clearToken, clearUserId } = useAuth();
 
 const router = useRouter();
 const isLoggedIn = ref(false);
@@ -47,7 +50,13 @@ router.push('/calendar');
       <button @click="goToCalendar" class="router mode">Calendar</button>
       <button @click="goToPlanner" class="router mode">Planner</button>
       <button @click="goToJournal" class="router mode">Journal</button>
-      <button @click="loginToggle" class="router login">{{ !isLoggedIn ? "Login" : "Logout" }}</button>
+      <!-- <button @click="loginToggle" class="router login">{{ !isLoggedIn ? "Login" : "Logout" }}</button> -->
+      <button
+      @click="isLoggedIn && (clearToken(), clearUserId(), isLoggedIn = false)"
+      :disabled="!isLoggedIn"
+      class="router login">
+        {{ !isLoggedIn ? "Login" : "Logout" }}
+      </button>
       <button @click="darkModeToggle" class="router" :class="[darkMode ? darkModeClass : lightModeClass]">{{ darkModeIcon }}</button>
     </nav>
   </header>

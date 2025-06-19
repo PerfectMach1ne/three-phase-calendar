@@ -14,26 +14,26 @@ public class QueryParamsFilter extends Filter {
 
 	@Override
 	public void doFilter(HttpExchange htex, Chain chain) throws IOException {
-		// A troublesome NullPointerException fix
-		if (htex.getRequestURI().getQuery() == null) {
+		String query = htex.getRequestURI().getQuery();
+
+		if (query == null || query.trim().isEmpty()) {
 			chain.doFilter(htex);
-		} else {
-			String query = htex.getRequestURI().getQuery();
-			HashMap<String, String> queryParams = new HashMap<String, String>();
-			query = query.strip();
-
-			if (query != null) {
-				String[] splitQuery = query.split("&");
-				for (String queryPair : splitQuery) {
-					String[] splitPair = queryPair.split("=");
-					String key = splitPair[0];
-					String value = splitPair[1];
-					queryParams.put(key, value);
-				}
-			}
-
-			htex.setAttribute("queryParams", queryParams);
-			chain.doFilter(htex);	
+			return;
 		}
+
+		HashMap<String, String> queryParams = new HashMap<String, String>();
+		String[] splitQuery = query.split("&");
+		for (String queryPair : splitQuery) {
+			if (queryPair == null || !queryPair.contains("=")) continue;
+			String[] splitPair = queryPair.split("=");
+			if (splitPair.length >= 2 && splitPair[0] != null) {
+				String key = splitPair[0];
+				String value = splitPair[1] != null ? splitPair[1] : "";
+				queryParams.put(key.strip(), value.strip());
+			}
+		}
+
+		htex.setAttribute("queryParams", queryParams);
+		chain.doFilter(htex);	
 	}
 }

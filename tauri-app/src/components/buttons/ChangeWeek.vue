@@ -8,11 +8,7 @@ const displayChar = ref("");
 const buttonType = ref("");
 
 // onBeforeMount(() => {
-console.log(props.character);
-console.log(displayChar.value);
 displayChar.value = props.character;
-console.log(props.character);
-console.log(displayChar.value);
 
 if ( Number(displayChar.value.slice(2,7)) == 10094 ) buttonType.value = 'left';
 else if ( Number(displayChar.value.slice(2,7)) == 10095 ) buttonType.value = 'right';

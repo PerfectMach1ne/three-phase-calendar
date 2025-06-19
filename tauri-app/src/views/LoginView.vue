@@ -1,9 +1,9 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { useAuth } from '../composables/session.js';
 
-const { setToken } = useAuth();
+const { jwtToken, loadToken, setToken, userId, setUserId, clearToken } = useAuth();
 const emit = defineEmits(['login']);
 
 const username = ref('Michalina Hatsuńska');
@@ -23,17 +23,25 @@ async function attemptLogin() {
         password: pwd.value
       });
       setToken(res.token);
-      loginResult.value = res.data;
-      console.log(res.data + " " + res.token);
+      setUserId(data.loginUserId);
+      let data = JSON.parse(res.data);
+      loginResult.value = data.result;
+      console.log(JSON.stringify(data) + " " + res.token);
       
     } else {
       const res = await invoke('login', {
         email: email.value,
         password: pwd.value
       });
-      setToken(res.token);
-      loginResult.value = res.data;
-      console.log(res.data + " " + res.token);
+      let data = JSON.parse(res.data);
+      if (data.result && !loginResult.value.includes('404')) {
+        setToken(res.token);
+        setUserId(data.loginUserId);
+      }
+      console.log(data.loginUserId);
+      setUserId(data.loginUserId);
+      loginResult.value = data.result;
+      console.log(JSON.stringify(data) + " " + res.token);
     }
   } catch (error) {
     loginResult.value = `Error: ${error}`;
@@ -71,6 +79,27 @@ function initRegistration() {
   noaccount.value = false;
   registrationMode.value = true;
 }
+
+onMounted(async () => {
+  const token = await loadToken();
+  if (token) {
+    try {
+      const res = await invoke('validate_token', { token });
+      console.log(res);
+      const data = JSON.parse(res);
+      console.log(data);
+
+      if (data.valid) {
+        setToken(token);
+        setUserId(data.userId);
+        emit('login');
+      }
+    } catch (err) {
+      console.error("Token validation failed:", err);
+      await clearToken();
+    }
+  }
+});
 </script>
 
 <template>

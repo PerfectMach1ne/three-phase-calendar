@@ -99,7 +99,9 @@ public class APIContexts {
 						exchange.getResponseHeaders().set("Connection", "close");
 						if (Pattern.compile("^/api/(login|register)$").matcher(uri).matches()) {
 							String token = ROUTER.getToken();
-							exchange.getResponseHeaders().set("Authorization", token);
+							if (token != null && !exchange.getResponseHeaders().containsKey("Authorization")) {
+								exchange.getResponseHeaders().set("Authorization", "Bearer " + token);
+							}
 						}
 
 						exchange.sendResponseHeaders(status.getint(), resBytes.length);

@@ -35,10 +35,19 @@ public class TaskRouter implements APIRouter {
     @Override
     public HTTPStatusCode GET(HttpExchange htex) {
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
-        int hashcode = Integer.valueOf(queryParams.get("id"));
+        // A (in)sane default.
+        HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        int hashcode = -1;
+        try {
+            hashcode = Integer.parseInt(queryParams.get("id"));
+        } catch (NumberFormatException | NullPointerException nXe) {
+            status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+            response = status.wrapAsJsonRes();
+            nXe.printStackTrace();
+        }
 
         Object[] dbResult = findAndFetchFromDB(hashcode);
-        HTTPStatusCode status = (HTTPStatusCode)dbResult[0];
+        status = (HTTPStatusCode)dbResult[0];
         Object fetchedJsonOrNull = dbResult[1];
 
         Headers resh = htex.getResponseHeaders();
@@ -96,10 +105,16 @@ public class TaskRouter implements APIRouter {
     @Override
     public HTTPStatusCode DELETE(HttpExchange htex) {
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
-        int hashcode = Integer.valueOf(queryParams.get("id"));
-
         // A (in)sane default.
         HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        int hashcode = -1;
+        try {
+            hashcode = Integer.parseInt(queryParams.get("id"));
+        } catch (NumberFormatException | NullPointerException nXe) {
+            status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+            response = status.wrapAsJsonRes();
+            nXe.printStackTrace();
+        }
 
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
@@ -126,7 +141,16 @@ public class TaskRouter implements APIRouter {
     @Override
     public HTTPStatusCode PUT(HttpExchange htex) {
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
-        int hashcode = Integer.valueOf(queryParams.get("id"));
+        // A (in)sane default.
+        HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        int hashcode = -1;
+        try {
+            hashcode = Integer.parseInt(queryParams.get("id"));
+        } catch (NumberFormatException | NullPointerException nXe) {
+            status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+            response = status.wrapAsJsonRes();
+            nXe.printStackTrace();
+        }
 
 		InputStream is = htex.getRequestBody();
 		InputStreamReader isReader = new InputStreamReader(is);
@@ -134,8 +158,6 @@ public class TaskRouter implements APIRouter {
 	    StringBuffer sb = new StringBuffer();
 
 		String reqdata;
-        // A (in)sane default.
-        HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
 
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");

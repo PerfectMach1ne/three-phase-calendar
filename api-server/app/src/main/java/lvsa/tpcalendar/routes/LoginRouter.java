@@ -1,12 +1,16 @@
 package lvsa.tpcalendar.routes;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Map;
 import java.io.BufferedReader;
 
@@ -16,6 +20,18 @@ import lvsa.tpcalendar.dbutils.proxies.LoginDBProxy;
 import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
+@SuppressWarnings("unused")
+class LoginResponse{
+    private int loginUserId;
+    private String result;
+
+    LoginResponse() {}
+
+    LoginResponse(int uid, String res) {
+        this.loginUserId = uid;
+        this.result = res;
+    }
+}
 /**
  * <h3><code>/api/login</code> endpoint</h3>
  */
@@ -23,6 +39,7 @@ public class LoginRouter implements APIRouter {
     private String response = "{ \"response\": \"nothing\" }";
     private String token;
     private final int PGERR_UNIQUE_VIOLATION = 23505;
+    private int loginUserId;
 
     public String getResponse() { return this.response; }
     public String getToken() { return this.token; }
@@ -42,6 +59,7 @@ public class LoginRouter implements APIRouter {
 	    StringBuffer sb = new StringBuffer();
 
 		String reqdata;
+        Gson gson = new GsonBuilder().disableInnerClassSerialization().create();
         // A (in)sane default.
         HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
 
@@ -60,7 +78,17 @@ public class LoginRouter implements APIRouter {
         }
 
         status = attemptLogin(sb.toString());
-        response = status.wrapAsJsonRes();
+
+        String resStatus = status.wrapAsJsonRes();
+        JsonObject resJobj = gson.fromJson(resStatus, JsonObject.class);
+        String resExtract = resJobj.get("result").getAsString();
+        System.out.println(resExtract);
+        System.out.println(this.loginUserId);
+        
+        LoginResponse res = new LoginResponse(this.loginUserId, resExtract);
+        System.out.println(gson.toJsonTree(res).toString());
+        response = gson.toJson(res);
+        System.out.println(gson.toJson(res));
 
         return status;
     }
@@ -74,9 +102,16 @@ public class LoginRouter implements APIRouter {
     @Override
     public HTTPStatusCode GET(HttpExchange htex) {
         Map<String, String> queryParams = (Map<String, String>)htex.getAttribute("queryParams");
-        int uid = Integer.valueOf(queryParams.get("id"));
-        
         HTTPStatusCode status;
+        int uid = -1;
+        try {
+            uid = Integer.parseInt(queryParams.get("id"));
+        } catch (NumberFormatException | NullPointerException nXe) {
+            status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
+            response = status.wrapAsJsonRes();
+            nXe.printStackTrace();
+        }
+        
         token = htex.getRequestHeaders().getFirst("Authorization");
         token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
         try( TokenProvider tp = new TokenProvider()) {
@@ -84,6 +119,8 @@ public class LoginRouter implements APIRouter {
             String subject = jwt.getSubject();
             int tokenuid = Integer.valueOf(subject).intValue();
             if (tokenuid != uid) {
+                System.out.println(tokenuid);
+                System.out.println(uid);
                 status = HTTPStatusCode.HTTP_403_FORBIDDEN;
                 return status;
             }
@@ -164,6 +201,7 @@ public class LoginRouter implements APIRouter {
                 try {
                     TokenProvider tp = new TokenProvider();
                     token = tp.createJWTToken(proxy.getAuthResult().getUser_id());
+                    loginUserId = proxy.getAuthResult().getUser_id();
                     tp.close();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -195,12 +233,12 @@ public class LoginRouter implements APIRouter {
             LoginDBProxy proxy = new LoginDBProxy(db);
         ) {
             eventList = proxy.read(id);
-            if (eventList.isEmpty()) {
-                return new Object[]{HTTPStatusCode.HTTP_404_NOT_FOUND, null};
+            if (eventList.isEmpty() || eventList == null) {
+                return new Object[]{HTTPStatusCode.HTTP_204_NO_CONTENT, null};
             } else if (proxy.getAuthResult().isSuccess()) {
                 return new Object[]{HTTPStatusCode.HTTP_200_OK, eventList};
             } else {
-                return new Object[]{HTTPStatusCode.HTTP_403_FORBIDDEN, null};
+                return new Object[]{HTTPStatusCode.HTTP_204_NO_CONTENT, null};
             }
         } catch (SQLException sqle) {
             sqle.printStackTrace();

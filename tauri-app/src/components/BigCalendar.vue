@@ -5,7 +5,7 @@ import ChangeWeek from './buttons/ChangeWeek.vue';
 import TodaysWeek from './buttons/TodaysWeek.vue';
 import { useAuth } from '../composables/session.js';
 
-const { jwtToken, loadToken } = useAuth();
+const { jwtToken, loadToken, userId, loadUserId } = useAuth();
 
 const weekdayBoxWidth = ref('');
 const left = ref("&#10094;");
@@ -29,7 +29,7 @@ const monthNames =
 async function fetchCalSpace(userId) {
   try {
     const res = await invoke('fetch_cspace', {
-      userId: userId,
+      userid: userId,
     });
     console.log(res);
   } catch (error) {
@@ -135,7 +135,7 @@ function goToTodaysWeek() {
 }
 
 onMounted(() => {
-  fetchCalSpace(14);
+  fetchCalSpace(userId.value);
 
   currentDate.setHours(0, 0, 0, 0);
 
