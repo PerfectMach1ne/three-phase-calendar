@@ -10,6 +10,10 @@ public interface APIRouter {
     
     public String getToken();
 
+    public void flushResponse();
+
+    public void flushToken();
+
     public HTTPStatusCode GET(HttpExchange htex);
 
     public HTTPStatusCode POST(HttpExchange htex);

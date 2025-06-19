@@ -14,6 +14,8 @@ public class TextRouter implements APIRouter {
 
     public String getResponse() { return this.response; }
     public String getToken() { return this.token; }
+    public void flushResponse() { this.response = null; }
+    public void flushToken() { this.token = null; }
 
     /**
      * <b>GET</b> <code>/api/cal/text?id={base64encodedstr}.</code>

@@ -26,6 +26,8 @@ public class LoginRouter implements APIRouter {
 
     public String getResponse() { return this.response; }
     public String getToken() { return this.token; }
+    public void flushResponse() { this.response = null; }
+    public void flushToken() { this.token = null; }
 
     /** 
      * <b>POST</b> <code>/api/login</code>.

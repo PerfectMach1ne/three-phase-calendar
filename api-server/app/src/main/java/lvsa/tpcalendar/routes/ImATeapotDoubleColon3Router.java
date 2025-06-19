@@ -22,6 +22,8 @@ public class ImATeapotDoubleColon3Router implements APIRouter {
 
     public String getResponse() { return this.response; }
     public String getToken() { return this.token; }
+    public void flushResponse() { this.response = null; }
+    public void flushToken() { this.token = null; }
 
     private HTTPStatusCode teapot(HttpExchange htex) {
 

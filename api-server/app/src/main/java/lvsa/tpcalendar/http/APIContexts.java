@@ -103,8 +103,12 @@ public class APIContexts {
 						}
 
 						exchange.sendResponseHeaders(status.getint(), resBytes.length);
+						ROUTER.flushResponse();
+						ROUTER.flushToken();
 
 						try (OutputStream os = exchange.getResponseBody()) {
+							assert ROUTER.getToken().isEmpty() || ROUTER.getToken() == null;
+							assert ROUTER.getResponse().isEmpty() || ROUTER.getResponse() == null;
 							os.write(resBytes);
 							os.flush();
 							os.close();
