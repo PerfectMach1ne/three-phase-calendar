@@ -69,7 +69,9 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
         stat.setString(4, timeblock.getName());
         stat.setString(5, timeblock.getDesc());
         stat.setObject(6, timeblock.getViewType(), Types.OTHER);
-        stat.setString(7, timeblock.getColor().getHex());
+        stat.setString(7, timeblock.getColor().getHex().startsWith("#")
+                ? timeblock.getColor().getHex()
+                : '#' + timeblock.getColor().getHex() );
         
         stat.executeUpdate();
 
@@ -197,7 +199,9 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
         updateStat.setString(3, timeblock.getName());
         updateStat.setString(4, timeblock.getDesc());
         updateStat.setObject(5, timeblock.getViewType(), Types.OTHER);
-        updateStat.setString(6, "#" + timeblock.getColor().getHex());
+        updateStat.setString(6, timeblock.getColor().getHex().startsWith("#")
+                ? timeblock.getColor().getHex()
+                : '#' + timeblock.getColor().getHex() );
         updateStat.setInt(7, hashcode);
 
         final int PG_STATUS = updateStat.executeUpdate();

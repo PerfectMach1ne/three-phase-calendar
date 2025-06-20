@@ -28,7 +28,15 @@ function submit() {
 async function createTask() {
   try {
     const res = await invoke('create_task', {
-
+      datetime: date.value + "T" + time.value,
+      name: title.value,
+      desc: description.value,
+      viewtype: viewtype.value,
+      color: {
+        hasColor: true,
+        hex: color.value
+      },
+      isdone: isdone.value
     });
     console.log(res);
   } catch (error) {

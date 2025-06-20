@@ -64,7 +64,9 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
         stat.setString(3, task.getName());
         stat.setString(4, task.getDesc());
         stat.setObject(5, task.getViewType(), Types.OTHER);
-        stat.setString(6, "#" + task.getColor().getHex());
+        stat.setString(6, task.getColor().getHex().startsWith("#")
+                ? task.getColor().getHex()
+                : '#' + task.getColor().getHex() );
         stat.setBoolean(7, task.isDone());
 
         stat.executeUpdate();
@@ -212,7 +214,9 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
         updateStat.setString(2, task.getName());
         updateStat.setString(3, task.getDesc());
         updateStat.setObject(4, task.getViewType(), Types.OTHER);
-        updateStat.setString(5, "#" + task.getColor().getHex());
+        updateStat.setString(5, task.getColor().getHex().startsWith("#")
+                ? task.getColor().getHex()
+                : '#' + task.getColor().getHex() );
         updateStat.setBoolean(6, task.isDone());
         updateStat.setInt(7, hashcode);
 

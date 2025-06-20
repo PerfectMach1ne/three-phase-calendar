@@ -1,13 +1,13 @@
 <script setup>
-import { inject, ref } from 'vue';
+import { inject, ref, onMounted } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { useEvents } from '../composables/events.js';
 
-const { events } = useEvents();
+const { events, refreshTasks } = useEvents();
 
 const renderDelTask = inject('renderDelTask');
 const tasks = ref(events.tasks);
-const task = ref(events.tasks[0].id);
+const task = ref(events.tasks[0].hashcode);
 
 function cancel() {
   renderDelTask.value = !renderDelTask.value;
@@ -17,16 +17,20 @@ function remove() {
   deleteTask(task.value);
 }
 
-async function deleteTask(uid) {
+async function deleteTask(hashcode) {
   try {
     const res = await invoke('delete_task', {
-      userId: uid
+      hashcode: hashcode
     });
     console.log(res);
   } catch (error) {
     console.log(`Error: ${error}`);
   }
 }
+
+onMounted(() => {
+  refreshTasks();
+})
 </script>
 
 <template>
@@ -34,8 +38,8 @@ async function deleteTask(uid) {
     <select v-model="task" name="task-choice">
       <option
         v-for="task in tasks"
-        :value="task.id"
-        :key="task.id">
+        :value="task.hashcode"
+        :key="task.hashcode">
         {{ task.name }}
         </option>
     </select>

@@ -11,10 +11,10 @@ const tasks = ref(events.tasks);
 const renderAddTimeblock = inject('renderAddTimeblock');
 const title = ref('(Untitled)');
 const description = ref("")
-const start_datetime = ref('2020-08-28');
-const start_hours = ref('12:00');
-const end_datetime = ref('2020-08-28');
-const end_hours = ref('13:00');
+const start_date = ref('2020-08-28');
+const start_time = ref('12:00');
+const end_date = ref('2020-08-28');
+const end_time = ref('13:00');
 const viewtype = ref("static_task");
 const color = ref('#c493d3');
 
@@ -29,7 +29,15 @@ function submit() {
 async function createTimeblock() {
   try {
     const res = await invoke('create_timeblock', {
-      
+      startDatetime: start_date.value + "T" + start_time.value,
+      endDatetime: end_date.value + "T" + end_time.value, 
+      name: title.value,
+      desc: description.value,
+      viewtype: viewtype.value,
+      color: {
+        hasColor: true,
+        hex: color.value
+      }
     });
     console.log(res);
   } catch (error) {
@@ -45,24 +53,24 @@ async function createTimeblock() {
       <input type="text" v-model="title" name="timeblock-title-input">
     </span>
     <span>
-      <label for="tblock-start-datetime-input">Start date: </label>
-      <input type="date" v-model="start_datetime" name="tblock-start-datetime-input">
+      <label for="tblock-start-date-input">Start date: </label>
+      <input type="date" v-model="start_date" name="tblock-start-date-input">
     </span>
     <span>
-      <label for="tblock-start-hours-choice">Start time: </label>
-      <input list="hours-list" v-model="start_hours" name="tblock-start-hours-choice">
-      <datalist id="hours-list">
+      <label for="tblock-start--choice">Start time: </label>
+      <input list="time-list" v-model="start_time" name="tblock-start-time-choice">
+      <datalist id="time-list">
         <option v-for="i in 24" :value="`${String(i - 1).padStart(2, '0') + ':00'}`"></option>
       </datalist>
     </span>
     <span>
-      <label for="tblock-end-datetime-input">End date: </label>
-      <input type="date" v-model="end_datetime" name="tblock-end-datetime-input">
+      <label for="tblock-end-date-input">End date: </label>
+      <input type="date" v-model="end_date" name="tblock-end-date-input">
     </span>
     <span>
-      <label for="tblock-end-hours-choice">End time: </label>
-      <input list="hours-list" v-model="end_hours" name="tblock-end-hours-choice">
-      <datalist id="hours-list">
+      <label for="tblock-end-time-choice">End time: </label>
+      <input list="time-list" v-model="end_time" name="tblock-end-time-choice">
+      <datalist id="time-list">
         <option v-for="i in 24" :value="`${String(i - 1).padStart(2, '0') + ':00'}`"></option>
       </datalist>
     </span>

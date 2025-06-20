@@ -20,12 +20,39 @@ export function useEvents() {
       events.tasks = boxOjson.tasks;
       events.timeblocks = boxOjson.timeblocks;
     } catch (e) {
-      consol.err("", e);
+      console.error("Error unpacking events:", e);
+    }
+  }
+
+  const refreshTasks = async () => {
+    try {
+      const res = await invoke('fetch_cspace', {
+        userid: events.events_userId,
+      });
+      const json = JSON.parse(res);
+      events.tasks = json.tasks;
+      console.log(events.tasks)
+    } catch (e) {
+      console.error("Error refreshin tasks:", e);
+    }
+  }
+
+  const refreshTimeblocks = async () => {
+    try {
+      const res = await invoke('fetch_cspace', {
+        userid: events.events_userId,
+      });
+      const json = JSON.parse(res);
+      events.timeblocks = json.timeblocks;
+    } catch (e) {
+      console.error("Error refreshin timeblocks:", e);
     }
   }
 
   return {
     events,
-    unpackEvents
+    unpackEvents,
+    refreshTasks,
+    refreshTimeblocks
   }
 }

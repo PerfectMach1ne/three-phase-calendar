@@ -2,12 +2,22 @@ use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
 use jsonwebtoken_rustcrypto::dangerous_insecure_decode;
 use sha2::{Sha256, Digest};
 use reqwest::{Client, StatusCode};
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use serde_json::Value;
 use std::sync::Mutex;
+use std::time::Duration;
 use tauri_plugin_store::StoreBuilder;
 use tauri::State;
 use urlencoding::encode;
+
+struct AppState {
+    jwt_token: Mutex<Option<String>>,
+}
+
+#[derive(Deserialize)]
+struct Claims {
+    sub: String,
+}
 
 #[derive(serde::Serialize)]
 struct AuthResponse {
@@ -22,19 +32,45 @@ struct RegisterRequest {
     password: String,
 }
 
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+enum ViewType {
+    StaticTask,
+    HistoricTask,
+    RoutineTask,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct Color {
+    has_color: bool,
+    hex: String,
+}
+
+#[derive(Serialize, Deserialize)]
+struct CreateTask{
+    datetime: String,
+    name: String,
+    desc: String,
+    viewtype: ViewType,
+    color: Color,
+    isdone: bool,
+}
+
+#[derive(Serialize, Deserialize)]
+struct CreateTimeblock{
+    start_datetime: String,
+    end_datetime: String,
+    name: String,
+    desc: String,
+    viewtype: ViewType,
+    color: Color,
+}
+
 #[derive(serde::Serialize)]
 struct LoginRequest {
     email: String,
     password: String,
-}
-
-struct AppState {
-    jwt_token: Mutex<Option<String>>,
-}
-
-#[derive(Deserialize)]
-struct Claims {
-    sub: String,
 }
 
 // Listen. Don't ask. This is as "todo fix later" as it gets.
@@ -49,7 +85,7 @@ oh/ntmDS9id6Gy27yLC4JTjaoqVE466RD797y0Aj7iHIgAS9CFD9CtsPUwpcXBDI
 -----END PUBLIC KEY-----"#;
 
 #[tauri::command]
-async fn validate_token(token: String) -> Result<String, String> {
+async fn validate_token(token: String,) -> Result<String, String> {
     let key = DecodingKey::from_rsa_pem(PUBLIC_KEY.as_bytes())
         .map_err(|e| format!("Bad key: {}", e))?;
 
@@ -65,17 +101,10 @@ async fn validate_token(token: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-async fn extract_user_id(token: String) -> Option<i32> {
-    dangerous_insecure_decode::<Claims>(&token)
-        .ok()
-        .and_then(|data| data.claims.sub.parse().ok())
-}
-
-#[tauri::command]
 async fn store_token_securely(
         token: String,
         app_handle: tauri::AppHandle,
-        state: State<'_, AppState>
+        state: State<'_, AppState>,
         ) -> Result<(), String> {
     *state.jwt_token.lock().unwrap() = Some(token.clone());
 
@@ -89,7 +118,8 @@ async fn store_token_securely(
 }
 
 #[tauri::command]
-async fn load_token_securely(app_handle: tauri::AppHandle,) -> Result<Option<String>, String> {
+async fn load_token_securely(app_handle: tauri::AppHandle,)
+        -> Result<Option<String>, String> {
     let store = StoreBuilder::new(&app_handle, ".auth.dat")
         .build()
         .map_err(|e| format!("Failed to create store: {}", e))?;
@@ -104,7 +134,8 @@ async fn load_token_securely(app_handle: tauri::AppHandle,) -> Result<Option<Str
 }
 
 #[tauri::command]
-async fn clear_token_securely(app_handle: tauri::AppHandle,) -> Result<(), String> {
+async fn clear_token_securely(app_handle: tauri::AppHandle,)
+        -> Result<(), String> {
     let store = StoreBuilder::new(&app_handle, ".auth.dat")
         .build()
         .map_err(|e| format!("Failed to create store: {}", e))?;
@@ -116,9 +147,16 @@ async fn clear_token_securely(app_handle: tauri::AppHandle,) -> Result<(), Strin
 }
 
 #[tauri::command]
+async fn extract_user_id(token: String,) -> Option<i32> {
+    dangerous_insecure_decode::<Claims>(&token)
+        .ok()
+        .and_then(|data| data.claims.sub.parse().ok())
+}
+
+#[tauri::command]
 async fn fetch_cspace(
         userid: i32,
-        state: State<'_, AppState>
+        state: State<'_, AppState>,
         ) -> Result<String, String> {
     if userid <= 0 {
         return Err("Invalid userid (must be positive)".into());
@@ -131,16 +169,17 @@ async fn fetch_cspace(
     let client = Client::new();
     let token = tokio::time::timeout(
         // This fixes a race condition between fetch_cspace and load_token_securely on autologin.
-        std::time::Duration::from_secs(3),
+        Duration::from_secs(3),
         async {
             loop {
                 if let Some(token) = state.jwt_token.lock().unwrap().as_ref() {
                     return token.clone();
                 }
-                tokio::time::sleep(std::time::Duration::from_millis(100)).await;
+                tokio::time::sleep(Duration::from_millis(100)).await;
             }
         }
     ).await.map_err(|_| "Timeout waiting for token".to_string())?;
+
     let response = client
         .get(&url)
         .header("Authorization", format!("Bearer {}",token))
@@ -159,7 +198,11 @@ async fn fetch_cspace(
 }
 
 #[tauri::command]
-async fn register(username: &str, email: &str, password: &str, state: State<'_, AppState>)
+async fn register(
+        username: &str,
+        email: &str,
+        password: &str,
+        state: State<'_, AppState>,)
         -> Result<AuthResponse, String> {
     let username = if username.is_empty() { "Michalina Hatsuńska" } else { username };
 
@@ -177,6 +220,7 @@ async fn register(username: &str, email: &str, password: &str, state: State<'_, 
         email: email.to_string(),
         password: hashed_password.to_string(),
     };
+
     let response = client
         .post("http://127.0.0.1:58057/api/register")
         .json(&body)
@@ -208,7 +252,7 @@ async fn register(username: &str, email: &str, password: &str, state: State<'_, 
 }
 
 #[tauri::command]
-async fn login(email: &str, password: &str, state: State<'_, AppState>)
+async fn login(email: &str, password: &str, state: State<'_, AppState>,)
         -> Result<AuthResponse, String> {
     if email.is_empty() || password.is_empty() {
         return Err("Email and password field cannot be empty!".into());
@@ -223,6 +267,7 @@ async fn login(email: &str, password: &str, state: State<'_, AppState>)
         email: email.to_string(),
         password: hashed_password.to_string(),
     };
+
     let response = client
         .post("http://127.0.0.1:58057/api/login")
         .json(&body)
@@ -255,6 +300,172 @@ async fn login(email: &str, password: &str, state: State<'_, AppState>)
     Ok(AuthResponse{ token, data: response_text })
 }
 
+#[tauri::command]
+async fn create_task(
+        datetime: String,
+        name: String,
+        desc: String,
+        viewtype: ViewType,
+        color: Color,
+        isdone: bool,
+        state: State<'_, AppState>,)
+        -> Result<String, String> {
+    let client = Client::new();
+    let token = tokio::time::timeout(
+        Duration::from_secs(3),
+        async {
+            loop {
+                if let Some(token) = state.jwt_token.lock().unwrap().as_ref() {
+                    return token.clone();
+                }
+                tokio::time::sleep(Duration::from_millis(100)).await;
+            }
+        }
+    ).await.map_err(|_| "Timeout waiting for token".to_string())?;
+
+    let task = CreateTask{datetime, name, desc, viewtype, color, isdone,};
+    let body = serde_json::to_string(&task).expect("Failed to serialize task!");
+    println!("{}",&body);
+    let response = client
+        .post("http://127.0.0.1:58057/api/cal/task")
+        .body(body)
+        .send()
+        .await
+        .map_err(|e| format!("Network error: {}", e))?;
+
+    let status = response.status();
+    let headers = response.headers().clone();
+    let response_text = response.text()
+        .await
+        .map_err(|e| format!("Error reading response: {}", e))?;
+
+    if status.is_success() { Ok(response_text) } else {
+        Err(format!("Server error HTTP {}: {}", status, response_text))
+    }
+}
+
+#[tauri::command]
+async fn create_timeblock(
+        start_datetime: String,
+        end_datetime: String,
+        name: String,
+        desc: String,
+        viewtype: ViewType,
+        color: Color,
+        state: State<'_, AppState>,)
+        -> Result<String, String> {
+    let client = Client::new();
+    let token = tokio::time::timeout(
+        Duration::from_secs(3),
+        async {
+            loop {
+                if let Some(token) = state.jwt_token.lock().unwrap().as_ref() {
+                    return token.clone();
+                }
+                tokio::time::sleep(Duration::from_millis(100)).await;
+            }
+        }
+    ).await.map_err(|_| "Timeout waiting for token".to_string())?;
+
+    let timeblock = CreateTimeblock{start_datetime, end_datetime, name, desc, viewtype, color,};
+    let body = serde_json::to_string(&timeblock).expect("Failed to serialize timeblock!");
+    println!("{}",&body);
+    let response = client
+        .post("http://127.0.0.1:58057/api/cal/timeblock")
+        .body(body)
+        .send()
+        .await
+        .map_err(|e| format!("Network error: {}", e))?;
+
+    let status = response.status();
+    let headers = response.headers().clone();
+    let response_text = response.text()
+        .await
+        .map_err(|e| format!("Error reading response: {}", e))?;
+
+    if status.is_success() { Ok(response_text) } else {
+        Err(format!("Server error HTTP {}: {}", status, response_text))
+    }
+}
+
+#[tauri::command]
+async fn delete_task(
+        hashcode: i32,
+        state: State<'_, AppState>,)
+        -> Result<String, String> {
+    let url = format!(
+        "http://127.0.0.1:58057/api/cal/task?id={}",
+        encode(&hashcode.to_string())
+    );
+
+    let client = Client::new();
+    let token = tokio::time::timeout(
+        Duration::from_secs(3),
+        async {
+            loop {
+                if let Some(token) = state.jwt_token.lock().unwrap().as_ref() {
+                    return token.clone();
+                }
+                tokio::time::sleep(Duration::from_millis(100)).await;
+            }
+        }
+    ).await.map_err(|_| "Timeout waiting for token".to_string())?;
+    let response = client
+        .get(&url)
+        .header("Authorization", format!("Bearer {}",token))
+        .send()
+        .await
+        .map_err(|e| format!("Network error: {}", e))?;
+    
+    let status = response.status();
+    let response_text = response.text()
+        .await
+        .map_err(|e| format!("Error reading response: {}", e))?;
+
+    if status.is_success() { Ok(response_text) } else {
+        Err(format!("Server error HTTP {}: {}", status, response_text))
+    }
+}
+
+#[tauri::command]
+async fn delete_timeblock(
+        hashcode: i32,
+        state: State<'_, AppState>,)
+        -> Result<String, String> {
+    let url = format!(
+        "http://127.0.0.1:58057/api/cal/timeblock?id={}",
+        encode(&hashcode.to_string())
+    );
+
+    let client = Client::new();
+    let token = tokio::time::timeout(
+        Duration::from_secs(3),
+        async {
+            loop {
+                if let Some(token) = state.jwt_token.lock().unwrap().as_ref() {
+                    return token.clone();
+                }
+                tokio::time::sleep(Duration::from_millis(100)).await;
+            }
+        }
+    ).await.map_err(|_| "Timeout waiting for token".to_string())?;
+    let response = client
+        .get(&url)
+        .header("Authorization", format!("Bearer {}",token))
+        .send()
+        .await
+        .map_err(|e| format!("Network error: {}", e))?;
+    
+    let status = response.status();
+    let response_text = response.text()
+        .await
+        .map_err(|e| format!("Error reading response: {}", e))?;
+
+    if status.is_success() { Ok(response_text) } else {
+        Err(format!("Server error HTTP {}: {}", status, response_text))
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -264,7 +475,8 @@ pub fn run() {
         })
         .invoke_handler(tauri::generate_handler!
             [login, register, fetch_cspace, validate_token, extract_user_id,
-             store_token_securely, load_token_securely, clear_token_securely
+             store_token_securely, load_token_securely, clear_token_securely,
+             create_task, create_timeblock, delete_task, delete_timeblock
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

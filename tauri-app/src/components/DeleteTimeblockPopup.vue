@@ -1,13 +1,13 @@
 <script setup>
-import { inject, ref } from 'vue';
+import { inject, ref, onMounted } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { useEvents } from '../composables/events.js';
 
-const { events } = useEvents();
+const { events, refreshTimeblocks } = useEvents();
 
 const renderDelTimeblock = inject('renderDelTimeblock');
 const timeblocks = ref(events.timeblocks);
-const timeblock = ref(events.timeblocks[0].id);
+const timeblock = ref(events.timeblocks[0].hashcode);
 
 function cancel() {
   renderDelTimeblock.value = !renderDelTimeblock.value;
@@ -17,16 +17,20 @@ function remove() {
   deleteTimeblock(timeblock.value);
 }
 
-async function deleteTimeblock(uid) {
+async function deleteTimeblock(hashcode) {
   try {
     const res = await invoke('delete_timeblock', {
-      userId: uid
+      hashcode: hashcode
     });
     console.log(res);
   } catch (error) {
     console.log(`Error: ${error}`);
   }
 }
+
+onMounted(() => {
+  refreshTimeblocks();
+})
 </script>
 
 <template>
@@ -34,8 +38,8 @@ async function deleteTimeblock(uid) {
     <select v-model="timeblock" name="timeblock-choice">
       <option
         v-for="timeblock in timeblocks"
-        :value="timeblock.id"
-        :key="timeblock.id">
+        :value="timeblock.hashcode"
+        :key="timeblock.hashcode">
         {{ timeblock.name }}
         </option>
     </select>
