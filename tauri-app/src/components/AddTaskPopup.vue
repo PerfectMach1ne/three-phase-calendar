@@ -2,6 +2,11 @@
 import { inject, ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { ViewType, Colors } from '../utils/enums.js';
+import { useEvents } from '../composables/events.js';
+
+const { events } = useEvents();
+
+const tasks = ref(events.tasks);
 
 const renderAddTask = inject('renderAddTask');
 const title = ref('(Untitled)');
@@ -17,16 +22,13 @@ function cancel() {
 }
 
 function submit() {
-  const datetime = new Date(date.value + "T" + time.value);
-
-  console.log(datetime);
-  console.log("submit!");
+  createTask();
 }
 
 async function createTask() {
   try {
     const res = await invoke('create_task', {
-      userId: 14
+
     });
     console.log(res);
   } catch (error) {

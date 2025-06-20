@@ -1,27 +1,46 @@
 <script setup>
 import { inject, ref } from 'vue';
+import { invoke } from '@tauri-apps/api/core';
+import { useEvents } from '../composables/events.js';
+
+const { events } = useEvents();
 
 const renderDelTimeblock = inject('renderDelTimeblock');
-const timeblock = ref("");
-const timeblocks = ref([]);
+const timeblocks = ref(events.timeblocks);
+const timeblock = ref(events.timeblocks[0].id);
 
 function cancel() {
   renderDelTimeblock.value = !renderDelTimeblock.value;
+}
+
+function remove() {
+  deleteTimeblock(timeblock.value);
+}
+
+async function deleteTimeblock(uid) {
+  try {
+    const res = await invoke('delete_timeblock', {
+      userId: uid
+    });
+    console.log(res);
+  } catch (error) {
+    console.log(`Error: ${error}`);
+  }
 }
 </script>
 
 <template>
   <div class="event__page__box">
-    <select v-model="timeblock " name="timeblock-choice">
+    <select v-model="timeblock" name="timeblock-choice">
       <option
         v-for="timeblock in timeblocks"
-        :value="timeblock.hash"
-        :key="timeblock.hash">
+        :value="timeblock.id"
+        :key="timeblock.id">
         {{ timeblock.name }}
         </option>
     </select>
     <div class="event__page__buttons">
-      <button>Remove</button>
+      <button @click="remove">Remove</button>
       <button @click="cancel">Cancel</button>
     </div>
   </div>

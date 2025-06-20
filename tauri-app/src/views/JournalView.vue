@@ -33,7 +33,6 @@ import JournalContainer from '../components/containers/JournalContainer.vue';
 
 <style scoped>
 main {
-  /* min-height: calc(100vh - 18vh - 1px); */
   position: relative;
 }
 

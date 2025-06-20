@@ -1,12 +1,31 @@
 <script setup>
 import { inject, ref } from 'vue';
+import { invoke } from '@tauri-apps/api/core';
+import { useEvents } from '../composables/events.js';
+
+const { events } = useEvents();
 
 const renderDelTask = inject('renderDelTask');
-const task = ref("");
-const tasks = ref([]);
+const tasks = ref(events.tasks);
+const task = ref(events.tasks[0].id);
 
 function cancel() {
   renderDelTask.value = !renderDelTask.value;
+}
+
+function remove() {
+  deleteTask(task.value);
+}
+
+async function deleteTask(uid) {
+  try {
+    const res = await invoke('delete_task', {
+      userId: uid
+    });
+    console.log(res);
+  } catch (error) {
+    console.log(`Error: ${error}`);
+  }
 }
 </script>
 
@@ -15,13 +34,13 @@ function cancel() {
     <select v-model="task" name="task-choice">
       <option
         v-for="task in tasks"
-        :value="task.hash"
-        :key="task.hash">
+        :value="task.id"
+        :key="task.id">
         {{ task.name }}
         </option>
     </select>
     <div class="event__page__buttons">
-      <button>Remove</button>
+      <button @click="remove">Remove</button>
       <button @click="cancel">Cancel</button>
     </div>
   </div>

@@ -2,6 +2,11 @@
 import { inject, ref } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { ViewType, Colors } from '../utils/enums.js';
+import { useEvents } from '../composables/events.js';
+
+const { events } = useEvents();
+
+const tasks = ref(events.tasks);
 
 const renderAddTimeblock = inject('renderAddTimeblock');
 const title = ref('(Untitled)');
@@ -18,16 +23,13 @@ function cancel() {
 }
 
 function submit() {
-  console.log(title.value + " "
-   + start_datetime.value + "-" + end_datetime.value + " "
-   + start_hours.value + "-" + end_hours.value);
-  console.log("submit!");
+  createTimeblock();
 }
 
 async function createTimeblock() {
   try {
     const res = await invoke('create_timeblock', {
-      userId: 14
+      
     });
     console.log(res);
   } catch (error) {
