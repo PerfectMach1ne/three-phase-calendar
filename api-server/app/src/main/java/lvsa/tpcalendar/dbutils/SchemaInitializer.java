@@ -112,7 +112,7 @@ public final class SchemaInitializer {
 		stat.execute("""
 			CREATE TABLE IF NOT EXISTS calendarspace (
 				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-				user_id INT REFERENCES users(id),
+				user_id INT REFERENCES users(id) ON DELETE CASCADE,
 				tasksevents_id_arr integer ARRAY,	
 				timeblockevents_id_arr integer ARRAY,
 				textevents_id_arr integer ARRAY

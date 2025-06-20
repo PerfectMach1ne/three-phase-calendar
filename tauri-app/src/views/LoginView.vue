@@ -22,12 +22,11 @@ async function attemptLogin() {
         email: email.value,
         password: pwd.value
       });
-      setToken(res.token);
-      setUserId(data.loginUserId);
       let data = JSON.parse(res.data);
+      setUserId(data.loginUserId);
+      setToken(res.token);
       loginResult.value = data.result;
-      console.log(JSON.stringify(data) + " " + res.token);
-      
+      console.log("register::" + JSON.stringify(data) + " " + res.token);
     } else {
       const res = await invoke('login', {
         email: email.value,
@@ -35,13 +34,13 @@ async function attemptLogin() {
       });
       let data = JSON.parse(res.data);
       if (data.result && !loginResult.value.includes('404')) {
-        setToken(res.token);
         setUserId(data.loginUserId);
+        setToken(res.token);
       }
-      console.log(data.loginUserId);
+      console.log("login::" + data.loginUserId);
       setUserId(data.loginUserId);
       loginResult.value = data.result;
-      console.log(JSON.stringify(data) + " " + res.token);
+      console.log("login::" + JSON.stringify(data) + " " + res.token);
     }
   } catch (error) {
     loginResult.value = `Error: ${error}`;

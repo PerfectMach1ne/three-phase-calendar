@@ -9,12 +9,11 @@ const userId = ref(0);
 
 export function useAuth() {
   const setToken = async (token) => {
-    console.log(userId.value);
     jwtToken.value = token;
+    console.log(jwtToken.value || "[INFO::session.js:13] jwtToken is uninitialized.");
     userId.value = await invoke('extract_user_id', { token });
-    console.log(userId.value);
+    console.log(userId.value || "[INFO::session.js:15] userId is uninitialized.");
     await invoke('store_token_securely', { token });
-    // localStorage.setItem('jwt', token);
   };
 
   const setUserId = (uid) => {

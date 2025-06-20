@@ -1,12 +1,13 @@
-use sha2::{Sha256, Digest};
-use reqwest;
-use tauri::State;
-use std::sync::Mutex;
-use urlencoding::encode;
-use tauri_plugin_store::StoreBuilder;
 use jsonwebtoken::{decode, DecodingKey, Validation, Algorithm};
 use jsonwebtoken_rustcrypto::dangerous_insecure_decode;
+use sha2::{Sha256, Digest};
+use reqwest::{Client, StatusCode};
 use serde::Deserialize;
+use serde_json::Value;
+use std::sync::Mutex;
+use tauri_plugin_store::StoreBuilder;
+use tauri::State;
+use urlencoding::encode;
 
 #[derive(serde::Serialize)]
 struct AuthResponse {
@@ -55,7 +56,7 @@ async fn validate_token(token: String) -> Result<String, String> {
     // Minimal validation for now - just checks signature and expiry.
     let validation = Validation::new(Algorithm::RS256);
     
-    match decode::<serde_json::Value>(&token, &key, &validation) {
+    match decode::<Value>(&token, &key, &validation) {
         Ok(_) => Ok(r#"{"valid":true}"#.to_string()),
         Err(e) => Err(format!(
             r#"{{"error":"ValidationError","message":"{}"}}"#, e
@@ -74,13 +75,16 @@ async fn extract_user_id(token: String) -> Option<i32> {
 async fn store_token_securely(
         token: String,
         app_handle: tauri::AppHandle,
-        state: tauri::State<'_, AppState>
+        state: State<'_, AppState>
         ) -> Result<(), String> {
     *state.jwt_token.lock().unwrap() = Some(token.clone());
+
     let store = StoreBuilder::new(&app_handle, ".auth.dat")
         .build()
         .map_err(|e| format!("Failed to create store: {}", e))?;
+
     store.set("jwt_token".to_string(), token);
+
     store.save().map_err(|e| format!("Failed to save store: {}", e))
 }
 
@@ -90,8 +94,8 @@ async fn load_token_securely(app_handle: tauri::AppHandle,) -> Result<Option<Str
         .build()
         .map_err(|e| format!("Failed to create store: {}", e))?;
 
-    println!("{}", store.get("jwt_token")
-        .and_then(|v| v.as_str().map(|s| s.to_string())).unwrap());
+    // println!("{}", store.get("jwt_token")
+    //     .and_then(|v| v.as_str().map(|s| s.to_string())).unwrap());
     
     store.get("jwt_token")
         .and_then(|v| v.as_str().map(|s| s.to_string()))
@@ -114,7 +118,7 @@ async fn clear_token_securely(app_handle: tauri::AppHandle,) -> Result<(), Strin
 #[tauri::command]
 async fn fetch_cspace(
         userid: i32,
-        state: tauri::State<'_, AppState>
+        state: State<'_, AppState>
         ) -> Result<String, String> {
     if userid <= 0 {
         return Err("Invalid userid (must be positive)".into());
@@ -124,8 +128,7 @@ async fn fetch_cspace(
         encode(&userid.to_string())
     );
 
-    let client = reqwest::Client::new();
-    println!("Token state: {:?}", state.jwt_token.lock().unwrap());
+    let client = Client::new();
     let token = tokio::time::timeout(
         std::time::Duration::from_secs(3),
         async {
@@ -137,11 +140,6 @@ async fn fetch_cspace(
             }
         }
     ).await.map_err(|_| "Timeout waiting for token".to_string())?;
-    // let token = {
-    //     let guard = state.jwt_token.lock()
-    //         .map_err(|_| "Token mutex poisoned".to_string())?;
-    //     guard.as_ref().ok_or("Unauthorized: No token stored".to_string())?.clone()
-    // };
     let response = client
         .get(&url)
         .header("Authorization", format!("Bearer {}",token))
@@ -154,9 +152,7 @@ async fn fetch_cspace(
         .await
         .map_err(|e| format!("Error reading response: {}", e))?;
 
-    if status.is_success() {
-        Ok(response_text)
-    } else {
+    if status.is_success() { Ok(response_text) } else {
         Err(format!("Server error HTTP {}: {}", status, response_text))
     }
 }
@@ -174,7 +170,7 @@ async fn register(username: &str, email: &str, password: &str, state: State<'_, 
     pwd_hasher.update(password.as_bytes());
     let hashed_password = format!("{:x}", pwd_hasher.finalize());
 
-    let client = reqwest::Client::new();
+    let client = Client::new();
     let body = RegisterRequest {
         name: username.to_string(),
         email: email.to_string(),
@@ -195,7 +191,7 @@ async fn register(username: &str, email: &str, password: &str, state: State<'_, 
 
     if !status.is_success() {
         return match status {
-            reqwest::StatusCode::CONFLICT => Err("409 Conflict".to_string()),
+            StatusCode::CONFLICT => Err("409 Conflict".to_string()),
             _ => Err(format!("Server error: {}", response_text))
         }
     }
@@ -221,7 +217,7 @@ async fn login(email: &str, password: &str, state: State<'_, AppState>)
     pwd_hasher.update(password.as_bytes());
     let hashed_password = format!("{:x}", pwd_hasher.finalize());
 
-    let client = reqwest::Client::new();
+    let client = Client::new();
     let body = LoginRequest {
         email: email.to_string(),
         password: hashed_password.to_string(),
@@ -229,10 +225,6 @@ async fn login(email: &str, password: &str, state: State<'_, AppState>)
     let response = client
         .post("http://127.0.0.1:58057/api/login")
         .json(&body)
-        // .json(&json!({
-        //     "email": email,
-        //     "password": hashed_password,
-        // }))
         .send()
         .await
         .map_err(|e| format!("Network error: {}", e))?;
@@ -245,7 +237,7 @@ async fn login(email: &str, password: &str, state: State<'_, AppState>)
     
     if !status.is_success() {
         return match status {
-            reqwest::StatusCode::NOT_FOUND => Err("404 Not Found".to_string()),
+            StatusCode::NOT_FOUND => Err("404 Not Found".to_string()),
             _ => Err(format!("Server error: {}", response_text))
 
         }
@@ -261,8 +253,6 @@ async fn login(email: &str, password: &str, state: State<'_, AppState>)
 
     Ok(AuthResponse{ token, data: response_text })
 }
-
-
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
