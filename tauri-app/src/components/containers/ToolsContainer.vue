@@ -19,13 +19,15 @@ import DeleteTimeblock from '../buttons/DeleteTimeblockBtn.vue';
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  /* align-content: flex-start; */
+
+  width: 15%;
+
   align-items: flex-start;
   margin: 5px;
   border: 2px solid gray;
   padding: 5px;
-  width: 15%;
-  max-height: calc(57vh - 1vh);
+  min-height: 56vh;
+  max-height: 56vh;
 }
 
 /* Buttons for adding/deleting events in tools bar */

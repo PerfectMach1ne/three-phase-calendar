@@ -16,6 +16,7 @@ import '@vueup/vue-quill/dist/vue-quill.snow.css';
   margin: 5px;
   border: 2px solid gray;
   padding: 5px;
+  min-height: 56vh;
   max-height: 56vh;
   width: 85%
 }

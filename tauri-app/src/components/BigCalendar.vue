@@ -9,6 +9,35 @@ import { useEvents } from '../composables/events.js';
 const { jwtToken, loadToken, userId, loadUserId } = useAuth();
 const { events, unpackEvents } = useEvents();
 
+async function fetchCalSpace(userId) {
+  try {
+    const res = await invoke('fetch_cspace', {
+      userid: userId,
+    });
+    const json = JSON.parse(res);
+    unpackEvents(json);
+    console.log(events.events_userId);
+    console.log(events.cspaceId);
+    console.log(events.tasks);
+    console.log(events.timeblocks);
+  } catch (e) {
+    console.log(`Error: ${e}`);
+  }
+}
+
+onMounted(() => {
+  fetchCalSpace(userId.value);
+
+  currentDate.setHours(0, 0, 0, 0);
+
+  refreshYMDisplay();
+
+  console.log(currentWeek.value + ', ' + currentMonths.value + ', ' + currentFirstDayofweek.value + ', ' + currentLastDayofweek.value + ', ' + currentYear.value);
+  
+  // Easy fix for yearmonth__display class element being sized correctly - steal weekday__box's width after render. >:)
+  weekdayBoxWidth.value = document.getElementById('weekdaybox-width-source').offsetWidth + 'px';
+});
+
 const weekdayBoxWidth = ref('');
 const left = ref("&#10094;");
 const right = ref("&#10095;");
@@ -28,21 +57,6 @@ const monthNames =
   ["January", "February", "March", "April", "May", "June",
    "July", "August", "September", "October", "November", "December"];
 
-async function fetchCalSpace(userId) {
-  try {
-    const res = await invoke('fetch_cspace', {
-      userid: userId,
-    });
-    const json = JSON.parse(res);
-    unpackEvents(json);
-    console.log(events.events_userId);
-    console.log(events.cspaceId);
-    console.log(events.tasks);
-    console.log(events.timeblocks);
-  } catch (e) {
-    console.log(`Error: ${e}`);
-  }
-}
 
 /*
  * Returns the ISO week of the date.
@@ -58,11 +72,12 @@ Date.prototype.getWeek = function() {
   return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
 }
 
-function getTodaysWeek() {
-  var date = currentDate;
-  var weekNumeral = date.getWeek();
-
-  return weekNumeral;
+function refreshYMDisplay() {
+  currentMonths.value = getTodaysMonths();
+  currentFirstDayofweek.value = getWeekMonthday(0);
+  currentLastDayofweek.value = getWeekMonthday(6);
+  currentYear.value = currentDate.getFullYear();
+  currentWeek.value = currentDate.getWeek();
 }
 
 function getTodaysMonths() {
@@ -104,11 +119,7 @@ function goToPastWeek() {
   date = new Date(date.getFullYear(), date.getMonth(), monthday - 7);
   currentDate = date;
 
-  currentMonths.value = getTodaysMonths();
-  currentFirstDayofweek.value = getWeekMonthday(0);
-  currentLastDayofweek.value = getWeekMonthday(6);
-  currentYear.value = currentDate.getFullYear();
-  currentWeek.value = getTodaysWeek();
+  refreshYMDisplay();
 
   console.log(currentWeek.value + ', ' + currentMonths.value + ', ' + currentFirstDayofweek.value + ', ' + currentLastDayofweek.value + ', ' + currentYear.value);
 }
@@ -119,11 +130,7 @@ function goToFutureWeek() {
   date = new Date(date.getFullYear(), date.getMonth(), firstMonthDay + 7);
   currentDate = date;
 
-  currentMonths.value = getTodaysMonths();
-  currentFirstDayofweek.value = getWeekMonthday(0);
-  currentLastDayofweek.value = getWeekMonthday(6);
-  currentYear.value = currentDate.getFullYear();
-  currentWeek.value = getTodaysWeek();
+  refreshYMDisplay();
 
   console.log(currentWeek.value + ', ' + currentMonths.value + ', ' + currentFirstDayofweek.value + ', ' + currentLastDayofweek.value + ', ' + currentYear.value);
 }
@@ -132,31 +139,10 @@ function goToTodaysWeek() {
   currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
 
-  currentMonths.value = getTodaysMonths();
-  currentFirstDayofweek.value = getWeekMonthday(0);
-  currentLastDayofweek.value = getWeekMonthday(6);
-  currentYear.value = currentDate.getFullYear();
-  currentWeek.value = getTodaysWeek();
+  refreshYMDisplay();
 
   console.log(currentWeek.value + ', ' + currentMonths.value + ', ' + currentFirstDayofweek.value + ', ' + currentLastDayofweek.value + ', ' + currentYear.value);
 }
-
-onMounted(() => {
-  fetchCalSpace(userId.value);
-
-  currentDate.setHours(0, 0, 0, 0);
-
-  currentMonths.value = getTodaysMonths();
-  currentFirstDayofweek.value = getWeekMonthday(0);
-  currentLastDayofweek.value = getWeekMonthday(6);
-  currentYear.value = currentDate.getFullYear();
-  currentWeek.value = getTodaysWeek();
-
-  console.log(currentWeek.value + ', ' + currentMonths.value + ', ' + currentFirstDayofweek.value + ', ' + currentLastDayofweek.value + ', ' + currentYear.value);
-  
-  // Easy fix for yearmonth__display class element being sized correctly - steal weekday__box's width after render. >:)
-  weekdayBoxWidth.value = document.getElementById('weekdaybox-width-source').offsetWidth + 'px';
-});
 </script>
 
 <template>

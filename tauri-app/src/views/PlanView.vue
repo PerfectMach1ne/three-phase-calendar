@@ -13,6 +13,10 @@ import PlanContainer from '../components/containers/PlanContainer.vue';
 </template>
 
 <style scoped>
+.main {
+  position: relative;
+}
+
 .nav__isolator {
   display: flex;
 }

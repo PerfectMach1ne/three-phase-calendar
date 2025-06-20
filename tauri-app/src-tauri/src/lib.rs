@@ -130,6 +130,7 @@ async fn fetch_cspace(
 
     let client = Client::new();
     let token = tokio::time::timeout(
+        // This fixes a race condition between fetch_cspace and load_token_securely on autologin.
         std::time::Duration::from_secs(3),
         async {
             loop {
