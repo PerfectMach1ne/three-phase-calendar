@@ -9,17 +9,21 @@ const renderDelTask = inject('renderDelTask');
 const tasks = ref([]);
 try {
   if (events.tasks !== null) tasks.value = events.tasks;
-  else tasks.value = [{
+} catch (error) {
+  console.error("You have no tasks!");
+  tasks.value = [{
       hashcode: 1,
       name: "Create your first task!"
     }]
-} catch (error) { console.error("You have no tasks!"); }
+}
 
 const task = ref(0);
 try {
   if (events.tasks[0].hashcode !== null) task.value = events.tasks[0].hashcode;
-  else task = 1;
-} catch (error) { console.error("You have no tasks!"); }
+} catch (error) {
+  console.error("You have no tasks!");
+  task = 1;
+}
 
 function cancel() {
   renderDelTask.value = !renderDelTask.value;

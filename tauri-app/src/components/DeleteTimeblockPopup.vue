@@ -9,17 +9,21 @@ const renderDelTimeblock = inject('renderDelTimeblock');
 const timeblocks = ref([]);
 try {
   if (events.timeblocks !== null) timeblocks.value = events.timeblocks;
-  else timeblocks.value = [{
+} catch (error) {
+  console.error("You have no timeblocks!");
+  timeblocks.value = [{
       hashcode: 1,
       name: "Create your first timeblock!"
     }]
-} catch (error) { console.error("You have no timeblocks!"); }
+}
 
 const timeblock = ref(0);
 try {
   if (events.timeblocks[0].hashcode !== null) timeblock.value = events.timeblocks[0].hashcode;
-  else timeblock = 1;
-} catch (error) { console.error("You have no timeblocks!"); }
+} catch (error) {
+  console.error("You have no timeblocks!");
+  timeblock.value = 1;
+}
 
 function cancel() {
   renderDelTimeblock.value = !renderDelTimeblock.value;
