@@ -1,16 +1,20 @@
 <script setup>
-import AddTask from '../buttons/AddTaskBtn.vue';
-import AddTimeblock from '../buttons/AddTimeblockBtn.vue';
-import DeleteTask from '../buttons/DeleteTaskBtn.vue';
-import DeleteTimeblock from '../buttons/DeleteTimeblockBtn.vue';
+import AddTaskBtn from '../buttons/AddTaskBtn.vue';
+import AddTimeblockBtn from '../buttons/AddTimeblockBtn.vue';
+import DeleteTaskBtn from '../buttons/DeleteTaskBtn.vue';
+import DeleteTimeblockBtn from '../buttons/DeleteTimeblockBtn.vue';
+import ChangeTimeblockBtn from '../buttons/ChangeTimeblockBtn.vue';
+import ChangeTaskBtn from '../buttons/ChangeTaskBtn.vue';
 </script>
 
 <template>
   <div class="tools__container scrollbar">
-    <AddTask />
-    <AddTimeblock />
-    <DeleteTask />
-    <DeleteTimeblock />
+    <AddTaskBtn />
+    <AddTimeblockBtn />
+    <ChangeTaskBtn />
+    <ChangeTimeblockBtn />
+    <DeleteTaskBtn />
+    <DeleteTimeblockBtn />
   </div>
 </template>
 

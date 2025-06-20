@@ -1,14 +1,30 @@
 <script setup>
-import { inject, ref } from 'vue';
+import { inject, ref, onMounted } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { ViewType, Colors } from '../utils/enums.js';
 import { useEvents } from '../composables/events.js';
 
-const { events } = useEvents();
+const { events, refreshTimeblocks } = useEvents();
 
-const timeblocks = ref(events.timeblocks);
+const renderChangeTimeblock = inject('renderChangeTimeblock');
+const timeblocks = ref([]);
+try {
+  if (events.timeblocks !== null) timeblocks.value = events.timeblocks;
+} catch (error) {
+  console.error("You have no timeblocks!");
+  timeblocks.value = [{
+      hashcode: 1,
+      name: "Create your first timeblock!"
+    }]
+}
 
-const renderAddTimeblock = inject('renderAddTimeblock');
+const timeblock = ref(0);
+try {
+  if (events.timeblocks[0].hashcode !== null) timeblock.value = events.timeblocks[0].hashcode;
+} catch (error) {
+  console.error("You have no timeblocks!");
+  timeblock.value = 1;
+}
 
 const title = ref('(Untitled)');
 const description = ref("")
@@ -20,16 +36,16 @@ const viewtype = ref("static_task");
 const color = ref('#c493d3');
 
 function cancel() {
-  renderAddTimeblock.value = !renderAddTimeblock.value;
+  renderChangeTimeblock.value = !renderChangeTimeblock.value;
 }
 
-function submit() {
-  createTimeblock();
+function change() {
+  changeTimeblock(timeblock.value);
 }
 
-async function createTimeblock() {
+async function changeTimeblock() {
   try {
-    const res = await invoke('create_timeblock', {
+    const res = await invoke('change_timeblock', {
       startDatetime: start_date.value + "T" + start_time.value,
       endDatetime: end_date.value + "T" + end_time.value, 
       name: title.value,
@@ -45,10 +61,22 @@ async function createTimeblock() {
     console.log(`Error: ${error}`);
   }
 }
+
+onMounted(() => {
+  refreshTimeblocks();
+})
 </script>
 
 <template>
   <div class="event__page__box">
+    <select v-model="timeblock" name="timeblock-choice">
+      <option
+        v-for="timeblock in timeblocks"
+        :value="timeblock.hashcode"
+        :key="timeblock.hashcode">
+        {{ timeblock.name }}
+        </option>
+    </select>
     <span>
       <label for="timeblock-title-input">Title: </label>
       <input type="text" v-model="title" name="timeblock-title-input">
@@ -98,7 +126,7 @@ async function createTimeblock() {
       </select>
     </span>
     <div class="event__page__buttons">
-      <button @click="submit">Create</button>
+      <button @click="change">Change</button>
       <button @click="cancel">Cancel</button>
     </div>
   </div>
@@ -107,7 +135,7 @@ async function createTimeblock() {
 <style scoped>
 .event__page__box {
   z-index: 1;
-
+  
   overflow: hidden;
   resize: both;
 
@@ -121,16 +149,16 @@ async function createTimeblock() {
   right: 30%;
 
   min-width: 200px;
-  max-width: 35%;
-  min-height: 370px; 
-  max-height: 650px;
-  height: 370px;
-
+  max-width: 45%;
+  min-height: 355px; 
+  max-height: 600px;
+  height: 420px;
+  
   gap: 15px;
   margin: 5px;
   padding: 15px;
   border: 1px solid gray;
-  
+
   font-family: Arial, Helvetica, sans-serif;
   font-size: 1.2rem;
 }
