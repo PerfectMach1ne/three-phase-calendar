@@ -411,7 +411,7 @@ async fn delete_task(
         }
     ).await.map_err(|_| "Timeout waiting for token".to_string())?;
     let response = client
-        .get(&url)
+        .delete(&url)
         .header("Authorization", format!("Bearer {}",token))
         .send()
         .await
@@ -450,7 +450,7 @@ async fn delete_timeblock(
         }
     ).await.map_err(|_| "Timeout waiting for token".to_string())?;
     let response = client
-        .get(&url)
+        .delete(&url)
         .header("Authorization", format!("Bearer {}",token))
         .send()
         .await

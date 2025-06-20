@@ -17,8 +17,16 @@ export function useEvents() {
     try {
       events.events_userId = boxOjson.userdata[0].user_id;
       events.cspaceId = boxOjson.userdata[0].calspace_id;
-      events.tasks = boxOjson.tasks;
+      if (boxOjson.tasks === null) {
+        events.tasks = [];
+      } else {
+        events.tasks = boxOjson.tasks;
+      }
+      if (boxOjson.timeblocks === null) {
+        events.timeblocks = [];
+      } else {
       events.timeblocks = boxOjson.timeblocks;
+      }
     } catch (e) {
       console.error("Error unpacking events:", e);
     }
@@ -30,8 +38,11 @@ export function useEvents() {
         userid: events.events_userId,
       });
       const json = JSON.parse(res);
-      events.tasks = json.tasks;
-      console.log(events.tasks)
+      if (events.tasks === null) {
+        events.tasks = [];
+      } else {
+        events.tasks = json.tasks;
+      }
     } catch (e) {
       console.error("Error refreshin tasks:", e);
     }
@@ -43,7 +54,11 @@ export function useEvents() {
         userid: events.events_userId,
       });
       const json = JSON.parse(res);
-      events.timeblocks = json.timeblocks;
+      if (events.timeblocks === null) {
+        events.timeblocks = [];
+      } else {
+        events.timeblocks = json.timeblocks;
+      }
     } catch (e) {
       console.error("Error refreshin timeblocks:", e);
     }

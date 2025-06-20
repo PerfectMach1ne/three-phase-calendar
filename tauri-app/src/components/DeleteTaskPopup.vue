@@ -6,8 +6,20 @@ import { useEvents } from '../composables/events.js';
 const { events, refreshTasks } = useEvents();
 
 const renderDelTask = inject('renderDelTask');
-const tasks = ref(events.tasks);
-const task = ref(events.tasks[0].hashcode);
+const tasks = ref([]);
+try {
+  if (events.tasks !== null) tasks.value = events.tasks;
+  else tasks.value = [{
+      hashcode: 1,
+      name: "Create your first task!"
+    }]
+} catch (error) { console.error("You have no tasks!"); }
+
+const task = ref(0);
+try {
+  if (events.tasks[0].hashcode !== null) task.value = events.tasks[0].hashcode;
+  else task = 1;
+} catch (error) { console.error("You have no tasks!"); }
 
 function cancel() {
   renderDelTask.value = !renderDelTask.value;
