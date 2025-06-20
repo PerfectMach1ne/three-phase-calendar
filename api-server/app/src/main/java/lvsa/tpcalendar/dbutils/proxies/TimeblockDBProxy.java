@@ -164,8 +164,6 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
                         rs.getString("color"))
                 );
 
-				System.out.println(json.stripLeading());
-				System.out.println(gson.toJson(timeblockCheck));
                 if (gson.toJson(timeblockCheck) == json.stripLeading()) {
                     return HTTPStatusCode.HTTP_304_NOT_MODIFIED;
                 }

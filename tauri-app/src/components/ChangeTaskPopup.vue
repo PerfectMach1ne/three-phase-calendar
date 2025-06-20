@@ -44,9 +44,10 @@ function change() {
   changeTask(task.value);
 }
 
-async function changeTask() {
+async function changeTask(hashcode) {
   try {
-    const res = await invoke('change_task', {
+    const res = await invoke('update_task', {
+      hashcode: hashcode,
       datetime: date.value + "T" + time.value,
       name: title.value,
       desc: description.value,

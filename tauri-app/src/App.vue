@@ -47,9 +47,9 @@ router.push('/calendar');
   <header>
     <img @click="goToCalendar" src="./assets/logo.png" alt="tpc placeholder logo" class="logo" width="80" height="80"/>
     <nav>
-      <button @click="goToCalendar" class="router mode">Calendar</button>
-      <button @click="goToPlanner" class="router mode">Planner</button>
-      <button @click="goToJournal" class="router mode">Journal</button>
+      <button @click="goToCalendar" class="router calphase">Calendar</button>
+      <button @click="goToPlanner" class="router planphase">Planner</button>
+      <button @click="goToJournal" class="router journalphase">Journal</button>
       <!-- <button @click="loginToggle" class="router login">{{ !isLoggedIn ? "Login" : "Logout" }}</button> -->
       <button
       @click="isLoggedIn && (clearToken(), clearUserId(), isLoggedIn = false)"
@@ -104,8 +104,18 @@ footer {
   font-size: 1.2rem;
 }
 
-.router.mode {
+.router.calphase {
   background-color: indianred;
+  color: #fff;
+}
+
+.router.planphase {
+  background-color: darkseagreen;
+  color: #fff;
+}
+
+.router.journalphase {
+  background-color: steelblue;
   color: #fff;
 }
 
@@ -124,8 +134,16 @@ footer {
   color: #2b2b2b;
 }
 
-.router.mode:hover {
+.router.calphase:hover {
   background-color: tomato;
+}
+
+.router.planphase:hover {
+  background-color: palegreen;
+}
+
+.router.journalphase:hover {
+  background-color: cornflowerblue;
 }
 
 .router.login:hover {

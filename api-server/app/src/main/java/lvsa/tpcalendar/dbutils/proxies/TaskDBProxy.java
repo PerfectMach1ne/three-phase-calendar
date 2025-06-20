@@ -77,12 +77,11 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
         ) {
             // cspace should receive either user id or some kind of session token. How do we go about this?
             HTTPStatusCode status = cspace.updatePartial(task.getHashcode(), "");
+            return status;
         } catch (SQLException sqle) {
             sqle.printStackTrace();
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR; // Error while updating calendarspace.
-        } finally {
-            return HTTPStatusCode.HTTP_201_CREATED;
-        }
+        } 
     }
 
     /**
@@ -151,7 +150,6 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
 
         try {
             ResultSet rs = hashcodeQuery.executeQuery();
-            
             if (!rs.next()) {
                 return HTTPStatusCode.HTTP_404_NOT_FOUND;
             } else {
@@ -173,18 +171,6 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
                     rs.getBoolean("isdone")
                 );
 				
-				System.out.println(json.stripLeading());
-				System.out.println(gson.toJson(taskCheck));
-				/** 
-				 * FIXME: taskCheck returned from db and json have inconsistent formatting of the JSON.
-                 * Additionally, some data such as date and color is inconsistent by design, e.g.:
-                 * * sout(taskCheck) returns:
-                 * ... "datetime": "2024-11-30T13:40:09", ...
-                 * ... "hex": "573849") ...
-                 * * sout(json) returns:
-                 * ... "datetime": "2024-11-30 14:40:09", ...
-                 * ... "hex": "#573849") ...
-				 */
                 if (gson.toJson(taskCheck) == json.stripLeading()) {
                     return HTTPStatusCode.HTTP_304_NOT_MODIFIED;
                 }

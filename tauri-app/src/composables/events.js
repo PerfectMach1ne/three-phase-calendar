@@ -44,7 +44,7 @@ export function useEvents() {
         events.tasks = json.tasks;
       }
     } catch (e) {
-      console.error("Error refreshin tasks:", e);
+      console.error("Error refreshing tasks:", e);
     }
   }
 
@@ -60,7 +60,7 @@ export function useEvents() {
         events.timeblocks = json.timeblocks;
       }
     } catch (e) {
-      console.error("Error refreshin timeblocks:", e);
+      console.error("Error refreshing timeblocks:", e);
     }
   }
 

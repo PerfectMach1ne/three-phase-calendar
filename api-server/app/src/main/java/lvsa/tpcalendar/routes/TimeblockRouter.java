@@ -132,7 +132,7 @@ public class TimeblockRouter implements APIRouter {
                 sb.append(reqdata);
             }
         } catch (IOException ioe) {
-            // TODO: log: IOException at StringBuffer in POST /api/cal/task
+            // TODO: log: IOException at StringBuffer in POST /api/cal/timeblock
             ioe.printStackTrace();
             // Default is HTTP 500 Internal Server Error anyway.
             response = status.wrapAsJsonRes();

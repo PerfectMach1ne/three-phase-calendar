@@ -43,9 +43,11 @@ function change() {
   changeTimeblock(timeblock.value);
 }
 
-async function changeTimeblock() {
+async function changeTimeblock(hashcode) {
   try {
-    const res = await invoke('change_timeblock', {
+    console.log(hashcode);
+    const res = await invoke('update_timeblock', {
+      hashcode: hashcode,
       startDatetime: start_date.value + "T" + start_time.value,
       endDatetime: end_date.value + "T" + end_time.value, 
       name: title.value,
