@@ -4,8 +4,10 @@ import { invoke } from '@tauri-apps/api/core';
 import ChangeWeek from './buttons/ChangeWeek.vue';
 import TodaysWeek from './buttons/TodaysWeek.vue';
 import { useAuth } from '../composables/session.js';
+import { useEvents } from '../composables/events.js';
 
 const { jwtToken, loadToken, userId, loadUserId } = useAuth();
+const { events, unpackEvents } = useEvents();
 
 const weekdayBoxWidth = ref('');
 const left = ref("&#10094;");
@@ -31,9 +33,14 @@ async function fetchCalSpace(userId) {
     const res = await invoke('fetch_cspace', {
       userid: userId,
     });
-    console.log(res);
-  } catch (error) {
-    console.log(`Error: ${error}`);
+    const json = JSON.parse(res);
+    unpackEvents(json);
+    console.log(events.events_userId);
+    console.log(events.cspaceId);
+    console.log(events.tasks);
+    console.log(events.timeblocks);
+  } catch (e) {
+    console.log(`Error: ${e}`);
   }
 }
 
@@ -135,8 +142,6 @@ function goToTodaysWeek() {
 }
 
 onMounted(() => {
-  console.log(userId.value);
-  
   fetchCalSpace(userId.value);
 
   currentDate.setHours(0, 0, 0, 0);

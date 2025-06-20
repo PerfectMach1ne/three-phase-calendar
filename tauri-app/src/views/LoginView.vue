@@ -42,8 +42,8 @@ async function attemptLogin() {
       loginResult.value = data.result;
       console.log("login::" + JSON.stringify(data) + " " + res.token);
     }
-  } catch (error) {
-    loginResult.value = `Error: ${error}`;
+  } catch (e) {
+    loginResult.value = `Error: ${e}`;
   }
 
   if (loginResult.value.includes('404') && !registrationMode.value) {
@@ -90,8 +90,8 @@ onMounted(async () => {
         setToken(token);
         emit('login');
       }
-    } catch (err) {
-      console.error("Token validation failed:", err);
+    } catch (e) {
+      console.error("Token validation failed:", e);
       await clearToken();
     }
   }
