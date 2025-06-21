@@ -18,6 +18,12 @@ import lvsa.tpcalendar.http.HTTPStatusCode;
 import lvsa.tpcalendar.schemas.json.*;
 
 public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
+    private int uid;
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
     private <T> ViewType invoke(Callable<ViewType> c) throws Exception {
         return c.call();
     }
@@ -35,9 +41,10 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
     @Override
     public HTTPStatusCode create(String json) throws SQLException {
         PreparedStatement stat = this.conn.prepareStatement("""
-            INSERT INTO taskevents 
+            INSERT INTO taskevents
             (hashcode, datetime, name, description, viewtype, color, isdone)
-            VALUES (?, ?, ?, ?, ?, ?, ?);           
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            RETURNING id;
         """);
 
         Gson gson = new Gson();
@@ -69,19 +76,33 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
                 : '#' + task.getColor().getHex() );
         stat.setBoolean(7, task.isDone());
 
-        stat.executeUpdate();
+        HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        try {
+            ResultSet rs = stat.executeQuery();
 
-        try(
-            DBConnProvider db = new DBConnProvider();
-            CalSpaceDBProxy cspace = new CalSpaceDBProxy(db);
-        ) {
-            // cspace should receive either user id or some kind of session token. How do we go about this?
-            HTTPStatusCode status = cspace.updatePartial(task.getHashcode(), "");
+            if (rs.next()) {
+                PreparedStatement cspace = this.conn.prepareStatement("""
+                    INSERT INTO calendarspace
+                    (user_id, event_id, event_hashcode, event_type)
+                    VALUES (?, ?, ?, 'task');
+                """);
+
+                cspace.setInt(1, this.uid);
+                cspace.setInt(2, rs.getInt("id"));
+                cspace.setInt(3, task.getHashcode());
+
+                cspace.executeUpdate();
+
+                status = HTTPStatusCode.HTTP_201_CREATED;
+            } else {
+                return status;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
             return status;
-        } catch (SQLException sqle) {
-            sqle.printStackTrace();
-            return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR; // Error while updating calendarspace.
-        } 
+        }
+
+        return status;
     }
 
     /**
@@ -214,7 +235,9 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
     }
 
     /**
+     * <h4>WARNING: Unfinished implementation.</h4>
      * Partially the task in the database.
+     * 
      * @param hashcode
      * @return operation status code.
      * @throws SQLException
@@ -232,13 +255,15 @@ public class TaskDBProxy extends BaseDBProxy implements AutoCloseable {
         stat.setInt(1, hashcode);
         final int PG_STATUS = stat.executeUpdate();
 
-        return PG_STATUS > 0 ?
-            HTTPStatusCode.HTTP_200_OK :
-            HTTPStatusCode.HTTP_404_NOT_FOUND;
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        // return PG_STATUS > 0 ?
+        //     HTTPStatusCode.HTTP_200_OK :
+        //     HTTPStatusCode.HTTP_404_NOT_FOUND;
     }
 
     /**
-     * Delete a task from the database. Queries the task by hashcode.
+     * <p>Delete a task from the database. Queries the task by hashcode.</p>
+     * 
      * @param hashcode
      * @return operation status code.
      * @throws SQLException

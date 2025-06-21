@@ -68,23 +68,19 @@ public class RegisterDBProxy extends BaseDBProxy implements AutoCloseable {
                 stat.setString(2, map.get("email").getAsString());
                 stat.setString(3, map.get("password").getAsString());
 
-                ResultSet reg_rs = stat.executeQuery();
-                if (reg_rs.next()) {
-                    try(
-                        DBConnProvider db = new DBConnProvider();
-                        CalSpaceDBProxy cspace = new CalSpaceDBProxy(db);
-                    ) {
+                try {
+                    ResultSet reg_rs = stat.executeQuery();
+
+                    if (!rs.next()) {
+                        status = HTTPStatusCode.HTTP_201_CREATED;
                         Integer id = reg_rs.getInt("id");
-                        status = cspace.create(id.toString());
                         authResult = new AuthResult(id, status);
-                        return status; // 201 == Account created.
-                    } catch (SQLException sqle) {
-                        sqle.printStackTrace();
-                        status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
-                        authResult = new AuthResult("Could not create users calendarspace.", status);
-                        return status; // Error while creating calendarspace.
+
+                        return status;
                     }
-                } else {
+                } catch (SQLException sqle) {
+                    sqle.printStackTrace();
+
                     status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
                     authResult = new AuthResult("Insert query failure.", status);
                     return status; // INSERT query failed for some reason.

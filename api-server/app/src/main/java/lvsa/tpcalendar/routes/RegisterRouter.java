@@ -19,6 +19,9 @@ import lvsa.tpcalendar.dbutils.proxies.RegisterDBProxy;
 import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
+/**
+ * Little JSON schema for POST /api/register request response formatting.
+ */
 @SuppressWarnings("unused")
 class RegisterResponse{
     private int loginUserId;
@@ -32,7 +35,7 @@ class RegisterResponse{
     }
 }
 /**
- * /api/register
+ * <h3><code>/api/register</code> endpoint</h3>
  */
 public class RegisterRouter implements APIRouter {
     private String response = "{ \"response\": \"nothing\" }";
@@ -51,7 +54,9 @@ public class RegisterRouter implements APIRouter {
     }
 
     /** 
-     * Create a user with email and password.
+     * <b>POST</b> <code>/api/register [-d application/json]</code>.
+     * <p>Create a user with email and password.</p>
+     * <p>Uses the following method:</p> <pre>HTTPStatusCode attemptRegister(String buffer)</pre>
      */
     @Override
     public HTTPStatusCode POST(HttpExchange htex) {
@@ -133,7 +138,7 @@ public class RegisterRouter implements APIRouter {
     /**
      * Attempt to register the user with given data.
      * 
-     * @param   buffer  JSON string containing username, email and hashed password.
+     * @param   buffer  a string buffer containing the request JSON data to be inserted into the database.
      * @return  a <code>HTTPStatusCode</code>.
      */
     private HTTPStatusCode attemptRegister(String buffer) {

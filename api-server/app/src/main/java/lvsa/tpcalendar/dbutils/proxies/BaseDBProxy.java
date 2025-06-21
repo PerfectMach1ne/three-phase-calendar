@@ -3,14 +3,12 @@ package lvsa.tpcalendar.dbutils.proxies;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import lvsa.tpcalendar.auth.TokenProvider;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
 public abstract class BaseDBProxy {
     private DBConnProvider db;
     protected Connection conn;
-    public TokenProvider tokenProvider;
 
     protected BaseDBProxy(DBConnProvider dbConnProvider) {
         this.db = dbConnProvider;

@@ -7,9 +7,12 @@ import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Map;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
+import lvsa.tpcalendar.auth.TokenProvider;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.dbutils.proxies.TimeblockDBProxy;
 import lvsa.tpcalendar.http.APIRouter;
@@ -50,6 +53,21 @@ public class TimeblockRouter implements APIRouter {
         Object[] dbResult = findAndFetchFromDB(hashcode);
         status = (HTTPStatusCode)dbResult[0];
         Object fetchedJsonOrNull = dbResult[1];
+
+        token = htex.getRequestHeaders().getFirst("Authorization");
+        token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
+        try( TokenProvider tp = new TokenProvider() ) {
+            try {
+                tp.verifyToken(token);
+            } catch (JWTVerificationException jwtve) {
+                jwtve.printStackTrace();
+                status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            return status;
+        }
         
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
@@ -79,6 +97,22 @@ public class TimeblockRouter implements APIRouter {
 
 		String reqdata;
         HTTPStatusCode status; // Return value of insertTaskIntoDB()
+        DecodedJWT jwt = null;
+
+        token = htex.getRequestHeaders().getFirst("Authorization");
+        token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
+        try( TokenProvider tp = new TokenProvider() ) {
+            try {
+                jwt = tp.verifyToken(token);
+            } catch (JWTVerificationException jwtve) {
+                jwtve.printStackTrace();
+                status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            return status;
+        }
 
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
@@ -94,7 +128,7 @@ public class TimeblockRouter implements APIRouter {
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
 
-        status = insertTimeblockIntoDB(sb.toString());
+        status = insertTimeblockIntoDB(sb.toString(), Integer.parseInt(jwt.getSubject()));
         response = status.wrapAsJsonRes();
         return status;
     }
@@ -123,6 +157,21 @@ public class TimeblockRouter implements APIRouter {
 	    StringBuffer sb = new StringBuffer();
 
 		String reqdata;
+
+        token = htex.getRequestHeaders().getFirst("Authorization");
+        token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
+        try( TokenProvider tp = new TokenProvider() ) {
+            try {
+                tp.verifyToken(token);
+            } catch (JWTVerificationException jwtve) {
+                jwtve.printStackTrace();
+                status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            return status;
+        }
 
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
@@ -168,6 +217,21 @@ public class TimeblockRouter implements APIRouter {
             status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
             response = status.wrapAsJsonRes();
             nXe.printStackTrace();
+        }
+
+        token = htex.getRequestHeaders().getFirst("Authorization");
+        token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
+        try( TokenProvider tp = new TokenProvider() ) {
+            try {
+                tp.verifyToken(token);
+            } catch (JWTVerificationException jwtve) {
+                jwtve.printStackTrace();
+                status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            return status;
         }
 
         Headers resh = htex.getResponseHeaders();
@@ -252,11 +316,12 @@ public class TimeblockRouter implements APIRouter {
      * @param   buffer  a string buffer containing the request JSON data to be inserted into the database.
      * @return  a <code>HTTPStatusCode</code>.
      */
-    private HTTPStatusCode insertTimeblockIntoDB(String buffer) {
+    private HTTPStatusCode insertTimeblockIntoDB(String buffer, int uid) {
         try(
             DBConnProvider db = new DBConnProvider();
             TimeblockDBProxy proxy = new TimeblockDBProxy(db);
         ) {
+            proxy.setUid(uid);
             HTTPStatusCode status = proxy.create(buffer);
             return status;
         } catch (SQLException sqle) {

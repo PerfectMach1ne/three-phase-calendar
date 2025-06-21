@@ -2,6 +2,9 @@ package lvsa.tpcalendar.auth;
 
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
+/**
+ * Helper class for /api/login and /api/register endpoint DBProxy-APIRouter communication.
+ */
 @SuppressWarnings("unused")
 public class AuthResult {
     private final int user_id;
@@ -10,7 +13,7 @@ public class AuthResult {
     private final HTTPStatusCode status;
 
     /** 
-     * On success.
+     * Constructor for results on success.
      */
     public AuthResult(int userId, HTTPStatusCode status) {
         this.user_id = userId;
@@ -20,7 +23,7 @@ public class AuthResult {
     }
 
     /** 
-     * On failure.
+     * Constructor for results on failure.
      */
     public AuthResult(String errorMsg, HTTPStatusCode status) {
         this.user_id = -1;

@@ -25,6 +25,9 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
         return authResult;
     }
 
+    /**
+     * Fetch userdata from the database
+     */
     public HTTPStatusCode create(String json) throws SQLException {
         PreparedStatement query = this.conn.prepareStatement("""
             SELECT id, name, email, password
@@ -80,54 +83,49 @@ public class LoginDBProxy extends BaseDBProxy implements AutoCloseable {
 
     @Override
     public String read(int id) throws SQLException {
-        // PreparedStatement query = this.conn.prepareStatement("""
-        //     SELECT u.id, cs.user_id, cs.id AS calspace_id,
-        //         cs.tasksevents_id_arr, cs.timeblockevents_id_arr, cs.textevents_id_arr
-        //     FROM users u RIGHT JOIN calendarspace cs
-        //     ON u.id = cs.user_id
-        //     WHERE u.id = ?;
-        // """);
         PreparedStatement query = this.conn.prepareStatement("""
             WITH cspace AS (
             SELECT u.id,
                 cs.user_id AS user_id,
                 cs.id AS calspace_id,
-                cs.tasksevents_id_arr AS taskid_arr,
-                cs.timeblockevents_id_arr AS timeblockid_arr,
-                cs.textevents_id_arr AS textid_arr
+                cs.event_id,
+                cs.event_hashcode,
+                cs.event_type
             FROM users u RIGHT JOIN calendarspace cs
             ON u.id = cs.user_id WHERE u.id = ?
             )
             SELECT json_build_object(
             'userdata', (SELECT json_agg(u) FROM (
-                SELECT user_id, calspace_id FROM cspace
+                SELECT user_id FROM cspace
             ) u),
             'tasks', (SELECT json_agg(t) FROM (
-                SELECT id, hashcode, datetime, name, description, viewtype, color, isdone
-                FROM taskevents 
-                WHERE hashcode IN (
-                SELECT UNNEST(taskid_arr) FROM cspace
+                SELECT t.id, t.hashcode, t.datetime, t.name, t.description, t.viewtype, t.color, t.isdone
+                FROM taskevents t
+                WHERE t.id IN (
+                    SELECT event_id FROM cspace WHERE event_type = 'task'
+                ) AND t.hashcode IN (
+                    SELECT event_hashcode FROM cspace WHERE event_type = 'task'
                 )
             ) t),
             'timeblocks', (SELECT json_agg(tb) FROM (
-                SELECT id, hashcode, start_datetime, end_datetime, name, description, viewtype, color 
-                FROM timeblockevents 
-                WHERE hashcode IN (
-                SELECT UNNEST(timeblockid_arr) FROM cspace
+                SELECT tb.id, tb.hashcode, tb.start_datetime, tb.end_datetime, tb.name, tb.description, tb.viewtype, tb.color 
+                FROM timeblockevents tb
+                WHERE tb.id IN (
+                    SELECT event_id FROM cspace WHERE event_type = 'timeblock'
+                ) AND tb.hashcode IN (
+                    SELECT event_hashcode FROM cspace WHERE event_type = 'timeblock'
                 )
             ) tb)
             ) AS calendar_data;
         """);
         
         query.setInt(1, id);
-
         ResultSet rs = query.executeQuery();
 
         if (!rs.next()) {
             authResult = new AuthResult("", HTTPStatusCode.HTTP_404_NOT_FOUND);
             return ""; // Calendarspace or user not found.
         } else {
-            // authResult = new AuthResult(rs.getInt("user_id"), HTTPStatusCode.HTTP_200_OK);
             authResult = new AuthResult(id, HTTPStatusCode.HTTP_200_OK);
             return rs.getString("calendar_data");
         }

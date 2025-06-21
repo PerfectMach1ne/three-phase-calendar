@@ -1,5 +1,7 @@
 package lvsa.tpcalendar.routes;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.BufferedReader;
@@ -9,6 +11,7 @@ import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Map;
 
+import lvsa.tpcalendar.auth.TokenProvider;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.dbutils.proxies.TaskDBProxy;
 import lvsa.tpcalendar.http.APIRouter;
@@ -50,6 +53,21 @@ public class TaskRouter implements APIRouter {
         status = (HTTPStatusCode)dbResult[0];
         Object fetchedJsonOrNull = dbResult[1];
 
+        token = htex.getRequestHeaders().getFirst("Authorization");
+        token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
+        try( TokenProvider tp = new TokenProvider() ) {
+            try {
+                tp.verifyToken(token);
+            } catch (JWTVerificationException jwtve) {
+                jwtve.printStackTrace();
+                status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            return status;
+        }
+
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
 
@@ -78,6 +96,22 @@ public class TaskRouter implements APIRouter {
 
 		String reqdata;
         HTTPStatusCode status; // Return value of insertTaskIntoDB()
+        DecodedJWT jwt = null;
+
+        token = htex.getRequestHeaders().getFirst("Authorization");
+        token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
+        try( TokenProvider tp = new TokenProvider() ) {
+            try {
+                jwt = tp.verifyToken(token);
+            } catch (JWTVerificationException jwtve) {
+                jwtve.printStackTrace();
+                status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            return status;
+        }
 
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
@@ -93,7 +127,7 @@ public class TaskRouter implements APIRouter {
             return HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
         }
 
-        status = insertTaskIntoDB(sb.toString());
+        status = insertTaskIntoDB(sb.toString(), Integer.parseInt(jwt.getSubject()));
         response = status.wrapAsJsonRes(); 
         return status;
     }
@@ -114,6 +148,21 @@ public class TaskRouter implements APIRouter {
             status = HTTPStatusCode.HTTP_400_BAD_REQUEST;
             response = status.wrapAsJsonRes();
             nXe.printStackTrace();
+        }
+
+        token = htex.getRequestHeaders().getFirst("Authorization");
+        token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
+        try( TokenProvider tp = new TokenProvider() ) {
+            try {
+                tp.verifyToken(token);
+            } catch (JWTVerificationException jwtve) {
+                jwtve.printStackTrace();
+                status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            return status;
         }
 
         Headers resh = htex.getResponseHeaders();
@@ -159,6 +208,21 @@ public class TaskRouter implements APIRouter {
 
 		String reqdata;
 
+        token = htex.getRequestHeaders().getFirst("Authorization");
+        token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
+        try( TokenProvider tp = new TokenProvider() ) {
+            try {
+                tp.verifyToken(token);
+            } catch (JWTVerificationException jwtve) {
+                jwtve.printStackTrace();
+                status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            return status;
+        }
+
         Headers resh = htex.getResponseHeaders();
         resh.set("Content-Type", "application/json");
 
@@ -192,8 +256,25 @@ public class TaskRouter implements APIRouter {
      */
     @Override
     public HTTPStatusCode PATCH(HttpExchange htex) {
-        response = HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED.wrapAsJsonRes();
-        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        HTTPStatusCode status = HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+
+        token = htex.getRequestHeaders().getFirst("Authorization");
+        token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
+        try( TokenProvider tp = new TokenProvider() ) {
+            try {
+                tp.verifyToken(token);
+            } catch (JWTVerificationException jwtve) {
+                jwtve.printStackTrace();
+                status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
+            return status;
+        }
+
+        response = status.wrapAsJsonRes();
+        return status;
     }
 
     @Override
@@ -251,11 +332,12 @@ public class TaskRouter implements APIRouter {
      * @param   buffer  a string buffer containing the request JSON data to be inserted into the database.
      * @return  a <code>HTTPStatusCode</code>.
      */
-    private HTTPStatusCode insertTaskIntoDB(String buffer) {
+    private HTTPStatusCode insertTaskIntoDB(String buffer, int uid) {
         try (
             DBConnProvider db = new DBConnProvider();
             TaskDBProxy proxy = new TaskDBProxy(db);
         ) {
+            proxy.setUid(uid);
             HTTPStatusCode status = proxy.create(buffer);
             return status;
         } catch (SQLException sqle) {

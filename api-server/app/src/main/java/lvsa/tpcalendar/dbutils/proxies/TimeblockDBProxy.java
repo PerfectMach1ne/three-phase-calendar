@@ -22,6 +22,12 @@ import lvsa.tpcalendar.schemas.json.TimeblockOut;
 import lvsa.tpcalendar.schemas.json.ViewType;
 
 public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
+    private int uid;
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
     private <T> ViewType invoke(Callable<ViewType> c) throws Exception {
         return c.call();
     }
@@ -31,7 +37,8 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
   	}
 
     /**
-     * Insert a timeblock into the database.
+     * <p>Insert a timeblock into the database.</p>
+     * 
      * @param hashcode
      * @return operation status code.
      * @throws SQLException
@@ -41,7 +48,8 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
         PreparedStatement stat = this.conn.prepareStatement("""
             INSERT INTO timeblockevents
             (hashcode, start_datetime, end_datetime, name, description, viewtype, color)
-            VALUES (?, ?, ?, ?, ?, ?, ?);           
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            RETURNING id;           
         """);
 
         Gson gson = new Gson();
@@ -50,6 +58,7 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
             timeblock = gson.fromJson(json, TimeblockIn.class);
             try {
                 TimeblockIn.initHashCode(timeblock);
+                if (timeblock.getViewType() == null) return HTTPStatusCode.HTTP_400_BAD_REQUEST;
             } catch(DateTimeParseException dtpe) {
                 dtpe.printStackTrace();
                 return HTTPStatusCode.HTTP_400_BAD_REQUEST;
@@ -73,13 +82,38 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
                 ? timeblock.getColor().getHex()
                 : '#' + timeblock.getColor().getHex() );
         
-        stat.executeUpdate();
+        HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
+        try {
+            ResultSet rs = stat.executeQuery();
 
-        return HTTPStatusCode.HTTP_201_CREATED;
+            if (rs.next()) {
+                PreparedStatement cspace = this.conn.prepareStatement("""
+                    INSERT INTO calendarspace
+                    (user_id, event_id, event_hashcode, event_type)
+                    VALUES (?, ?, ?, 'timeblock');
+                """);
+
+                cspace.setInt(1, this.uid);
+                cspace.setInt(2, rs.getInt("id"));
+                cspace.setInt(3, timeblock.getHashcode());
+
+                cspace.executeUpdate();
+
+                status = HTTPStatusCode.HTTP_201_CREATED;
+            } else {
+                return status;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return status;
+        }
+
+        return status;
     }
 
     /**
-     * Query a timeblock from a database by its hashcode.
+     * <p>Query a timeblock from a database by its hashcode.</p>
+     * 
      * @param hashcode
      * @return a timeblock from database as JSON object or a JSON server error response. 
      * @throws SQLException
@@ -125,7 +159,8 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
 	}
 
     /**
-     * Update the whole timeblock in the database.
+     * <p>Update the whole timeblock in the database.</p>
+     * 
      * @param hashcode
      * @return operation status code.
      * @throws SQLException
@@ -210,7 +245,9 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
     }
 
     /**
-     * Partially the timeblock in the database.
+     * <h4>WARNING: Unfinished implementation.</h4>
+     * <p>Partially the timeblock in the database.</p>
+     * 
      * @param hashcode
      * @return operation status code.
      * @throws SQLException
@@ -228,13 +265,15 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
         stat.setInt(1, hashcode);
         final int PG_STATUS = stat.executeUpdate();
 
-        return PG_STATUS > 0 ?
-            HTTPStatusCode.HTTP_200_OK :
-            HTTPStatusCode.HTTP_404_NOT_FOUND;
+        return HTTPStatusCode.HTTP_501_NOT_IMPLEMENTED;
+        // return PG_STATUS > 0 ?
+        //     HTTPStatusCode.HTTP_200_OK :
+        //     HTTPStatusCode.HTTP_404_NOT_FOUND;
     }
 
     /**
-     * Delete a timeblock from the database. Queries the timeblock by hashcode.
+     * <p>Delete a timeblock from the database. Queries the timeblock by hashcode.</p>
+     * 
      * @param hashcode
      * @return operation status code.
      * @throws SQLException

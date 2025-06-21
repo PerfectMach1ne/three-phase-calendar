@@ -1,5 +1,6 @@
 package lvsa.tpcalendar.routes;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -20,6 +21,9 @@ import lvsa.tpcalendar.dbutils.proxies.LoginDBProxy;
 import lvsa.tpcalendar.http.APIRouter;
 import lvsa.tpcalendar.http.HTTPStatusCode;
 
+/**
+ * Little JSON schema for POST /api/login request response formatting.
+ */
 @SuppressWarnings("unused")
 class LoginResponse{
     private int loginUserId;
@@ -47,8 +51,8 @@ public class LoginRouter implements APIRouter {
     public void flushToken() { this.token = null; }
 
     /** 
-     * <b>POST</b> <code>/api/login</code>.
-     * <p>Create a user with email and password.</p>
+     * <b>POST</b> <code>/api/login [-d application/json]</code>.
+     * <p>Authenticate a user with provided email and password.</p>
      * <p>Uses the following method:</p> <pre>HTTPStatusCode attemptLogin(String buffer)</pre>
      */
     @Override
@@ -82,11 +86,8 @@ public class LoginRouter implements APIRouter {
         String resStatus = status.wrapAsJsonRes();
         JsonObject resJobj = gson.fromJson(resStatus, JsonObject.class);
         String resExtract = resJobj.get("result").getAsString();
-        System.out.println(resExtract);
-        System.out.println(this.loginUserId);
         
         LoginResponse res = new LoginResponse(this.loginUserId, resExtract);
-        System.out.println(gson.toJsonTree(res).toString());
         response = gson.toJson(res);
         System.out.println(gson.toJson(res));
 
@@ -114,15 +115,22 @@ public class LoginRouter implements APIRouter {
         
         token = htex.getRequestHeaders().getFirst("Authorization");
         token = token.trim().replaceAll("(?i)bearer", "").trim(); // Sanitize received token.
-        try( TokenProvider tp = new TokenProvider()) {
-            DecodedJWT jwt = tp.verifyToken(token);
-            String subject = jwt.getSubject();
-            int tokenuid = Integer.valueOf(subject).intValue();
-            if (tokenuid != uid) {
-                System.out.println(tokenuid);
-                System.out.println(uid);
-                status = HTTPStatusCode.HTTP_403_FORBIDDEN;
-                return status;
+        try( TokenProvider tp = new TokenProvider() ) {
+            try {
+                DecodedJWT jwt = tp.verifyToken(token);
+
+                String subject = jwt.getSubject();
+                int tokenuid = Integer.valueOf(subject).intValue();
+
+                if (tokenuid != uid) {
+                    System.out.println(tokenuid);
+                    System.out.println(uid);
+                    status = HTTPStatusCode.HTTP_403_FORBIDDEN;
+                    return status;
+                }
+            } catch (JWTVerificationException jwtve) {
+                jwtve.printStackTrace();
+                status = HTTPStatusCode.HTTP_401_UNAUTHORIZED;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -186,9 +194,9 @@ public class LoginRouter implements APIRouter {
     }
 
     /**
-     * Attempt to log the user in with their email and password and return the resulting HTTP status code.
+     * Attempt to log the user in with their email and password, create a session JWT token and return the resulting HTTP status code.
      * 
-     * @param   buffer  a string buffer containing the request JSON data to be inserted into the database.
+     * @param   buffer  JSON string containing username, email and hashed password.
      * @return  a <code>HTTPStatusCode</code>.
      */
     private HTTPStatusCode attemptLogin(String buffer) {

@@ -47,6 +47,12 @@ public final class SchemaInitializer {
 			EXCEPTION WHEN duplicate_object THEN
 				RAISE NOTICE 'taskview ENUM type already exists; not creating.';
 			END $$;
+			DO $$ BEGIN
+				CREATE TYPE eventtype
+				AS ENUM ('task', 'timeblock');
+			EXCEPTION WHEN duplicate_object THEN
+				RAISE NOTICE 'eventtype ENUM type already exists; not creating.';
+			END $$;
 		""");
 	}
 
@@ -113,9 +119,9 @@ public final class SchemaInitializer {
 			CREATE TABLE IF NOT EXISTS calendarspace (
 				id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 				user_id INT REFERENCES users(id) ON DELETE CASCADE,
-				tasksevents_id_arr integer ARRAY,	
-				timeblockevents_id_arr integer ARRAY,
-				textevents_id_arr integer ARRAY
+				event_id INT NOT NULL,
+				event_hashcode INT NOT NULL,
+				event_type eventtype NOT NULL
 			);
 		""");
 	}
