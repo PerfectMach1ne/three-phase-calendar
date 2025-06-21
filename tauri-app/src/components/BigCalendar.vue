@@ -17,7 +17,6 @@ async function fetchCalSpace(userId) {
     const json = JSON.parse(res);
     unpackEvents(json);
     console.log(events.events_userId);
-    console.log(events.cspaceId);
     console.log(events.tasks);
     console.log(events.timeblocks);
   } catch (e) {
@@ -29,10 +28,7 @@ onMounted(() => {
   fetchCalSpace(userId.value);
 
   currentDate.setHours(0, 0, 0, 0);
-
   refreshYMDisplay();
-
-  console.log(currentWeek.value + ', ' + currentMonths.value + ', ' + currentFirstDayofweek.value + ', ' + currentLastDayofweek.value + ', ' + currentYear.value);
   
   // Easy fix for yearmonth__display class element being sized correctly - steal weekday__box's width after render. >:)
   weekdayBoxWidth.value = document.getElementById('weekdaybox-width-source').offsetWidth + 'px';
@@ -160,7 +156,6 @@ function goToTodaysWeek() {
       <ChangeWeek
         :character="right"
         @future-week="goToFutureWeek()" />
-      <!-- <span>&#10095;</span> move "right" button -->
       <div class="lazy__filler__box" :style="{
         width: '7px'
       }"></div>
@@ -170,7 +165,7 @@ function goToTodaysWeek() {
       <span>&bull;</span>
       <span id="week__label">Week {{ currentWeek }}</span>
     </div>
-    <div class="long__task__display">
+    <div class="long__task__display" :style="{ width: weekdayBoxWidth }">
       <!-- TODO for that specific feature later; NOTE: it is to only appear when relevant -->
     </div>
     <ul class="weekday__box" id="weekdaybox-width-source">
@@ -184,14 +179,20 @@ function goToTodaysWeek() {
         </p>
       </li>
     </ul>
-    <div class="calendar__with__hours">
-      <div v-for="i in 24" v-bind:id="`${String(i - 1).padStart(2, '0') + ':00'}`" class="calendar__hour__row">
+    <div class="calendar__with__hours" :style="{ width: weekdayBoxWidth }">
+      <div 
+        v-for="i in 24"
+        v-bind:id="`${String(i - 1).padStart(2, '0') + ':00'}`"
+        class="calendar__hour__row"
+      >
         <div class="hour__box">
           {{ String(i - 1).padStart(2, '0') + ':00' }}
         </div>
-        <div v-for="j in 7" v-bind:id="`${weekdayArray[j - 1].substring(0,3)}${i - 1}`" class="hour__row__day">
-          <!-- This is a hour grid box -->
-        </div>
+        <div
+          v-for="j in 7"
+          v-bind:id="`${weekdayArray[j - 1].substring(0,3)}${i - 1}`"
+          class="hour__row__day"
+        ><!-- This is a hour grid box --></div>
       </div>
     </div>
   </div>
@@ -201,6 +202,7 @@ function goToTodaysWeek() {
 .wrapper__big__calendar {
   margin: 0;
   padding: 0;
+  content: 0;
 }
 
 .yearmonth__display {
@@ -211,7 +213,7 @@ function goToTodaysWeek() {
   top: 0;
 
   gap: 15px;
-  border: 1px solid lightgray;
+  border: 1px solid slateblue;
   margin: 0;
   padding: 20px 0;
   content: 0;
@@ -224,6 +226,10 @@ function goToTodaysWeek() {
 
 .long__task__display {
   display: flex;
+  list-style-type: none;
+  border: 1px solid lightgray;
+  padding: 0;
+  margin: 0;
 }
 
 .weekday__box {
@@ -246,6 +252,7 @@ function goToTodaysWeek() {
   margin: 0;
   padding: 25px 34px;
   content: 0;
+  bottom: 0;
 
   min-width: 150px;
 
@@ -258,7 +265,10 @@ function goToTodaysWeek() {
 }
 
 .calendar__with__hours {
-  --nothing-there: '';
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  border:none;
 }
 
 .calendar__hour__row {

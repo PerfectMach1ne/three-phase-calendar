@@ -1,11 +1,13 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, provide } from 'vue';
 import { RouterView, useRouter } from 'vue-router';
 import LoginView from './views/LoginView.vue';
 import { useAuth } from './composables/session.js';
 
 const { clearToken, clearUserId } = useAuth();
 
+const username = ref('Michalina Hatsuńska');
+provide('username', username);
 const router = useRouter();
 const isLoggedIn = ref(false);
 const darkMode = ref(false);
@@ -57,6 +59,7 @@ router.push('/calendar');
       class="router login">
         {{ !isLoggedIn ? "Login" : "Logout" }}
       </button>
+      <span class="username__display">{{ '👤 ' + username }}</span>
       <button @click="darkModeToggle" class="router" :class="[darkMode ? darkModeClass : lightModeClass]">{{ darkModeIcon }}</button>
     </nav>
   </header>
@@ -74,7 +77,7 @@ router.push('/calendar');
 <style>
 * {
   /* Core of the "light & dark theme" */
-  background-color: #fff;
+  background-color:antiquewhite;
   color: #000;
 }
 
@@ -97,7 +100,6 @@ footer {
 /* Buttons attached to Vue router and handling login and etc toggles*/
 .router {
   margin: 10px;
-  border: 1px solid gray;
   padding: 10px 20px;
   border: none;
   border-radius: 12px;
@@ -167,6 +169,16 @@ footer {
 
 .router:not(:hover) {
   transition: all 0.3s ease;
+}
+
+span.username__display {
+  font-size: 1.2em;
+  font-weight: 600;
+  margin: 10px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 12px;
+  background-color: skyblue;
 }
 
 /* Some legacy general global styling */

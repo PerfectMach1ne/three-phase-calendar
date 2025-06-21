@@ -190,6 +190,8 @@ async fn fetch_cspace(
         .await
         .map_err(|e| format!("Error reading response: {}", e))?;
 
+    println!("{}", response_text);
+
     if status.is_success() { Ok(response_text) } else {
         Err(format!("Server error HTTP {}: {}", status, response_text))
     }

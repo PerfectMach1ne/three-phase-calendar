@@ -8,7 +8,6 @@ const events = ref({
   tasks: [],
   timeblocks: [],
   events_userId: 0,
-  cspaceId: 0
 });
 
 export function useEvents() {
@@ -16,7 +15,6 @@ export function useEvents() {
   const unpackEvents = async (boxOjson) => {
     try {
       events.events_userId = boxOjson.userdata[0].user_id;
-      events.cspaceId = boxOjson.userdata[0].calspace_id;
       if (boxOjson.tasks === null) {
         events.tasks = [];
       } else {

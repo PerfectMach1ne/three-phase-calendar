@@ -7,7 +7,6 @@ import { useEvents } from '../composables/events.js';
 const { events, refreshTasks } = useEvents();
 
 const renderChangeTask = inject('renderChangeTask');
-
 const tasks = ref([]);
 try {
   if (events.tasks !== null) tasks.value = events.tasks;
@@ -24,10 +23,9 @@ try {
   if (events.tasks[0].hashcode !== null) task.value = events.tasks[0].hashcode;
 } catch (error) {
   console.error("You have no tasks!");
-  task = 1;
+  task.value = 1;
 }
 
-const renderAddTask = inject('renderAddTask');
 const title = ref('(Untitled)');
 const description = ref("");
 const date = ref('2020-08-28');

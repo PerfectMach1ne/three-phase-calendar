@@ -11,7 +11,7 @@ import BigCalendar from '../BigCalendar.vue';
 <style>
 .calendar__container {
   margin: 5px;
-  border: 2px solid gray;
+  border: 2px solid slateblue;
   padding: 5px;
   max-height: 56vh;
   width: 85%;

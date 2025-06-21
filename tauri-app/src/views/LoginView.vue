@@ -1,12 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 import { invoke } from '@tauri-apps/api/core';
 import { useAuth } from '../composables/session.js';
 
 const { jwtToken, loadToken, setToken, userId, setUserId, clearToken } = useAuth();
 const emit = defineEmits(['login']);
 
-const username = ref('Michalina Hatsuńska');
+
+const username = inject('username');
 const email = ref('email@example.com');
 const pwd = ref('');
 const loginResult = ref('');
@@ -26,7 +27,6 @@ async function attemptLogin() {
       setUserId(data.loginUserId);
       setToken(res.token);
       loginResult.value = data.result;
-      console.log("register::" + JSON.stringify(data) + " " + res.token);
     } else {
       const res = await invoke('login', {
         email: email.value,
@@ -37,10 +37,8 @@ async function attemptLogin() {
         setUserId(data.loginUserId);
         setToken(res.token);
       }
-      console.log("login::" + data.loginUserId);
       setUserId(data.loginUserId);
       loginResult.value = data.result;
-      console.log("login::" + JSON.stringify(data) + " " + res.token);
     }
   } catch (e) {
     loginResult.value = `Error: ${e}`;

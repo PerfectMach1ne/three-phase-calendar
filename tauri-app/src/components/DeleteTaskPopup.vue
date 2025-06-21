@@ -22,7 +22,7 @@ try {
   if (events.tasks[0].hashcode !== null) task.value = events.tasks[0].hashcode;
 } catch (error) {
   console.error("You have no tasks!");
-  task = 1;
+  task.value = 1;
 }
 
 function cancel() {
