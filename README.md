@@ -11,7 +11,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ## Milestones/feature ToDo list
 
-#### CALENDARCOINS COLLECTED: 42📅🪙!!!
+#### CALENDARCOINS COLLECTED: 43📅🪙!!!
 
 ### Java + postgres backend server
 
@@ -67,7 +67,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~Make Rust "middleend" be able to talk to the appropriate backend server.~~
 - [x] ~~Make Rust backend and Vue learn how to talk to each other about JWT tokens and user id handling in requests.~~
 - [x] ~~Wire up all event creation, fetching and deletion methods~~
-- [ ] **Correct the wiring between calendarspace and actual events (and make API server verify tokens)**
+- [x] ~~Correct the wiring between calendarspace and actual events (and make API server verify tokens)~~
 - [ ] **Make events renderable as they should be.**
 - [ ] **Make rendered events be fully functional and additionally clickable.**
 - [ ] **Event popup with the editing and PUT/PATCH part.**
