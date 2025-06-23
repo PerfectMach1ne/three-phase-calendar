@@ -83,28 +83,23 @@ public class TimeblockDBProxy extends BaseDBProxy implements AutoCloseable {
                 : '#' + timeblock.getColor().getHex() );
         
         HTTPStatusCode status = HTTPStatusCode.HTTP_500_INTERNAL_SERVER_ERROR;
-        try {
-            ResultSet rs = stat.executeQuery();
+        ResultSet rs = stat.executeQuery();
 
-            if (rs.next()) {
-                PreparedStatement cspace = this.conn.prepareStatement("""
-                    INSERT INTO calendarspace
-                    (user_id, event_id, event_hashcode, event_type)
-                    VALUES (?, ?, ?, 'timeblock');
-                """);
+        if (rs.next()) {
+            PreparedStatement cspace = this.conn.prepareStatement("""
+                INSERT INTO calendarspace
+                (user_id, event_id, event_hashcode, event_type)
+                VALUES (?, ?, ?, 'timeblock');
+            """);
 
-                cspace.setInt(1, this.uid);
-                cspace.setInt(2, rs.getInt("id"));
-                cspace.setInt(3, timeblock.getHashcode());
+            cspace.setInt(1, this.uid);
+            cspace.setInt(2, rs.getInt("id"));
+            cspace.setInt(3, timeblock.getHashcode());
 
-                cspace.executeUpdate();
+            cspace.executeUpdate();
 
-                status = HTTPStatusCode.HTTP_201_CREATED;
-            } else {
-                return status;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            status = HTTPStatusCode.HTTP_201_CREATED;
+        } else {
             return status;
         }
 

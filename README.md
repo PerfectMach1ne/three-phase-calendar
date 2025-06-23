@@ -11,7 +11,7 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 
 ## Milestones/feature ToDo list
 
-#### CALENDARCOINS COLLECTED: 43📅🪙!!!
+#### CALENDARCOINS COLLECTED: 46📅🪙!!!
 
 ### Java + postgres backend server
 
@@ -70,10 +70,10 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~Correct the wiring between calendarspace and actual events (and make API server verify tokens)~~
 - [ ] **Make events renderable as they should be.**
 - [ ] **Make rendered events be fully functional and additionally clickable.**
-- [ ] **Event popup with the editing and PUT/PATCH part.**
+- [x] ~~Event popup with the editing and PUT/PATCH part.~~
 - [ ] **Events don't collide with each other and extend on the right Vue div box when they last more than 1 day.**
-- [ ] **Implement a basic "casing" for planner mode.**
-- [ ] **Implement a basic "casing" for journal mode.**
+- [x] ~~Implement a basic "casing" for planner mode.~~
+- [x] ~~Implement a basic "casing" for journal mode.~~
 - [ ] **Planner mode and Journal mode can into calendarspace.**
 - [ ] **Journal prototype implenentation.**
 - [ ] **Planner prototype implementation.**

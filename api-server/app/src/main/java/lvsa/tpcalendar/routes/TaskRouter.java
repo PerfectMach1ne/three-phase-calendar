@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.sql.SQLException;
 import java.util.Map;
 
+import org.postgresql.util.PSQLException;
+
 import lvsa.tpcalendar.auth.TokenProvider;
 import lvsa.tpcalendar.dbutils.DBConnProvider;
 import lvsa.tpcalendar.dbutils.proxies.TaskDBProxy;
@@ -245,6 +247,7 @@ public class TaskRouter implements APIRouter {
             status = proxy.updateWhole(hashcode, sb.toString());
         } catch (SQLException sqle) {
             sqle.printStackTrace();
+            return status;
         }
 
         response = status.wrapAsJsonRes();
@@ -342,6 +345,7 @@ public class TaskRouter implements APIRouter {
             return status;
         } catch (SQLException sqle) {
             if (Integer.parseInt(sqle.getSQLState()) == PGERR_UNIQUE_VIOLATION) {
+                sqle.printStackTrace();
                 return HTTPStatusCode.HTTP_409_CONFLICT;
             }
             sqle.printStackTrace();
