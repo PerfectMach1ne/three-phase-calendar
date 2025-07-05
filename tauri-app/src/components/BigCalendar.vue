@@ -16,9 +16,6 @@ async function fetchCalSpace(userId) {
     });
     const json = JSON.parse(res);
     unpackEvents(json);
-    console.log(events.events_userId);
-    console.log(events.tasks);
-    console.log(events.timeblocks);
   } catch (e) {
     console.log(`Error: ${e}`);
   }
@@ -108,7 +105,9 @@ function getWeekMonthday(dayOffset) {
   return monthday;
 }
 
-// ChangeWeek.vue events
+/*
+ * ChangeWeek.vue event handlers.
+ */
 function goToPastWeek() {
   var date = currentDate;
   var monthday = date.getDate() - date.getDay() + 1;
