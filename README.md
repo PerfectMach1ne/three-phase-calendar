@@ -84,6 +84,17 @@ I named it "Three Phase Calendar", because the foundational idea behind this pro
 - [x] ~~Event creation forms.~~
 - [x] ~~User authentication GUI.~~
 
+### "Aronschaltung" study note organization module
+
+- [ ] Small steps: make new branch and manually insert beginning data
+- [ ] Tables for: notebook scan blobs, Markdown study notes, categories
+- [ ] Basic tpc GUI integration
+- [ ] Image blobs are viewable
+- [ ] Image blobs are scrollable & zoomable
+- [ ] You can select areas of image blobs...
+- [ ] ...and save notes or organizational data on selected areas.
+- [ ] Markdown note format reuses code of custom implementation from tpc Journal mode (ofc, first we must make it work lol)
+
 ### C + ncurses CLI frontend
 
 - [x] ~~Integrate ncurses and libcurl into the build.~~
