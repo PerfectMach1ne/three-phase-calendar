@@ -71,6 +71,7 @@ function refreshYMDisplay() {
   currentLastDayofweek.value = getWeekMonthday(6);
   currentYear.value = currentDate.getFullYear();
   currentWeek.value = currentDate.getWeek();
+  console.log(currentFirstDayofweek.value)
 }
 
 function getTodaysMonths() {
@@ -98,7 +99,12 @@ function getTodaysMonths() {
 function getWeekMonthday(dayOffset) {
   var date = currentDate;
 
-  var monthday = date.getDate() - date.getDay() + 1;
+  var monthday = 
+    date.getDay() == 0 /* "where 0 represents Sunday", the LAST day of the normal human week...
+                        * ...and North American contempt for the entire biosphere...
+                        * ...as well as my level of respect for USA and most of its fucking arsehole citizens. 
+                        * Fuck you and your date schizoformat. */
+    ? (date.getDate() - 7 + 1) : (date.getDate() - date.getDay() + 1);
   date = new Date(date.getFullYear(), date.getMonth(), monthday + dayOffset);
   monthday = date.getDate();
 
@@ -110,7 +116,7 @@ function getWeekMonthday(dayOffset) {
  */
 function goToPastWeek() {
   var date = currentDate;
-  var monthday = date.getDate() - date.getDay() + 1;
+  var monthday = date.getDay() == 0 ? (date.getDate() - 7 + 1) : (date.getDate() - date.getDay() + 1);
   date = new Date(date.getFullYear(), date.getMonth(), monthday - 7);
   currentDate = date;
 
@@ -121,7 +127,8 @@ function goToPastWeek() {
 
 function goToFutureWeek() {
   var date = currentDate;
-  var firstMonthDay = date.getDate() - date.getDay() + 1;
+  var firstMonthDay = date.getDay() == 0 ? (date.getDate() - 7 + 1) : (date.getDate() - date.getDay() + 1);
+  
   date = new Date(date.getFullYear(), date.getMonth(), firstMonthDay + 7);
   currentDate = date;
 
@@ -132,7 +139,10 @@ function goToFutureWeek() {
 
 function goToTodaysWeek() {
   currentDate = new Date();
+  // currentDate = Date.now();
+  console.log(currentDate)
   currentDate.setHours(0, 0, 0, 0);
+  console.log(currentDate)
 
   refreshYMDisplay();
 

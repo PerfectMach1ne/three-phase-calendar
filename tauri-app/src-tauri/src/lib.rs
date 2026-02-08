@@ -167,6 +167,7 @@ async fn fetch_cspace(
     let client = Client::new();
     let token = timeout(
         // This fixes a race condition between fetch_cspace and load_token_securely on autologin.
+        // 08/02/2026 three whole-ass seconds though...? Are we sure diva?
         Duration::from_secs(3),
         async {
             loop {
